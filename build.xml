@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<project name="WSU Custom Course Module" basedir="." default="war">
+	<property environment="env" />
+	<property file="build.properties"/>
+    <property name="src.dir" value="src"/>
+    <property name="web.dir" value="WebContent"/>
+    <property name="build.dir" value="${web.dir}/WEB-INF/classes"/>
+    <property name="name" value="wsu-custom-course-module"/>
+
+    <path id="master-classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+    	<fileset dir="${env.TOMCAT}" includes="**/*.jar" />
+        <pathelement path="${build.dir}"/>
+    </path>
+
+    <target name="build" description="Compile source tree java files">
+        <mkdir dir="${build.dir}"/>
+        <javac destdir="${build.dir}" source="1.5" target="1.5">
+            <src path="${src.dir}"/>
+            <classpath refid="master-classpath"/>
+        </javac>
+    </target>
+	
+	<target name="war" depends="build" description="Creates a WAR file">
+		<war destfile="${name}.war"
+             webxml="${web.dir}/WEB-INF/web.xml">
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+                <exclude name="**/*.jar"/>
+            </fileset>
+        </war>
+	</target>
+	
+	<target name="deploywar" depends="war" 
+	      description="Deploy application as a WAR file">
+	        <copy todir="${deploy.path}" preservelastmodified="true">
+	            <fileset dir=".">
+	                <include name="*.war"/>
+	            </fileset>
+	        </copy>
+	    </target>
+ 
+    <target name="clean" description="Clean output directories">
+        <delete>
+            <fileset dir="${build.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </delete>
+    </target>
+</project>
