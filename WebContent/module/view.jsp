@@ -105,7 +105,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 
 
 <%
-String test = "test";
+
 User user = bbContext.getUser();
 boolean isInstructor = false; 
 int activeCourseCount = 0;
