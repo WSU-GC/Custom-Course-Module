@@ -12,6 +12,7 @@
             <include name="*.jar"/>
         </fileset>
     	<fileset dir="${env.TOMCAT}" includes="**/*.jar" />
+    	<fileset dir="${bb.build}" includes="**/*.jar" />
         <pathelement path="${build.dir}"/>
     </path>
 
@@ -28,7 +29,8 @@
              webxml="${web.dir}/WEB-INF/web.xml">
             <fileset dir="${web.dir}">
                 <include name="**/*.*"/>
-                <exclude name="**/*.jar"/>
+            	<exclude name="**/*-javadoc.jar"/>
+            	<exclude name="**/*-sources.jar"/>
             </fileset>
         </war>
 	</target>
