@@ -47,7 +47,8 @@
       <permission type="persist" name="contentfile" actions="create,modify,delete"/>
       <permission type="persist" name="metadatacontentareaassociation" actions="create"/>
       <permission type="persist" name="metadatapickeruserpreference" actions="create"/>
-      <permission type="persist" name="metadatapickerattributevalues" actions="create"/>      
+      <permission type="persist" name="metadatapickerattributevalues" actions="create"/> 
+      <permission type="java.lang.reflect.ReflectPermission" name="suppressAccessChecks" actions="suppressAccessChecks"/>     
     </permissions>
   </plugin>
 
