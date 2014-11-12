@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<manifest>
+  <plugin>
+    <name value= "WSU Custom Course Module"/>
+    <handle value= "wsu-custom-course-module"/>
+    <description value= "WSU Custom Course Module for managing course sections and merges."/>
+    <version value= "0.9.0"/>
+    <requires>
+    	<bbversion value="9.0.0"/>
+    </requires>
+    <vendor>
+      <id value="wsu"/>
+      <name value="WSU"/>
+      <url value="http://wsu.edu/" />
+      <description value="Preparing for v9." />
+    </vendor>
+    <http-actions></http-actions>
+    <module-defs>
+      <module-type ext-ref="wsu-course-module" title="My Courses" uicreatable="true">
+        <jsp-dir>module</jsp-dir>
+        <jsp>
+          <view>view.jsp</view>
+        </jsp>
+      </module-type>  
+      <module type="wsu-course-module" isadmin="false" isavailabletocourse="true" useraddable="true" isdeletable="true" title="My Courses">
+        <description>WSU Custom Course Module</description>
+        <ExtraInfo>
+					<property key="" type=""></property>
+		</ExtraInfo>
+		<module-groups>
+ 			<module-group id="Everyone" /> 
+		</module-groups>
+      </module>
+    </module-defs>
+    
+    <permissions>
+      <permission type="persist" name="Content" actions="create,modify,delete"/>
+      <permission type="persist" name="course" actions="create,modify,delete"/>
+      <permission type="persist" name="coursemembership" actions="create,modify,delete"/>
+      <permission type="persist" name="euditemrecipient" actions="create,modify,delete"/>
+      <permission type="persist" name="tab" actions="create,modify,delete"/>
+      <permission type="persist" name="layoutfamily" actions="create,modify,delete"/>
+      <permission type="persist" name="group" actions="create,modify,delete"/>
+      <permission type="persist" name="groupmembership" actions="create,modify,delete"/>
+      <permission type="attribute" name="user.authinfo" actions="get"/>
+      <permission type="attribute" name="user.personalinfo" actions="get"/>
+      <permission type="persist" name="contentfile" actions="create,modify,delete"/>
+      <permission type="persist" name="metadatacontentareaassociation" actions="create"/>
+      <permission type="persist" name="metadatapickeruserpreference" actions="create"/>
+      <permission type="persist" name="metadatapickerattributevalues" actions="create"/>      
+    </permissions>
+  </plugin>
+
+</manifest>
