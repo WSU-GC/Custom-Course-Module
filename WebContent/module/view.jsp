@@ -1,4 +1,4 @@
-<%@page import="edu.wsu.CMWrapper"%>
+<%@page import="edu.wsu.*"%>
 <%@page import="blackboard.platform.plugin.PlugInUtil" %>
 <%@page import="blackboard.data.course.*" %>
 <%@page import="blackboard.data.user.*" %>
@@ -146,11 +146,20 @@ Collections.sort(courses, new Comparator<Course>() {
 	<%
 		List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
 		List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
+		List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
 		List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
 	%>
-	Courses you are a student
+	Courses you are a student:
 	<ul class="portletList-img courseListing">
-		
+		<% if (activeStudentMemberships.size() == 0) { %>
+		<li>Sorry, you are not enrolled in any active Blackboard Learn courses as a student.</li>
+		<% } else { 
+			for(int i=0, l = activeStudentMemberships.size(); i < l; i++) {
+				CMWrapper cm = activeStudentMemberships.get(i);
+		%>
+			<li><a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.courseId %></a></li>	
+		<%	}
+		} %>
 	</ul>
 	
 	
@@ -195,7 +204,7 @@ Collections.sort(courses, new Comparator<Course>() {
 	</ul>
 </div><!-- End Page1 -->
 
-<% if(isInstructor) { %>
+<% if(instMemberships.size() > 0) { %>
 	<style> #manageCourses { display: block; } </style>
 <% } %>
 
@@ -204,7 +213,89 @@ Collections.sort(courses, new Comparator<Course>() {
 	<div class="CCMSpace">
 		<strong>Enabled Course Spaces:</strong>
 		
-		<!-- Active Courses -->
+		<!-- Instructor Courses -->
+		<div class="CSSTableGenerator">
+		<table class="four">
+			
+				<tr>
+					<td>Enrl</td>
+					<td>Course ID</td>
+					<td>Availability</td>
+					<td>Action</td>
+				</tr>
+				
+				<%
+				for (int i=0, l = instMemberships.size(); i < l; i++) {
+					CMWrapper cm = instMemberships.get(i);
+					int enrl = cm.course.loadMemberships().size();
+					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
+					String disableUri = moduleBasePath + "disable.jsp?batch-uid=" + cm.course.courseId;
+					String enableUri = moduleBasePath + "enable.jsp?batch-uid=" + cm.course.courseId;
+					if(!cm.course.isChild) {
+				%>
+				<tr>
+					<td><%= enrl %></td>
+					<td>
+					<% if (!cm.course.isRoster) { %>
+						<a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.courseId %></a>
+					<% } else { %>
+						<%= cm.course.courseId %>
+					<% } %>
+					</td>
+					<td>
+					<% if (!cm.course.isRoster) { 
+						if (cm.course.isAvailable) {
+					%>
+						<a href="<%= disableUri %>">Disable</a>
+					<% } else { %>
+						<a href="<%= enableUri %>">Enable</a>
+					<% }
+					} %>
+					</td>
+					<td>
+					<% if (cm.course.isOnline) {	%>
+						<a target="_blank" href="<%= cvUri + cm.course.courseId %>">Course Verificaion</a>
+					<% } else if (cm.course.isRoster) { %>
+						<a class="manageActiveSectionsLink" href="#<%= i %>">Activate</a>
+					<% } else { %>
+						<a class="manageActiveSectionsLink" href="#<%= i %>">Manage</a>
+					<% } %>
+					</td>
+				</tr>
+					<% } 
+					if (cm.course.isParent) { 
+						List<CourseWrapper> childCourses = CourseWrapper
+								.loadChildCourseWrappersByParentCourse(cm._course);
+						for (int j=0, m = childCourses.size(); j < m; j++) {
+							CourseWrapper child = childCourses.get(j);
+							int childEnrl = child.loadMemberships().size();
+							String unmergeUri = moduleBasePath + "unmerge.jsp?parent-batchuid=" + cm.course.courseBatchUid 
+									+ "&child-batchuid=" + child.courseBatchUid;
+					%>
+						<tr>
+							<td>
+								<%= childEnrl %>
+							</td>
+							<td class="child">
+								<%= child.courseId %>
+							</td>
+							<td>
+							</td>
+							<td>
+								<% if (!cm.course.isOnline) {	%>
+									<a href="<%= unmergeUri %>">Remove</a>
+								<% } %>
+							</td>
+						</tr>
+					<% }
+					}
+				} %>
+			
+		</table>
+		</div>
+		
+		
+		
 		<div class="CSSTableGenerator">
 		<table class="four">
 			

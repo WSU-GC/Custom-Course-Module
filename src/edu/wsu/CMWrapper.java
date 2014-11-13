@@ -53,10 +53,15 @@ public class CMWrapper {
 		return cmWrappers;
 	}
 	
-	public static List<CMWrapper> filterCMWrappersByRoleAndAvailability(List<CMWrapper> courses, 
-			String role, boolean isAvailable) {
+	public static List<CMWrapper> filterCMWrappersByAvailability(List<CMWrapper> courses, 
+			boolean isAvailable) {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
-		// TODO finish method
+		for (int i = 0, l = courses.size(); i < l; i++) {
+			CMWrapper cm = courses.get(i);
+			if (cm.course.isAvailable == isAvailable) {
+				cmWrappers.add(cm);
+			}
+		}
 		return cmWrappers;
 	}
 	
