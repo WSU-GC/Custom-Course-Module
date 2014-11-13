@@ -16,6 +16,7 @@
 <%@page import="java.util.Random.*"%>
 <%@page import="java.lang.Thread.*"%>
 <%@page import="java.util.Calendar.*"%>
+<%@page import="edu.wsu.*" %>
 <%@ taglib uri="/bbNG" prefix="bbNG"%>
 <%@page isErrorPage="true" %>
 

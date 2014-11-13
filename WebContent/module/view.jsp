@@ -1,3 +1,4 @@
+<%@page import="edu.wsu.CMWrapper"%>
 <%@page import="blackboard.platform.plugin.PlugInUtil" %>
 <%@page import="blackboard.data.course.*" %>
 <%@page import="blackboard.data.user.*" %>
@@ -141,6 +142,18 @@ Collections.sort(courses, new Comparator<Course>() {
 	</div>
 
 	<!-- COURSE LIST -->	
+	
+	<%
+		List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
+		List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
+		List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
+	%>
+	Courses you are a student
+	<ul class="portletList-img courseListing">
+		
+	</ul>
+	
+	
 	<ul class="portletList-img courseListing">
 		<%
 		for(int i = 0; i < courses.size(); i++) {
