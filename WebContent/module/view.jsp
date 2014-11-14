@@ -117,9 +117,9 @@ Collections.sort(courses, new Comparator<Course>() {
 					<% if (!cm.course.isRoster) { 
 						if (cm.course.isAvailable) {
 					%>
-						<a href="<%= disableUri %>">Disable</a>
+						<a class="showLoading" href="<%= disableUri %>">Disable</a>
 					<% } else { %>
-						<a href="<%= enableUri %>">Enable</a>
+						<a class="showLoading" href="<%= enableUri %>">Enable</a>
 					<% }
 					} %>
 					</td>
@@ -127,7 +127,7 @@ Collections.sort(courses, new Comparator<Course>() {
 					<% if (cm.course.isOnline) {	%>
 						<a target="_blank" href="<%= cvUri + cm.course.courseId %>">Course Verificaion</a>
 					<% } else if (cm.course.isRoster) { %>
-						<a href="<%= activateUri %>">Activate</a>
+						<a class="showLoading" href="<%= activateUri %>">Activate</a>
 					<% } else { %>
 						<a class="manageSection" href="#<%= cm.course.courseId %>">Manage</a>
 					<% } %>
@@ -154,7 +154,7 @@ Collections.sort(courses, new Comparator<Course>() {
 							</td>
 							<td>
 								<% if (!cm.course.isOnline) {	%>
-									<a href="<%= unmergeUri %>">Remove</a>
+									<a class="showLoading" href="<%= unmergeUri %>">Remove</a>
 								<% } %>
 							</td>
 						</tr>
@@ -220,19 +220,14 @@ Collections.sort(courses, new Comparator<Course>() {
 </div>
 
 <script type="text/javascript">
-	<%-- var rosters = JSON.parse('<%= jsonRoster %>');
-	var activeSections = JSON.parse('<%= jsonActiveSections %>');
-	var disabledSections = JSON.parse('<%= jsonDisabledSections %>'); --%>
 	var moduleBasePath = "<%= moduleBasePath %>";
-	var parentCourseBatchUid = '';
-	<%-- var isInstructor = <%= isInstructor %>; --%>
 	var parentCourseId = '';
-	
-	//if(isInstructor) showPage2();
 	
 	document.getElementById('createCourseSection').addEventListener('click', function(evt){
 		evt.stopPropagation();
 		evt.preventDefault();
+		
+		showLoading();
 		
 		var uri = moduleBasePath + 'merge.jsp?parent-course=' + parentCourseId + "&child-courses=";
 		var childCourses = document.querySelectorAll('#mergeList input:checked');
@@ -253,61 +248,7 @@ Collections.sort(courses, new Comparator<Course>() {
 		showPage2();
 	});
 	
-	/* onClassClick('.showCCMPage1', showPage1);
-	onClassClick('.showCCMPage2', showPage2);
-	onClassClick('.showCCMPage3', showPage3);
-	
-	onClassClick('.manageRosterLink', manage(rosters, true));
-	onClassClick('.manageActiveSectionsLink', manage(activeSections, false));
-	onClassClick('.manageDisabledSectionsLink', manage(disabledSections, false));
-	
-	onClassClick('.enableSection', function(evt) {
-		evt.stopPropagation();
-		evt.preventDefault();
-		
-		
-		
-	}); */
-	
-	function manage(sectionsToManage, skip) {
-		return function(evt) {
-			if (evt) {
-				evt.stopPropagation();
-				evt.preventDefault();
-			}
-			var ind = parseInt(this.getAttribute("href").substring(1));
-			var rosterList = "";
-			
-			document.getElementById("parentCourse").innerHTML = sectionsToManage[ind][1];
-			parentCourseBatchUid = sectionsToManage[ind][0];
-			
-			if(rosters.length) {
-				for(var i=0, l = rosters.length; i<l; i++) {
-					if(skip) {
-						if(i != ind) {
-							if(!/-ONLIN-/i.test(rosters[i][1])) {
-								rosterList += "<li><input type='checkbox' value='"+ rosters[i][0] +"' />" + rosters[i][1] + "</li>";
-							} else {
-								rosterList += "<li>* " + rosters[i][1] +"</li>";
-							}
-						}
-					} else {
-						if(!/-ONLIN-/i.test(rosters[i][1])) {
-							rosterList += "<li><input type='checkbox' value='"+ rosters[i][0] +"' />" + rosters[i][1] + "</li>";
-						} else {
-							rosterList += "<li>* " + rosters[i][1] +"</li>";
-						}
-					}
-				}
-			} else {
-				rosterList += "<li>No available rosters to merge</li>";
-			}
-			
-			document.getElementById("mergeList").innerHTML = rosterList;
-			showPage3();
-		}
-	}
-	
+	onClassClick(".showLoading", showLoading);
 	
 	function onClassClick(cls, fn) {
 		[].forEach.call(document.querySelectorAll(cls), function(el) {
@@ -331,6 +272,12 @@ Collections.sort(courses, new Comparator<Course>() {
 		}
         document.getElementById("CCMPage1").style.display = "none";
         document.getElementById("CCMPage2").style.display = "block";
+	}
+	
+	function showLoading(evt) {
+        document.getElementById("CCMPage1").style.display = "none";
+        document.getElementById("CCMPage2").style.display = "none";
+        document.getElementById("loadingRequest").style.display = "block";
 	}
 	
 		

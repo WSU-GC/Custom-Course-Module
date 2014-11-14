@@ -50,7 +50,6 @@ public class CourseManagement {
 		CourseManagement.createCourseSpace(ids[0], ids[1], title);
 	}
 	
-	
 	public static void createCourseSpace(String batchUid, String courseId, String title) 
 			throws PersistenceException, ValidationException {
 		
