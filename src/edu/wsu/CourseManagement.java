@@ -16,6 +16,7 @@ import blackboard.persist.course.CourseDbLoader;
 import blackboard.persist.course.CourseDbPersister;
 import blackboard.persist.course.GroupDbLoader;
 import blackboard.persist.course.GroupDbPersister;
+import blackboard.persist.course.GroupMembershipDbLoader;
 import blackboard.persist.course.GroupMembershipDbPersister;
 
 
@@ -89,6 +90,7 @@ public class CourseManagement {
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
 		Course parentCourse = courseLoader.loadByCourseId(parentId);
 		Course childCourse = courseLoader.loadByCourseId(childId);
+		CourseManagement.removeGroup(parentId, childId);
 		ccManager.removeChildFromMaster(childCourse.getId(), parentCourse.getId(), 
 				CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE);
 	}
@@ -141,6 +143,47 @@ public class CourseManagement {
 			}
 		}  
 		
+	}
+	
+	public static void removeGroup(String parentCourseId, String childCourseId) 
+			throws PersistenceException {
+		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		GroupDbLoader groupLoader = GroupDbLoader.Default.getInstance();
+		GroupMembershipDbLoader gmLoader = GroupMembershipDbLoader.Default.getInstance();
+		GroupMembershipDbPersister gmPersister = GroupMembershipDbPersister.Default.getInstance();
+		
+		Course parentCourse = courseLoader.loadByCourseId(parentCourseId);
+		Course childCourse = courseLoader.loadByCourseId(childCourseId);
+		
+		List<Group> groups = groupLoader.loadByCourseId(parentCourse.getId());
+
+		boolean needToRemoveGroup = false;
+		Group groupToRemove = new Group();
+		for (int i =0, l = groups.size(); i < l; i++) {
+			Group curGroup = groups.get(i);
+			if(curGroup.getTitle().equalsIgnoreCase(childCourse.getCourseId())) {
+				groupToRemove = groupLoader.loadById(curGroup.getId());
+				needToRemoveGroup = true;
+			}
+		}
+
+		if(needToRemoveGroup) {
+			List<GroupMembership> groupMemberships= gmLoader.loadByGroupId(groupToRemove.getId());
+			for (int i = 0, l = groupMemberships.size(); i < l; i++) {
+				gmPersister.deleteById(groupMemberships.get(i).getId());
+			}
+		}
+	}
+	
+	public static void enableOrDisableCourse(String courseId, boolean enabled) 
+			throws KeyNotFoundException, PersistenceException, ValidationException {
+		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		CourseDbPersister coursePersister = CourseDbPersister.Default.getInstance();
+
+		Course course = courseLoader.loadByCourseId(courseId);
+		course.setHonorTermAvailability(false);
+		course.setIsAvailable(enabled);
+		coursePersister.persist(course);
 	}
 	
 }
