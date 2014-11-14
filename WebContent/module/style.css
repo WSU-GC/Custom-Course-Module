@@ -1,0 +1,79 @@
+#manageCourses {
+		display: none;
+		margin: 10px 0;
+		font-size: 1.2rem;
+	}
+	#CCMPage2, #CCMPage3 {
+		display: none;
+	}
+	.CCMSpace {
+		margin-top: 8px;
+	}
+	.CCMSpace strong {
+		font-size: 1.3rem;
+	}
+	.CSSTableGenerator {
+		margin:10px 0px;padding:0px;
+		width:100%;
+		box-shadow: 1px 1px 5px #888888;
+		border:1px solid #dddddd;
+	}.CSSTableGenerator table{
+	    border-collapse: collapse;
+	        border-spacing: 0;
+		width:100%;
+		height:100%;
+		margin:0px;padding:0px;
+	}
+	
+	.CSSTableGenerator tr:nth-child(odd){ background-color:#d8d8d8; }
+	.CSSTableGenerator tr:nth-child(even)    { background-color:#ffffff; }.CSSTableGenerator td{
+		vertical-align:middle;
+		border:1px solid #ffffff;
+		border-width:0px 1px 1px 0px;
+		text-align:left;
+		padding:7px;
+	}.CSSTableGenerator tr:last-child td{
+		border-width:0px 1px 0px 0px;
+	}.CSSTableGenerator tr td:last-child{
+		border-width:0px 0px 1px 0px;
+	}.CSSTableGenerator tr:last-child td:last-child{
+		border-width:0px 0px 0px 0px;
+	}
+	.CSSTableGenerator tr:first-child td{
+			background:-o-linear-gradient(bottom, #981e32 5%, #981e32 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #981e32), color-stop(1, #981e32) );
+		background:-moz-linear-gradient( center top, #981e32 5%, #981e32 100% );
+		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#981e32", endColorstr="#981e32");	background: -o-linear-gradient(top,#981e32,981e32);
+	
+		background-color:#981e32;
+		border:0px solid #ffffff;
+		text-align:center;
+		border-width:0px 0px 1px 1px;
+		color: #ffffff;
+	}
+	.CSSTableGenerator tr:first-child td:first-child{
+		border-width:0px 0px 1px 0px;
+	}
+	.CSSTableGenerator tr:first-child td:last-child{
+		border-width:0px 0px 1px 1px;
+	}
+	.CSSTableGenerator tr td.child {
+		padding-left: 30px;
+		background-image: url('<%= moduleBasePath + "xchild.png" %>');
+		background-repeat: no-repeat;
+		background-position: 15px center;
+	}
+	 
+	.CSSTableGenerator table.four td:last-child,
+	.CSSTableGenerator table.four td:nth-child(3) {
+		width: 15%;
+	}
+	
+	.CSSTableGenerator table.four td:first-child {
+		width: 10%;
+	}
+	.CSSTableGenerator table.three td:first-child {
+		width: 10%;
+	}
+	.CSSTableGenerator table.three td:last-child {
+		width: 15%;
+	}

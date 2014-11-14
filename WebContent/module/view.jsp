@@ -20,85 +20,11 @@
 String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "") + "module/";
 %>
 
+<link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "style.css" %>' />
+
 <style>
-	#manageCourses {
-		display: none;
-		margin: 10px 0;
-		font-size: 1.2rem;
-	}
-	#CCMPage2, #CCMPage3 {
-		display: none;
-	}
-	.CCMSpace {
-		margin-top: 8px;
-	}
-	.CCMSpace strong {
-		font-size: 1.3rem;
-	}
-	.CSSTableGenerator {
-		margin:10px 0px;padding:0px;
-		width:100%;
-		box-shadow: 1px 1px 5px #888888;
-		border:1px solid #dddddd;
-	}.CSSTableGenerator table{
-	    border-collapse: collapse;
-	        border-spacing: 0;
-		width:100%;
-		height:100%;
-		margin:0px;padding:0px;
-	}
-	
-	.CSSTableGenerator tr:nth-child(odd){ background-color:#d8d8d8; }
-	.CSSTableGenerator tr:nth-child(even)    { background-color:#ffffff; }.CSSTableGenerator td{
-		vertical-align:middle;
-		border:1px solid #ffffff;
-		border-width:0px 1px 1px 0px;
-		text-align:left;
-		padding:7px;
-	}.CSSTableGenerator tr:last-child td{
-		border-width:0px 1px 0px 0px;
-	}.CSSTableGenerator tr td:last-child{
-		border-width:0px 0px 1px 0px;
-	}.CSSTableGenerator tr:last-child td:last-child{
-		border-width:0px 0px 0px 0px;
-	}
-	.CSSTableGenerator tr:first-child td{
-			background:-o-linear-gradient(bottom, #981e32 5%, #981e32 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #981e32), color-stop(1, #981e32) );
-		background:-moz-linear-gradient( center top, #981e32 5%, #981e32 100% );
-		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#981e32", endColorstr="#981e32");	background: -o-linear-gradient(top,#981e32,981e32);
-	
-		background-color:#981e32;
-		border:0px solid #ffffff;
-		text-align:center;
-		border-width:0px 0px 1px 1px;
-		color: #ffffff;
-	}
-	.CSSTableGenerator tr:first-child td:first-child{
-		border-width:0px 0px 1px 0px;
-	}
-	.CSSTableGenerator tr:first-child td:last-child{
-		border-width:0px 0px 1px 1px;
-	}
 	.CSSTableGenerator tr td.child {
-		padding-left: 30px;
 		background-image: url('<%= moduleBasePath + "xchild.png" %>');
-		background-repeat: no-repeat;
-		background-position: 15px center;
-	}
-	 
-	.CSSTableGenerator table.four td:last-child,
-	.CSSTableGenerator table.four td:nth-child(3) {
-		width: 15%;
-	}
-	
-	.CSSTableGenerator table.four td:first-child {
-		width: 10%;
-	}
-	.CSSTableGenerator table.three td:first-child {
-		width: 10%;
-	}
-	.CSSTableGenerator table.three td:last-child {
-		width: 15%;
 	}
 </style>
 
@@ -136,82 +62,22 @@ Collections.sort(courses, new Comparator<Course>() {
 });
 %>
 
-<div id="CCMPage1">
-	<div id="manageCourses">
-		<strong><a class="showCCMPage2" href="#">Course Control Panel</a></strong> 
-	</div>
-
-	<!-- COURSE LIST -->	
-	
-	<%
-		List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
-		List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
-		List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
-		List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
-	%>
-	Courses you are a student:
-	<ul class="portletList-img courseListing">
-		<% if (activeStudentMemberships.size() == 0) { %>
-		<li>Sorry, you are not enrolled in any active Blackboard Learn courses as a student.</li>
-		<% } else { 
-			for(int i=0, l = activeStudentMemberships.size(); i < l; i++) {
-				CMWrapper cm = activeStudentMemberships.get(i);
-		%>
-			<li><a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.courseId %></a></li>	
-		<%	}
-		} %>
-	</ul>
-	
-	
-	<ul class="portletList-img courseListing">
-		<%
-		for(int i = 0; i < courses.size(); i++) {
-			boolean isInstructorForCurrentCourse = false;
-			Course course = ((Course)(courses.get(i)));
-			String coursePkId = course.getId().toExternalString();
-			String courseId = course.getCourseId();
-			CourseMembership membership = CourseMembershipDbLoader.Default.getInstance()
-					.loadByCourseAndUserId(course.getId(), user.getId());
-			
-			if (membership.getRoleAsString() == "INSTRUCTOR") {
-				isInstructor = true;
-				isInstructorForCurrentCourse = true;
-			}
-			if (course.getIsAvailable()) {
-				if (!course.isChild()) {
-					activeCourseCount++;
-				}
-				if (isInstructorForCurrentCourse) { 
-					activeSections.add(course); 
-				}
-		%>
-		<li><a href="<%= courseBasePath + coursePkId %>"><%= courseId %></a></li>
-		<%
-			} else if (course.getBatchUid().matches(saipRegex) 
-					&& isInstructorForCurrentCourse
-					&& !course.isChild()) {
-				rosters.add(course);
-			} else if (isInstructorForCurrentCourse
-					&& !course.isChild()) {
-				disabledSections.add(course);
-			}
-		} // End For loop
-
-		if (activeCourseCount == 0) {
-		%>
-		<li>Sorry, you are not enrolled in any active courses at this time.</li>
-		<% } %>
-	</ul>
-</div><!-- End Page1 -->
+<%
+	List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
+	List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
+	List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
+	List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
+	List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships);
+%>
 
 <% if(instMemberships.size() > 0) { %>
 	<style> #manageCourses { display: block; } </style>
 <% } %>
 
-<div id="CCMPage2">
-	<a class="showCCMPage1" href="#">back</a>
-	<div class="CCMSpace">
-		<strong>Enabled Course Spaces:</strong>
+<div id="CCMPage1">
+	<div id="manageCourses">
+		<div class="CCMSpace">
+		<strong>Courses you are an Instructor:</strong>
 		
 		<!-- Instructor Courses -->
 		<div class="CSSTableGenerator">
@@ -231,6 +97,8 @@ Collections.sort(courses, new Comparator<Course>() {
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
 					String disableUri = moduleBasePath + "disable.jsp?batch-uid=" + cm.course.courseId;
 					String enableUri = moduleBasePath + "enable.jsp?batch-uid=" + cm.course.courseId;
+					String activateUri = moduleBasePath + "activate.jsp?course-id=" 
+							+ cm.course.courseId + "&title=" + cm.course.title;
 					if(!cm.course.isChild) {
 				%>
 				<tr>
@@ -256,9 +124,9 @@ Collections.sort(courses, new Comparator<Course>() {
 					<% if (cm.course.isOnline) {	%>
 						<a target="_blank" href="<%= cvUri + cm.course.courseId %>">Course Verificaion</a>
 					<% } else if (cm.course.isRoster) { %>
-						<a class="manageActiveSectionsLink" href="#<%= i %>">Activate</a>
+						<a href="<%= activateUri %>">Activate</a>
 					<% } else { %>
-						<a class="manageActiveSectionsLink" href="#<%= i %>">Manage</a>
+						<a class="manageSection" href="#<%= cm.course.courseBatchUid + ":" + cm.course.courseId %>">Manage</a>
 					<% } %>
 					</td>
 				</tr>
@@ -293,240 +161,28 @@ Collections.sort(courses, new Comparator<Course>() {
 			
 		</table>
 		</div>
-		
-		
-		
-		<div class="CSSTableGenerator">
-		<table class="four">
-			
-				<tr>
-					<td>Enrl</td>
-					<td>Course ID</td>
-					<td>Availability</td>
-					<td>Action</td>
-				</tr>
-			
-			
-				<%
-				jsonActiveSections = "[";
-				for(int i=0; i<activeSections.size(); i++) { 
-					Course course = ((Course)(activeSections.get(i)));
-					String coursePkId = course.getId().toExternalString();
-					String courseId = course.getCourseId();
-					String batchUid = course.getBatchUid();
-					List<CourseMembership> courseMemberships = cmLoader.loadByCourseId(course.getId());
-					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
-					String uri = moduleBasePath + "disable.jsp?batch-uid=" + batchUid;
-					String prefix = i == 0 ? "" : ",";
-					jsonActiveSections += prefix + "[\"" + batchUid + "\", \"" + courseId + "\"]";
-				%>
-				<tr>
-					<td>
-						<%= courseMemberships.size() %>
-					</td>
-					<td>
-						<a href="<%= courseBasePath + coursePkId %>"><%= courseId %></a>
-					</td>
-					<td>
-						<a href="<%= uri %>">Disable</a>
-					</td>
-					<td>
-					<% if (courseId.matches(onlineRegex)) {	%>
-						<a target="_blank" href="<%= cvUri + courseId %>">Course Verificaion</a>
-					<% } else { %>
-						<a class="manageActiveSectionsLink" href="#<%= i %>">Manage</a>
-					<% } %>
-					</td>
-				</tr>
-				<% 
-				//check for child course
-					if (course.isParent()) {
-						List<CourseCourse> ccMappings = ccLoader.loadByParentId(course.getId());
-						for (int j = 0, l=ccMappings.size(); j<l; j++) {
-							CourseCourse ccMap = (CourseCourse)(ccMappings.get(j));
-							Course child = courseLoader.loadById(ccMap.getChildCourseId());
-							String childId = child.getCourseId();
-							String childBUid = child.getBatchUid();
-							List<CourseMembership> ccMemberships = cmLoader.loadByCourseId(child.getId());
-							String unmergeUri = moduleBasePath + "unmerge.jsp?parent-batchuid=" + batchUid 
-									+ "&child-batchuid=" + childBUid;
-							%>
-							<tr>
-								<td>
-									<%= ccMemberships.size() %>
-								</td>
-								<td class="child"> 
-									<%= childId %>
-								</td>
-								<td>
-									
-								</td>
-								<td>
-								<% if (!courseId.matches(onlineRegex)) {	%>
-									<a href="<%= unmergeUri %>">Remove</a>
-								<% } %>
-								</td>
-							</tr>
-							<%
-						}
-					}
-				} 
-				jsonActiveSections += "]";
-				%>
-			
-		</table>
 		</div>
-		
-		<% if (activeSections.isEmpty()) { %>
-			Currently there are no active course sections.
-		<% } %>
-		
-	</div>
-	
-	<div class="CCMSpace">
-		<strong>Disabled Course Spaces:</strong>
-		
-		<!-- Disable Sections -->
-		<div class="CSSTableGenerator">
-		<table class="four">
-			
-				<tr>
-					<td>Enrl</td>
-					<td>Course ID</td>
-					<td>Availability</td>
-					<td>Action</td>
-				</tr>
-			
-			
-				<%
-				jsonDisabledSections = "[";
-				for(int i=0; i<disabledSections.size(); i++) { 
-					Course course = ((Course)(disabledSections.get(i)));
-					String coursePkId = course.getId().toExternalString();
-					String courseId = course.getCourseId();
-					String batchUid = course.getBatchUid();
-					List<CourseMembership> courseMemberships = cmLoader.loadByCourseId(course.getId());
-					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
-					String uri = moduleBasePath + "enable.jsp?batch-uid=" + batchUid;
-					String prefix = i == 0 ? "" : ",";
-					jsonDisabledSections += prefix + "[\"" + batchUid + "\", \"" + courseId + "\"]";
-				%>
-				<tr>
-					<td>
-						<%= courseMemberships.size() %>
-					</td>
-					<td>
-						<a href="<%= courseBasePath + coursePkId %>"><%= courseId %></a>
-					</td>
-					<td>
-						<a href="<%= uri %>">Enable</a>
-					</td>
-					<td>
-					<% if (courseId.matches(onlineRegex)) {	%>
-						<a target="_blank" href="<%= cvUri + courseId %>">Course Verificaion</a>
-					<% } else { %>
-						<a class="manageDisabledSectionsLink" href="#<%= i %>">Manage</a>
-					<% } %>
-					</td>
-				</tr>
-				<% 
-				//check for child course
-					if (course.isParent()) {
-						List<CourseCourse> ccMappings = ccLoader.loadByParentId(course.getId());
-						for (int j = 0, l=ccMappings.size(); j<l; j++) {
-							CourseCourse ccMap = (CourseCourse)(ccMappings.get(j));
-							Course child = courseLoader.loadById(ccMap.getChildCourseId());
-							String childId = child.getCourseId();
-							String childBUid = child.getBatchUid();
-							List<CourseMembership> ccMemberships = cmLoader.loadByCourseId(child.getId());
-							String unmergeUri = moduleBasePath + "unmerge.jsp?parent-batchuid=" + batchUid 
-									+ "&child-batchuid=" + childBUid;
-							%>
-							<tr>
-								<td>
-									<%= ccMemberships.size() %>
-								</td>
-								<td class="child"> 
-									<%= childId %>
-								</td>
-								<td>
-									
-								</td>
-								<td>
-								<% if (!courseId.matches(onlineRegex)) {	%>
-									<a href="<%= unmergeUri %>">Remove</a>
-								<% } %>
-								</td>
-							</tr>
-							<%
-						}
-					}
-				} 
-				jsonDisabledSections += "]";
-				%>
-			
-		</table>
-		</div>
-		
-		<% if (disabledSections.isEmpty()) { %>
-			Currently there  Disabled sections to show at this time.
-		<% } %>
-	</div>
-	
-	<div class="CCMSpace">
-		<strong>Course Rosters:</strong>
-		
-		<!-- Rosters -->
-		<div class="CSSTableGenerator">
-		<table class="three">
-			
-				<tr>
-					<td>Enrl</td>
-					<td>Course ID</td>
-					<td>Action</td>
-				</tr>
-			
-				<%
-				jsonRoster = "[";
-				for(int i=0; i<rosters.size(); i++) { 
-					Course course = ((Course)(rosters.get(i)));
-					String coursePkId = course.getId().toExternalString();
-					String courseId = course.getCourseId();
-					String batchUid = course.getBatchUid();
-					List<CourseMembership> courseMemberships = cmLoader.loadByCourseId(course.getId());
-					String prefix = i == 0 ? "" : ",";
-					jsonRoster += prefix + "[\"" + batchUid + "\", \"" + courseId + "\"]";
-				%>
-				<tr>
-					<td>
-						<%= courseMemberships.size() %>
-					</td>
-					<td>
-						<%= courseId %>
-					</td>
-					<td>
-					<% if (courseId.matches(onlineRegex)) {	%>
-						*
-					<% } else { %>
-						<a class="manageRosterLink" href="#<%= i %>">Manage</a>
-					<% } %>
-					</td>
-				</tr>
-				<% } 
-				jsonRoster += "]";
-				%>
-			
-		</table>
-		</div>
-		
-		<% if (rosters.isEmpty()) { %>
-			Roster list is empty.
-		<% } %>
-	</div>
-</div><!-- End Page2 -->
+	</div><!-- END Manage Course -->
 
-<div id="CCMPage3">
-	<a class="showCCMPage2" href="#">back</a>
+	<!-- Active Student COURSE LIST -->
+	<div class="CCMSpace">		
+		<strong>Courses you are a student:</strong>
+		<ul class="portletList-img courseListing">
+			<% if (activeStudentMemberships.size() == 0) { %>
+			<li>Sorry, you are not enrolled in any active courses as a student.</li>
+			<% } else { 
+				for(int i=0, l = activeStudentMemberships.size(); i < l; i++) {
+					CMWrapper cm = activeStudentMemberships.get(i);
+			%>
+				<li><a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.courseId %></a></li>	
+			<%	}
+			} %>
+		</ul>
+	</div>
+	
+</div><!-- End Page1 -->
+
+<div id="CCMPage2">
 	<div class="CCMSpace">
 		<strong>Parent Course Space</strong>
 		<br/>
@@ -534,7 +190,14 @@ Collections.sort(courses, new Comparator<Course>() {
 		<br/>
 		<strong>Select other rosters to include</strong>
 		<ul id="mergeList" class="portletList-img courseListing">
-			
+		<% 
+			for (int i = 0, l = rosterWrapper.size(); i < l; i++) {
+				CMWrapper roster = rosterWrapper.get(i);
+				if (!roster.course.isOnline) {
+		%>
+		<li><input type='checkbox' value='<%= roster.course.courseBatchUid %>' /><%= roster.course.courseId %></li>
+		<% }
+		} %>
 		</ul>
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
 		<!-- <button id="createCourseSection">Create Course Section</button>-->
@@ -563,6 +226,13 @@ Collections.sort(courses, new Comparator<Course>() {
 		});
 		window.location.replace(uri);
 	}, false);
+	
+	onClassClick(".manageSection", function(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
+		
+		
+	});
 	
 	onClassClick('.showCCMPage1', showPage1);
 	onClassClick('.showCCMPage2', showPage2);
