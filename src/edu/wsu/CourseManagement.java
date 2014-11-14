@@ -43,6 +43,7 @@ public class CourseManagement {
 		return new String[] {id, publicCourseId};
 	}
 	
+	
 	public static void createCourseSpaceFromRoster(String courseId, String title) 
 			throws PersistenceException, ValidationException {
 		String[] ids = CourseManagement.getBatchAndCourseIdFromRoster(courseId);

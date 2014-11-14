@@ -26,6 +26,9 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 	.CSSTableGenerator tr td.child {
 		background-image: url('<%= moduleBasePath + "xchild.png" %>');
 	}
+	#CCMPage2 {
+		display: none;
+	}
 </style>
 
 <bbNG:includedPage ctxId="bbContext">
@@ -196,7 +199,7 @@ Collections.sort(courses, new Comparator<Course>() {
 		%>
 		<li>
 		<% if (!roster.course.isOnline) { %>
-			<input type='checkbox' value='<%= roster.course.courseBatchUid %>' />
+			<input type='checkbox' value='<%= roster.course.courseId %>' />
 		<% } else { %>
 			* 
 		<% } %>
@@ -210,12 +213,12 @@ Collections.sort(courses, new Comparator<Course>() {
 </div><!-- End Page3 -->
 
 <script type="text/javascript">
-	var rosters = JSON.parse('<%= jsonRoster %>');
+	<%-- var rosters = JSON.parse('<%= jsonRoster %>');
 	var activeSections = JSON.parse('<%= jsonActiveSections %>');
-	var disabledSections = JSON.parse('<%= jsonDisabledSections %>');
+	var disabledSections = JSON.parse('<%= jsonDisabledSections %>'); --%>
 	var moduleBasePath = "<%= moduleBasePath %>";
 	var parentCourseBatchUid = '';
-	var isInstructor = <%= isInstructor %>;
+	<%-- var isInstructor = <%= isInstructor %>; --%>
 	var parentCourseId = '';
 	
 	//if(isInstructor) showPage2();
@@ -224,7 +227,7 @@ Collections.sort(courses, new Comparator<Course>() {
 		evt.stopPropagation();
 		evt.preventDefault();
 		
-		var uri = moduleBasePath + 'create-merge-course.jsp?parent-course=' + parentCourseBatchUid + "&child-courses=";
+		var uri = moduleBasePath + 'merge.jsp?parent-course=' + parentCourseId + "&child-courses=";
 		var childCourses = document.querySelectorAll('#mergeList input:checked');
 		[].forEach.call(childCourses, function(el, i) {
 			var prefix = i > 0 ? ',' : '';
@@ -238,6 +241,9 @@ Collections.sort(courses, new Comparator<Course>() {
 		evt.preventDefault();
 		
 		parentCourseId = this.getAttribute("href").substring(1);
+		document.getElementById("parentCourse").innerHTML = parentCourseId;
+		
+		showPage2();
 	});
 	
 	/* onClassClick('.showCCMPage1', showPage1);
