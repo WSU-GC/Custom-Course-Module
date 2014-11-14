@@ -1,6 +1,8 @@
 package edu.wsu;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import blackboard.data.course.Course;
@@ -92,6 +94,30 @@ public class CMWrapper {
 			}
 		}
 		return cmWrappers;
+	}
+	
+	public static void sort(List<CMWrapper> courses) {
+		Collections.sort(courses, new Comparator<CMWrapper>() {
+			public int compare(CMWrapper o1, CMWrapper o2) {
+				if ((!o1.course.isRoster && !o2.course.isRoster)
+						|| (o1.course.isRoster && o2.course.isRoster)) {
+					return secondCompare(o1, o2);
+				} else if ((!o1.course.isRoster && o2.course.isRoster)
+						|| (o1.course.isRoster && !o2.course.isRoster)) {
+					if((!o1.course.isRoster && o2.course.isRoster)) {
+						return -1;
+					} else {
+						return 1;
+					}
+				} else {
+					return 0;
+				}
+			}
+			
+			private int secondCompare(CMWrapper o1, CMWrapper o2) {
+				return o1.course.courseId.compareTo(o2.course.courseId);
+			}
+		});
 	}
 	
 }

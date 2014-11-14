@@ -67,6 +67,7 @@ Collections.sort(courses, new Comparator<Course>() {
 
 <%
 	List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
+	CMWrapper.sort(userMemberships);
 	List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
 	List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
 	List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
@@ -137,6 +138,7 @@ Collections.sort(courses, new Comparator<Course>() {
 					if (cm.course.isParent) { 
 						List<CourseWrapper> childCourses = CourseWrapper
 								.loadChildCourseWrappersByParentCourse(cm._course);
+						CourseWrapper.sort(childCourses);
 						for (int j=0, m = childCourses.size(); j < m; j++) {
 							CourseWrapper child = childCourses.get(j);
 							int childEnrl = child.loadMemberships().size();
