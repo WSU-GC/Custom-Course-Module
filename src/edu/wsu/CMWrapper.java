@@ -112,7 +112,6 @@ public class CMWrapper {
 				} else {
 					return 0;
 				}
-				
 			}
 			
 			private int secondCompare(CMWrapper o1, CMWrapper o2) {

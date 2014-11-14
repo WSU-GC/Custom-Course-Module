@@ -126,7 +126,11 @@ Collections.sort(courses, new Comparator<Course>() {
 					</td>
 					<td>
 					<% if (cm.course.isOnline) {	%>
+						<% if (!cm.course.isRoster) { %>
 						<a target="_blank" href="<%= cvUri + cm.course.courseId %>">Course Verificaion</a>
+						<% } else { %>
+						*
+						<% } %>
 					<% } else if (cm.course.isRoster) { %>
 						<a class="showLoading" href="<%= activateUri %>">Activate</a>
 					<% } else { %>
@@ -166,6 +170,7 @@ Collections.sort(courses, new Comparator<Course>() {
 			
 		</table>
 		</div>
+		<strong>*  </strong>
 		</div>
 	</div><!-- END Manage Course -->
 
