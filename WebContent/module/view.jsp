@@ -26,7 +26,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 	.CSSTableGenerator tr td.child {
 		background-image: url('<%= moduleBasePath + "xchild.png" %>');
 	}
-	#CCMPage2 {
+	#CCMPage2, #loadingRequest {
 		display: none;
 	}
 </style>
@@ -140,8 +140,8 @@ Collections.sort(courses, new Comparator<Course>() {
 						for (int j=0, m = childCourses.size(); j < m; j++) {
 							CourseWrapper child = childCourses.get(j);
 							int childEnrl = child.loadMemberships().size();
-							String unmergeUri = moduleBasePath + "unmerge.jsp?parent-batchuid=" + cm.course.courseBatchUid 
-									+ "&child-batchuid=" + child.courseBatchUid;
+							String unmergeUri = moduleBasePath + "remove.jsp?parent-course=" + cm.course.courseId 
+									+ "&child-course=" + child.courseId;
 					%>
 						<tr>
 							<td>
@@ -210,7 +210,14 @@ Collections.sort(courses, new Comparator<Course>() {
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
 		<!-- <button id="createCourseSection">Create Course Section</button>-->
 	</div>
-</div><!-- End Page3 -->
+</div><!-- End Page2 -->
+
+<div id="loadingRequest">
+	<div class="CCMSpace">
+		<strong>Loading...</strong>
+		<p></p>
+	</div>
+</div>
 
 <script type="text/javascript">
 	<%-- var rosters = JSON.parse('<%= jsonRoster %>');

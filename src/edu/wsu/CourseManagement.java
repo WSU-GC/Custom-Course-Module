@@ -74,4 +74,13 @@ public class CourseManagement {
 		
 	}
 	
+	public static void unmerge(String parentId, String childId) throws Exception {
+		CourseCourseManager ccManager = CourseCourseManagerFactory.getInstance();
+		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		Course parentCourse = courseLoader.loadByCourseId(parentId);
+		Course childCourse = courseLoader.loadByCourseId(childId);
+		ccManager.removeChildFromMaster(childCourse.getId(), parentCourse.getId(), 
+				CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE);
+	}
+	
 }
