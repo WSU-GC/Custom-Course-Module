@@ -21,6 +21,7 @@ public class CourseWrapper {
 	public Id id;
 	public String courseId;
 	public String courseBatchUid; 
+	public String title;
 	public boolean isAvailable;
 	public boolean isRoster;
 	public boolean isOnline;
@@ -37,11 +38,12 @@ public class CourseWrapper {
 		String saipRegex = "^\\d+-\\d+-\\d+-\\w+-\\w+-\\d+$";
 		String onlineRegex = "(?i).+-ONLIN-.+";
 		this.course = course;
+		this.title = this.course.getTitle();
 		this.id = this.course.getId();
 		this.coursePkId = this.id.toExternalString();
 		this.courseId = this.course.getCourseId();
 		this.courseBatchUid = this.course.getBatchUid();
-		this.isAvailable = course.getIsAvailable();
+		this.isAvailable = this.course.getIsAvailable();
 		this.isRoster = this.courseBatchUid.matches(saipRegex);
 		this.isOnline = this.courseId.matches(onlineRegex);
 		this.isParent = course.isParent();

@@ -82,4 +82,15 @@ public class CMWrapper {
 		return cmWrappers;
 	}
 	
+	public static List<CMWrapper> filterIsolatedRosters(List<CMWrapper> courses) {
+		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
+		for (int i = 0, l = courses.size(); i < l; i++) {
+			CMWrapper cm = courses.get(i);
+			if (cm.course.isRoster && !cm.course.isChild) {
+				cmWrappers.add(cm);
+			}
+		}
+		return cmWrappers;
+	}
+	
 }
