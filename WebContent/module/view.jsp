@@ -98,8 +98,8 @@ Collections.sort(courses, new Comparator<Course>() {
 					CMWrapper cm = instMemberships.get(i);
 					int enrl = cm.course.loadMemberships().size();
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
-					String disableUri = moduleBasePath + "disable.jsp?batch-uid=" + cm.course.courseId;
-					String enableUri = moduleBasePath + "enable.jsp?batch-uid=" + cm.course.courseId;
+					String disableUri = moduleBasePath + "disable.jsp?course-id=" + cm.course.courseId;
+					String enableUri = moduleBasePath + "enable.jsp?course-id=" + cm.course.courseId;
 					String activateUri = moduleBasePath + "activate.jsp?course-id=" 
 							+ cm.course.courseId + "&title=" + cm.course.title;
 					if(!cm.course.isChild) {
