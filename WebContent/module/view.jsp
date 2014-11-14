@@ -243,12 +243,20 @@ Collections.sort(courses, new Comparator<Course>() {
 
 	ready(function() {
 		var availabilityMessage = "Enable/Disable your course for student viewing.";
-		var actionMessage = "Activate: Creates a course space for the corresponding roster. <br/>"
-			+ "Remove: Pull the roster enrollments out of the parent course space. <br/>"
-			+ "Course Verification: Manage Global Campus courses.";
+		var actionMessage = "<strong>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
+			+ "<strong>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
+			+ "<strong>Course Verification</strong>: Manage Global Campus courses.";
+		
+		Opentip.styles.extendedAlert = {
+				extends: "alert",
+				background: "#981e32",
+				color: "#ffffff"
+		}
+		
 		var options = {
 			target: true,
-			tipJoint: "bottom"
+			tipJoint: "bottom",
+			style: "extendedAlert"
 		};
 		new Opentip("#availabilityTT", availabilityMessage, options);
 		new Opentip("#actionTT", actionMessage, options);
