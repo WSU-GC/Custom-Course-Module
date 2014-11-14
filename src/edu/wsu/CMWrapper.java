@@ -112,9 +112,26 @@ public class CMWrapper {
 				} else {
 					return 0;
 				}
+				
 			}
 			
 			private int secondCompare(CMWrapper o1, CMWrapper o2) {
+				if ((!o1.course.isAvailable && !o2.course.isAvailable)
+						|| (o1.course.isAvailable && o2.course.isAvailable)) {
+					return thirdCompare(o1, o2);
+				} else if ((!o1.course.isAvailable && o2.course.isAvailable)
+						|| (o1.course.isAvailable && !o2.course.isAvailable)) {
+					if((!o1.course.isAvailable && o2.course.isAvailable)) {
+						return 1;
+					} else {
+						return -1;
+					}
+				} else {
+					return 0;
+				}
+			}
+			
+			private int thirdCompare(CMWrapper o1, CMWrapper o2) {
 				return o1.course.courseId.compareTo(o2.course.courseId);
 			}
 		});
