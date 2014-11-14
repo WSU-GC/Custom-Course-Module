@@ -126,7 +126,7 @@ Collections.sort(courses, new Comparator<Course>() {
 					<% } else if (cm.course.isRoster) { %>
 						<a href="<%= activateUri %>">Activate</a>
 					<% } else { %>
-						<a class="manageSection" href="#<%= cm.course.courseBatchUid + ":" + cm.course.courseId %>">Manage</a>
+						<a class="manageSection" href="#<%= cm.course.courseId %>">Manage</a>
 					<% } %>
 					</td>
 				</tr>
@@ -193,11 +193,16 @@ Collections.sort(courses, new Comparator<Course>() {
 		<% 
 			for (int i = 0, l = rosterWrapper.size(); i < l; i++) {
 				CMWrapper roster = rosterWrapper.get(i);
-				if (!roster.course.isOnline) {
 		%>
-		<li><input type='checkbox' value='<%= roster.course.courseBatchUid %>' /><%= roster.course.courseId %></li>
-		<% }
-		} %>
+		<li>
+		<% if (!roster.course.isOnline) { %>
+			<input type='checkbox' value='<%= roster.course.courseBatchUid %>' />
+		<% } else { %>
+			* 
+		<% } %>
+			<%= roster.course.courseId %>
+		</li>
+		<% } %>
 		</ul>
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
 		<!-- <button id="createCourseSection">Create Course Section</button>-->
@@ -211,6 +216,7 @@ Collections.sort(courses, new Comparator<Course>() {
 	var moduleBasePath = "<%= moduleBasePath %>";
 	var parentCourseBatchUid = '';
 	var isInstructor = <%= isInstructor %>;
+	var parentCourseId = '';
 	
 	//if(isInstructor) showPage2();
 	
@@ -231,10 +237,10 @@ Collections.sort(courses, new Comparator<Course>() {
 		evt.stopPropagation();
 		evt.preventDefault();
 		
-		
+		parentCourseId = this.getAttribute("href").substring(1);
 	});
 	
-	onClassClick('.showCCMPage1', showPage1);
+	/* onClassClick('.showCCMPage1', showPage1);
 	onClassClick('.showCCMPage2', showPage2);
 	onClassClick('.showCCMPage3', showPage3);
 	
@@ -246,7 +252,9 @@ Collections.sort(courses, new Comparator<Course>() {
 		evt.stopPropagation();
 		evt.preventDefault();
 		
-	});
+		
+		
+	}); */
 	
 	function manage(sectionsToManage, skip) {
 		return function(evt) {
@@ -300,7 +308,6 @@ Collections.sort(courses, new Comparator<Course>() {
 	        evt.preventDefault();
 		}
         document.getElementById("CCMPage2").style.display = "none";
-        document.getElementById("CCMPage3").style.display = "none";
         document.getElementById("CCMPage1").style.display = "block";
 	}
 	
@@ -310,19 +317,9 @@ Collections.sort(courses, new Comparator<Course>() {
 	        evt.preventDefault();
 		}
         document.getElementById("CCMPage1").style.display = "none";
-        document.getElementById("CCMPage3").style.display = "none";
         document.getElementById("CCMPage2").style.display = "block";
 	}
 	
-	function showPage3(evt) {
-		if(evt) {
-			evt.stopPropagation();
-	        evt.preventDefault();
-		}
-        document.getElementById("CCMPage1").style.display = "none";
-        document.getElementById("CCMPage2").style.display = "none";
-        document.getElementById("CCMPage3").style.display = "block";
-	}
 		
 </script>
 

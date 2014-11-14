@@ -2,7 +2,10 @@ package edu.wsu;
 
 import blackboard.data.ValidationException;
 import blackboard.data.course.Course;
+import blackboard.data.course.CourseCourseManager;
+import blackboard.data.course.CourseCourseManagerFactory;
 import blackboard.persist.PersistenceException;
+import blackboard.persist.course.CourseDbLoader;
 import blackboard.persist.course.CourseDbPersister;
 
 
@@ -58,7 +61,15 @@ public class CourseManagement {
 		
 	}
 	
-	public static void mergeCourses(String parentId, String[] childIds) {
+	public static void mergeCourses(String parentId, String[] childIds) 
+			throws PersistenceException, ValidationException {
+		CourseCourseManager ccManager = CourseCourseManagerFactory.getInstance();
+		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		Course parentCourse = courseLoader.loadByCourseId(parentId);
+		for (int i = 0, l = childIds.length; i < l; i++) {
+			Course childCourse = courseLoader.loadByCourseId(childIds[i]);
+			ccManager.addChildToMaster(childCourse.getId(), parentCourse.getId());
+		}
 		
 	}
 	

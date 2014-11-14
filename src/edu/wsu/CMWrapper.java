@@ -65,6 +65,7 @@ public class CMWrapper {
 		return cmWrappers;
 	}
 	
+	
 	public static List<CMWrapper> filterCMWrappersByRole(List<CMWrapper> courses, String role, boolean equals) {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
