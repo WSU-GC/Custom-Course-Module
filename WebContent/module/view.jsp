@@ -116,14 +116,16 @@ Collections.sort(courses, new Comparator<Course>() {
 					<% } %>
 					</td>
 					<td>
-					<% if (!cm.course.isRoster) { 
+					<% if (!cm.course.isRoster && !cm.course.isOnline) { 
 						if (cm.course.isAvailable) {
 					%>
 						<a class="showLoading" href="<%= disableUri %>">Disable</a>
 					<% } else { %>
 						<a class="showLoading" href="<%= enableUri %>">Enable</a>
 					<% }
-					} %>
+					} else if (cm.course.isOnline) { %>
+					*
+					<% } %>
 					</td>
 					<td>
 					<% if (cm.course.isOnline) {	%>
