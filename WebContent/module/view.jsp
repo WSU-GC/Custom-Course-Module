@@ -103,15 +103,16 @@ Collections.sort(courses, new Comparator<Course>() {
 					String enableUri = moduleBasePath + "enable.jsp?course-id=" + cm.course.courseId;
 					String activateUri = moduleBasePath + "activate.jsp?course-id=" 
 							+ cm.course.courseId + "&title=" + cm.course.title;
+					String displayTitle = cm.course.title + " (" + cm.course.courseId + ")";
 					if(!cm.course.isChild) {
 				%>
 				<tr>
 					<td><%= enrl %></td>
 					<td>
 					<% if (!cm.course.isRoster) { %>
-						<a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.courseId %></a>
+						<a href="<%= courseBasePath + cm.course.coursePkId %>"><%= displayTitle %></a>
 					<% } else { %>
-						<%= cm.course.courseId %>
+						<%= displayTitle %>
 					<% } %>
 					</td>
 					<td>
@@ -148,13 +149,14 @@ Collections.sort(courses, new Comparator<Course>() {
 							int childEnrl = child.loadMemberships().size();
 							String unmergeUri = moduleBasePath + "remove.jsp?parent-course=" + cm.course.courseId 
 									+ "&child-course=" + child.courseId;
+							String childDisplayTitle = child.title + " (" + child.courseId +")";
 					%>
 						<tr>
 							<td>
 								<%= childEnrl %>
 							</td>
 							<td class="child">
-								<%= child.courseId %>
+								<%= childDisplayTitle %>
 							</td>
 							<td>
 							</td>
@@ -170,7 +172,7 @@ Collections.sort(courses, new Comparator<Course>() {
 			
 		</table>
 		</div>
-		<strong>*  </strong>
+		<strong>* Online courses are managed through the Course Verification process.</strong>
 		</div>
 	</div><!-- END Manage Course -->
 
@@ -203,6 +205,7 @@ Collections.sort(courses, new Comparator<Course>() {
 		<% 
 			for (int i = 0, l = rosterWrapper.size(); i < l; i++) {
 				CMWrapper roster = rosterWrapper.get(i);
+				String displayTitle = roster.course.title + " (" + roster.course.courseId + ")";
 		%>
 		<li>
 		<% if (!roster.course.isOnline) { %>
@@ -210,13 +213,14 @@ Collections.sort(courses, new Comparator<Course>() {
 		<% } else { %>
 			* 
 		<% } %>
-			<%= roster.course.courseId %>
+			<%= displayTitle %>
 		</li>
 		<% } %>
 		</ul>
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
 		<!-- <button id="createCourseSection">Create Course Section</button>-->
 	</div>
+	<strong>* Online courses are managed through the Course Verification process.</strong>
 </div><!-- End Page2 -->
 
 <div id="loadingRequest">
