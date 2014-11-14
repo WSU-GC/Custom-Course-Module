@@ -25,7 +25,6 @@ public class CourseManagement {
 	public CourseManagement() {
 	}
 	
-	
 	public static String[] getBatchAndCourseIdFromRoster(String rosterId) {
 		int lastDigit = 0;
 		String[] courseIdArr = rosterId.split("-");
@@ -82,7 +81,6 @@ public class CourseManagement {
 			ccManager.addChildToMaster(childCourse.getId(), parentCourse.getId());
 			CourseManagement.createGroup(parentId, childIds[i]);
 		}
-		
 	}
 	
 	public static void unmerge(String parentId, String childId) throws Exception {
@@ -93,6 +91,7 @@ public class CourseManagement {
 		CourseManagement.removeGroup(parentId, childId);
 		ccManager.removeChildFromMaster(childCourse.getId(), parentCourse.getId(), 
 				CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE);
+		CourseManagement.enableOrDisableCourse(childCourse.getCourseId(), false);
 	}
 	
 	public static void createGroup(String parentCourseId, String childCourseId) 

@@ -21,6 +21,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 %>
 
 <link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "style.css" %>' />
+<link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "opentip.css" %>' />
 
 <style>
 	.CSSTableGenerator tr td.child {
@@ -89,9 +90,9 @@ Collections.sort(courses, new Comparator<Course>() {
 			
 				<tr>
 					<td>Enrl</td>
-					<td>Course ID</td>
-					<td>Availability</td>
-					<td>Action</td>
+					<td>Course Title (Course ID)</td>
+					<td id="availabilityTT">Availability <img height="20px" src='<%= moduleBasePath + "question_mark.png" %>' /></td>
+					<td id="actionTT">Action <img height="20px" src='<%= moduleBasePath + "question_mark.png" %>' /></td>
 				</tr>
 				
 				<%
@@ -232,6 +233,27 @@ Collections.sort(courses, new Comparator<Course>() {
 	</div>
 </div>
 
+<script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
+<script type="text/javascript">
+	function ready(cb) {
+		typeof Opentip == 'undefined' // in = loadINg
+        ? setTimeout('ready('+cb+')', 9)
+        : cb();
+	}
+
+	ready(function() {
+		var availabilityMessage = "Enable/Disable your course for student viewing.";
+		var actionMessage = "Activate: Creates a course space for the corresponding roster. <br/>"
+			+ "Remove: Pull the roster enrollments out of the parent course space. <br/>"
+			+ "Course Verification: Manage Global Campus courses.";
+		var options = {
+			target: true,
+			tipJoint: "bottom"
+		};
+		new Opentip("#availabilityTT", availabilityMessage, options);
+		new Opentip("#actionTT", actionMessage, options);
+	});
+</script>
 <script type="text/javascript">
 	var moduleBasePath = "<%= moduleBasePath %>";
 	var parentCourseId = '';
