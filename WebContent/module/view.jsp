@@ -1,19 +1,9 @@
 <%@page import="edu.wsu.*"%>
 <%@page import="blackboard.platform.plugin.PlugInUtil" %>
-<%@page import="blackboard.data.course.*" %>
 <%@page import="blackboard.data.user.*" %>
-<%@page import="blackboard.persist.course.*" %>
-<%@page import="java.util.HashMap" %>
-<%@page import="java.util.*" %>
-<%@page import="java.util.regex.*" %>
-<%@page import="javax.xml.parsers.*"%>
-<%@page import="java.util.Date.*"%>
-<%@page import="java.text.DateFormat.*"%>
-<%@page import="java.text.*"%>
-<%@page import="java.lang.*"%>
-<%@page import="java.util.Random.*"%>
-<%@page import="java.lang.Thread.*"%>
-<%@page import="java.util.Calendar.*"%>
+<%@page import="java.util.ArrayList" %>
+<%@page import="java.util.List" %>
+
 <%@ taglib uri="/bbNG" prefix="bbNG"%>
 
 <%
@@ -38,41 +28,15 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <%
 
 User user = bbContext.getUser();
-boolean isInstructor = false; 
-int activeCourseCount = 0;
 String courseBasePath = "/webapps/blackboard/execute/launcher?type=Course&url=&id=";
-List<Course> activeSections = new ArrayList<Course>();
-List<Course> disabledSections = new ArrayList<Course>();
-List<Course> rosters = new ArrayList<Course>();
-String saipRegex = "^\\d+-\\d+-\\d+-\\w+-\\w+-\\d+$";
-String onlineRegex = "(?i).+-ONLIN-.+";
-String jsonRoster = "";
-String jsonActiveSections = "";
-String jsonDisabledSections = "";
 
-CourseCourseManager ccManager = CourseCourseManagerFactory.getInstance();
-CourseManager cManager = CourseManagerFactory.getInstance();
+List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
+CMWrapper.sort(userMemberships);
+List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
+List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
+List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
+List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships);
 
-CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
-CourseMembershipDbLoader cmLoader = CourseMembershipDbLoader.Default.getInstance();
-CourseCourseDbLoader ccLoader = CourseCourseDbLoader.Default.getInstance();
-
-List<Course> courses = courseLoader.loadByUserId(user.getId());
-
-Collections.sort(courses, new Comparator<Course>() {
-	public int compare(Course o1, Course o2) {
-		return o1.getCourseId().compareTo(o2.getCourseId());
-	}
-});
-%>
-
-<%
-	List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
-	CMWrapper.sort(userMemberships);
-	List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
-	List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
-	List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
-	List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships);
 %>
 
 <% if(instMemberships.size() > 0) { %>
