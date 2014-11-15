@@ -102,15 +102,10 @@ public class CMWrapper {
 				if ((!o1.course.isRoster && !o2.course.isRoster)
 						|| (o1.course.isRoster && o2.course.isRoster)) {
 					return secondCompare(o1, o2);
-				} else if ((!o1.course.isRoster && o2.course.isRoster)
-						|| (o1.course.isRoster && !o2.course.isRoster)) {
-					if((!o1.course.isRoster && o2.course.isRoster)) {
-						return -1;
-					} else {
-						return 1;
-					}
+				} else if (!o1.course.isRoster && o2.course.isRoster) {
+					return -1;
 				} else {
-					return 0;
+					return 1;
 				}
 			}
 			
@@ -118,15 +113,10 @@ public class CMWrapper {
 				if ((!o1.course.isAvailable && !o2.course.isAvailable)
 						|| (o1.course.isAvailable && o2.course.isAvailable)) {
 					return thirdCompare(o1, o2);
-				} else if ((!o1.course.isAvailable && o2.course.isAvailable)
-						|| (o1.course.isAvailable && !o2.course.isAvailable)) {
-					if((!o1.course.isAvailable && o2.course.isAvailable)) {
-						return 1;
-					} else {
-						return -1;
-					}
+				} else if (!o1.course.isAvailable && o2.course.isAvailable) {
+					return 1;
 				} else {
-					return 0;
+					return -1;
 				}
 			}
 			

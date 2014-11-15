@@ -87,19 +87,25 @@ public class CourseWrapper {
 				if ((!o1.isRoster && !o2.isRoster)
 						|| (o1.isRoster && o2.isRoster)) {
 					return secondCompare(o1, o2);
-				} else if ((!o1.isRoster && o2.isRoster)
-						|| (o1.isRoster && !o2.isRoster)) {
-					if((!o1.isRoster && o2.isRoster)) {
-						return -1;
-					} else {
-						return 1;
-					}
+				} else if (!o1.isRoster && o2.isRoster) {
+					return -1;
 				} else {
-					return 0;
+					return 1;
 				}
 			}
 			
 			private int secondCompare(CourseWrapper o1, CourseWrapper o2) {
+				if ((!o1.isAvailable && !o2.isAvailable)
+						|| (o1.isAvailable && o2.isAvailable)) {
+					return thirdCompare(o1, o2);
+				} else if (!o1.isAvailable && o2.isAvailable) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+			
+			private int thirdCompare(CourseWrapper o1, CourseWrapper o2) {
 				return o1.courseId.compareTo(o2.courseId);
 			}
 		});
