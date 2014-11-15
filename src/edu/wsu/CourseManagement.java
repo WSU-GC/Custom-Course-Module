@@ -77,8 +77,8 @@ public class CourseManagement {
 	public static void createCourseSpace(String batchUid, String courseId, String title) 
 			throws Exception {
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
-		String errorMessage = "Error: Course already exist for bathcUid: " + batchUid
-				+ " CourseId: " + courseId + ".";
+		String errorMessage = "Failed to create course space for bathcUid: " + batchUid
+				+ " CourseId: " + courseId + " as it already exists";
 		
 		Course course = new Course();
 		
@@ -101,10 +101,24 @@ public class CourseManagement {
 			throws Exception {
 		CourseCourseManager ccManager = CourseCourseManagerFactory.getInstance();
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		
+		if (!courseLoader.doesCourseIdExist(parentId)) {
+			throw new Exception("Failed to merge courses. Parent course " + parentId + " does not exist. Create parent space first");
+		}
+		
 		Course parentCourse = courseLoader.loadByCourseId(parentId);
+		
 		for (int i = 0, l = childIds.length; i < l; i++) {
+			if (!courseLoader.doesCourseIdExist(childIds[i])) {
+				throw new Exception("Failed to merge courses. Child course " + childIds[i] + " does not exist. Parent course: " + parentId);
+			}
+			
 			Course childCourse = courseLoader.loadByCourseId(childIds[i]);
-			ccManager.addChildToMaster(childCourse.getId(), parentCourse.getId());
+			try {
+				ccManager.addChildToMaster(childCourse.getId(), parentCourse.getId());
+			} catch (Exception e) {
+				throw new Exception("Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i]);
+			}
 			CourseManagement.createGroup(parentId, childIds[i]);
 		}
 	}
@@ -112,20 +126,39 @@ public class CourseManagement {
 	public static void unmerge(String parentId, String childId) throws Exception {
 		CourseCourseManager ccManager = CourseCourseManagerFactory.getInstance();
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		
+		if (!courseLoader.doesCourseIdExist(parentId)) {
+			throw new Exception("Failed to unmerge courses. parent course: " + parentId + " Child course: " + childId + ". Parent course Does not exist.");
+		}
+		if (!courseLoader.doesCourseIdExist(childId)) {
+			throw new Exception("Failed to unmerge courses. parent course: " + parentId + " Child course: " + childId + ". Child course Does not exist.");
+		}
+		
 		Course parentCourse = courseLoader.loadByCourseId(parentId);
 		Course childCourse = courseLoader.loadByCourseId(childId);
 		CourseManagement.removeGroup(parentId, childId);
-		ccManager.removeChildFromMaster(childCourse.getId(), parentCourse.getId(), 
-				CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE);
+		try {
+			ccManager.removeChildFromMaster(childCourse.getId(), parentCourse.getId(), 
+					CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE);
+		} catch (Exception e) {
+			throw new Exception("Failed to persist unmerge courses. parent course: " + parentId + " Child course: " + childId + ".");
+		}
 		CourseManagement.enableOrDisableCourse(childCourse.getCourseId(), false);
 	}
 	
 	public static void createGroup(String parentCourseId, String childCourseId) 
-			throws KeyNotFoundException, PersistenceException, ValidationException {
+			throws Exception {
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
 		GroupDbLoader groupLoader = GroupDbLoader.Default.getInstance();
 		GroupDbPersister groupPersister = GroupDbPersister.Default.getInstance();
 		GroupMembershipDbPersister gmPersister = GroupMembershipDbPersister.Default.getInstance();
+		
+		if (!courseLoader.doesCourseIdExist(parentCourseId)) {
+			throw new Exception("Failed to create group for " + childCourseId + ". In " + parentCourseId + ". Parent course does not exist.");
+		}
+		if (!courseLoader.doesCourseIdExist(childCourseId)) {
+			throw new Exception("Failed to create group for " + childCourseId + ". In " + parentCourseId + ". Child course does not exist.");
+		}
 		
 		Course parentCourse = courseLoader.loadByCourseId(parentCourseId);
 		Course childCourse = courseLoader.loadByCourseId(childCourseId);
@@ -171,11 +204,18 @@ public class CourseManagement {
 	}
 	
 	public static void removeGroup(String parentCourseId, String childCourseId) 
-			throws PersistenceException {
+			throws Exception {
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
 		GroupDbLoader groupLoader = GroupDbLoader.Default.getInstance();
 		GroupMembershipDbLoader gmLoader = GroupMembershipDbLoader.Default.getInstance();
 		GroupMembershipDbPersister gmPersister = GroupMembershipDbPersister.Default.getInstance();
+		
+		if (!courseLoader.doesCourseIdExist(parentCourseId)) {
+			throw new Exception("Failed to remove group for " + childCourseId + ". In " + parentCourseId + ". Parent course does not exist.");
+		}
+		if (!courseLoader.doesCourseIdExist(childCourseId)) {
+			throw new Exception("Failed to remove group for " + childCourseId + ". In " + parentCourseId + ". Child course does not exist.");
+		}
 		
 		Course parentCourse = courseLoader.loadByCourseId(parentCourseId);
 		Course childCourse = courseLoader.loadByCourseId(childCourseId);
@@ -201,9 +241,13 @@ public class CourseManagement {
 	}
 	
 	public static void enableOrDisableCourse(String courseId, boolean enabled) 
-			throws KeyNotFoundException, PersistenceException, ValidationException {
+			throws Exception {
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
 		CourseDbPersister coursePersister = CourseDbPersister.Default.getInstance();
+		
+		if (!courseLoader.doesCourseIdExist(courseId)) {
+			throw new Exception("Failed to enable or disable course. Could not locate " + courseId);
+		}
 
 		Course course = courseLoader.loadByCourseId(courseId);
 		course.setHonorTermAvailability(false);
