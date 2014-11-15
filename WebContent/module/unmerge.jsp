@@ -23,7 +23,6 @@
 <bbNG:learningSystemPage  ctxId="bbContext">
 
 <bbNG:pageHeader> 
- <fmt:message var="pageTitleVar" key="bundle.key" bundle="Course Module"/> 
  <bbNG:pageTitleBar title="Course Module"/> 
 </bbNG:pageHeader>
 
