@@ -25,17 +25,31 @@ public class CourseManagement {
 	public CourseManagement() {
 	}
 	
-	public static String[] getBatchAndCourseIdFromRoster(String rosterId) {
+	public static String[] getBatchAndCourseIdFromRoster(String rosterId) 
+			throws Exception {
 		int lastDigit = 0;
+		String rosterRegex = "(?i)ROSTER-\\w+-\\w+-\\w+-\\w+-\\w+-\\d+-\\w+-\\w+";
+		String invalidRosterId = "Invalid Roster ID: " + rosterId + ", cannot generate batchuid or courseid from roster Id.";
+		
+		if(!rosterId.matches(rosterRegex)) {
+			throw new IllegalArgumentException(invalidRosterId);
+		}
+		
 		String[] courseIdArr = rosterId.split("-");
 		String[] yearTermComponents = courseIdArr[1].split("");
+		
+		if (yearTermComponents.length < 5) {
+			throw new IllegalArgumentException(invalidRosterId);
+		}
 		
 		if (courseIdArr[2].equalsIgnoreCase("fall")) {
 			lastDigit = 7;
 		} else if (courseIdArr[2].equalsIgnoreCase("spri")) {
 			lastDigit = 3;
-		} else {
+		} else if (courseIdArr[2].equalsIgnoreCase("summ")){
 			lastDigit = 5;
+		} else {
+			throw new IllegalArgumentException(invalidRosterId);
 		}
 		
 		String yearTerm = yearTermComponents[1] + yearTermComponents[3] 
@@ -55,24 +69,36 @@ public class CourseManagement {
 	
 	
 	public static void createCourseSpaceFromRoster(String courseId, String title) 
-			throws PersistenceException, ValidationException {
+			throws Exception {
 		String[] ids = CourseManagement.getBatchAndCourseIdFromRoster(courseId);
 		CourseManagement.createCourseSpace(ids[0], ids[1], title);
 	}
 	
 	public static void createCourseSpace(String batchUid, String courseId, String title) 
-			throws PersistenceException, ValidationException {
+			throws Exception {
+		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		String errorMessage = "Error: Course already exist for bathcUid: " + batchUid
+				+ " CourseId: " + courseId + ".";
 		
 		Course course = new Course();
-		course.setBatchUid(batchUid);
-		course.setCourseId(courseId);
-		course.setTitle(title);
-		CourseDbPersister.Default.getInstance().persist(course);
+		
+		if (courseLoader.doesCourseIdExist(courseId)) {
+			throw new IllegalArgumentException(errorMessage);
+		}
+		
+		try {
+			course.setBatchUid(batchUid);
+			course.setCourseId(courseId);
+			course.setTitle(title);
+			CourseDbPersister.Default.getInstance().persist(course);
+		} catch (Exception e) {
+			throw new Exception("Could not persist course to DB. BatchUid: " + batchUid + ".");
+		}
 		
 	}
 	
 	public static void mergeCourses(String parentId, String[] childIds) 
-			throws PersistenceException, ValidationException {
+			throws Exception {
 		CourseCourseManager ccManager = CourseCourseManagerFactory.getInstance();
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
 		Course parentCourse = courseLoader.loadByCourseId(parentId);

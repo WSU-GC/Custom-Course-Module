@@ -82,7 +82,7 @@ Collections.sort(courses, new Comparator<Course>() {
 <div id="CCMPage1">
 	<div id="manageCourses">
 		<div class="CCMSpace">
-		<strong>Courses you are an Instructor:</strong>
+		<strong>Courses to which you are assigned as the primary instructor:</strong>
 		
 		<!-- Instructor Courses -->
 		<div class="CSSTableGenerator">
@@ -117,16 +117,14 @@ Collections.sort(courses, new Comparator<Course>() {
 					<% } %>
 					</td>
 					<td>
-					<% if (!cm.course.isRoster && !cm.course.isOnline) { 
+					<% if (!cm.course.isRoster) { 
 						if (cm.course.isAvailable) {
 					%>
 						<a class="showLoading" href="<%= disableUri %>">Disable</a>
 					<% } else { %>
 						<a class="showLoading" href="<%= enableUri %>">Enable</a>
-					<% }
-					} else if (cm.course.isOnline) { %>
-					*
-					<% } %>
+					<% } 
+					} %>
 					</td>
 					<td>
 					<% if (cm.course.isOnline) {	%>
@@ -175,13 +173,13 @@ Collections.sort(courses, new Comparator<Course>() {
 			
 		</table>
 		</div>
-		<strong>* Online courses are managed through the Course Verification process.</strong>
+		<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
 		</div>
 	</div><!-- END Manage Course -->
 
 	<!-- Active Student COURSE LIST -->
 	<div class="CCMSpace">		
-		<strong>Courses you are a student:</strong>
+		<strong>Courses in which you are enrolled as a student:</strong>
 		<ul class="portletList-img courseListing">
 			<% if (activeStudentMemberships.size() == 0) { %>
 			<li>Sorry, you are not enrolled in any active courses as a student.</li>
@@ -223,7 +221,7 @@ Collections.sort(courses, new Comparator<Course>() {
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
 		<!-- <button id="createCourseSection">Create Course Section</button>-->
 	</div>
-	<strong>* Online courses are managed through the Course Verification process.</strong>
+	<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
 </div><!-- End Page2 -->
 
 <div id="loadingRequest">
@@ -243,9 +241,9 @@ Collections.sort(courses, new Comparator<Course>() {
 
 	ready(function() {
 		var availabilityMessage = "Enable/Disable your course for student viewing.";
-		var actionMessage = "<strong>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
-			+ "<strong>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
-			+ "<strong>Course Verification</strong>: Manage Global Campus courses.";
+		var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
+			+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
+			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.";
 		
 		Opentip.styles.extendedAlert = {
 				extends: "alert",
