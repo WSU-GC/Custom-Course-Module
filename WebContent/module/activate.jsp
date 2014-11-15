@@ -1,5 +1,6 @@
 <%@ page import="edu.wsu.*" %>
 <%@page import="blackboard.data.course.*" %>
+<%@page import="blackboard.data.user.*" %>
 <%@page import="blackboard.persist.course.*" %>
 <%@ taglib uri="/bbNG" prefix="bbNG"%>
 <%@page isErrorPage="true" %>
@@ -24,14 +25,15 @@ CourseManagement.createCourseSpace(ids[0], ids[1], title);
 
 CourseMembership instrMembership = new CourseMembership();
 CourseMembershipDbPersister cmPersister = CourseMembershipDbPersister.Default.getInstance();
-
+CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+Course course = courseLoader.loadByCourseId(ids[1]);
 
 instrMembership.setRole(CourseMembership.Role.INSTRUCTOR);
-instrMembership.setCourseId(parentCourse.getId());
+instrMembership.setCourseId(course.getId());
 instrMembership.setUserId(user.getId());
 try { // POSSIBLY UPDATING PREVIOUSLY CREATED COURSE THE INSTR IS ALREADY ENROLLED IN
 	CourseMembershipDbLoader.Default.getInstance()
-		.loadByCourseAndUserId(parentCourse.getId(), user.getId());
+		.loadByCourseAndUserId(course.getId(), user.getId());
 } catch(Exception e) {
 	cmPersister.persist(instrMembership);
 }
