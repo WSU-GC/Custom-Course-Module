@@ -9,7 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blackboard.data.course.Course;
+import blackboard.data.user.User;
 import blackboard.persist.course.CourseDbLoader;
+import blackboard.platform.context.Context;
+import blackboard.platform.context.ContextManager;
+import blackboard.platform.context.ContextManagerFactory;
 import blackboard.platform.plugin.PlugInUtil;
 
 import com.google.gson.Gson;
@@ -46,16 +50,23 @@ public class CourseAdmin extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			ContextManager contextManager = ContextManagerFactory.getInstance();
+			Context ctx = contextManager.getContext();
 			CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+			
 			Gson gson = new GsonBuilder()
 				.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
+			
+			// PARAMETERS
 			String courseId = request.getParameter("course-id");
 			
+			User user = ctx.getUser();
 			Course course = courseLoader.loadByCourseId(courseId);
 			
 			CourseWrapper cw = new CourseWrapper(course);
+			CourseWrapper[] test = {cw};
 			
-			String jsonResponse = gson.toJson(cw);
+			String jsonResponse = gson.toJson(test);
 			
 			response.setContentType("application/json");
 	        PrintWriter writer = response.getWriter();
