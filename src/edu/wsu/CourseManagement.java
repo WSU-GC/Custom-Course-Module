@@ -28,10 +28,10 @@ public class CourseManagement {
 	public static String[] getBatchAndCourseIdFromRoster(String rosterId) 
 			throws Exception {
 		int lastDigit = 0;
-		String rosterRegex = "(?i)ROSTER-\\w+-\\w+-\\w+-\\w+-\\w+-\\d+-\\w+-\\w+";
+		String rosterRegex = "(?i)ROSTER-\\d+-\\w+-\\w+-\\w+-\\w+-\\d+-\\w+-\\w+";
 		String invalidRosterId = "Invalid Roster ID: " + rosterId + ", cannot generate batchuid or courseid from roster Id.";
 		
-		if(!rosterId.matches(rosterRegex)) {
+		if(rosterId == null || !rosterId.matches(rosterRegex)) {
 			throw new IllegalArgumentException(invalidRosterId);
 		}
 		
@@ -101,6 +101,7 @@ public class CourseManagement {
 			throws Exception {
 		CourseCourseManager ccManager = CourseCourseManagerFactory.getInstance();
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		String errorMessage = "";
 		
 		if (!courseLoader.doesCourseIdExist(parentId)) {
 			throw new Exception("Failed to merge courses. Parent course " + parentId + " does not exist. Create parent space first");
@@ -110,16 +111,22 @@ public class CourseManagement {
 		
 		for (int i = 0, l = childIds.length; i < l; i++) {
 			if (!courseLoader.doesCourseIdExist(childIds[i])) {
-				throw new Exception("Failed to merge courses. Child course " + childIds[i] + " does not exist. Parent course: " + parentId);
+				//throw new Exception("Failed to merge courses. Child course " + childIds[i] + " does not exist. Parent course: " + parentId);
+				errorMessage += " Failed to merge courses, child course " + childIds[i] + " does not exist. parent course: " + parentId + ".";
+			} else {
+				Course childCourse = courseLoader.loadByCourseId(childIds[i]);
+				try {
+					ccManager.addChildToMaster(childCourse.getId(), parentCourse.getId());
+				} catch (Exception e) {
+					//throw new Exception("Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i]);
+					errorMessage += "Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i];
+				}
+				//CourseManagement.createGroup(parentId, childIds[i]);
 			}
-			
-			Course childCourse = courseLoader.loadByCourseId(childIds[i]);
-			try {
-				ccManager.addChildToMaster(childCourse.getId(), parentCourse.getId());
-			} catch (Exception e) {
-				throw new Exception("Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i]);
-			}
-			//CourseManagement.createGroup(parentId, childIds[i]);
+		}
+		
+		if(!errorMessage.isEmpty()) {
+			throw new Exception(errorMessage);
 		}
 	}
 	
