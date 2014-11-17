@@ -119,7 +119,7 @@ public class CourseManagement {
 			} catch (Exception e) {
 				throw new Exception("Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i]);
 			}
-			CourseManagement.createGroup(parentId, childIds[i]);
+			//CourseManagement.createGroup(parentId, childIds[i]);
 		}
 	}
 	
@@ -136,7 +136,7 @@ public class CourseManagement {
 		
 		Course parentCourse = courseLoader.loadByCourseId(parentId);
 		Course childCourse = courseLoader.loadByCourseId(childId);
-		CourseManagement.removeGroup(parentId, childId);
+		//CourseManagement.removeGroup(parentId, childId);
 		try {
 			ccManager.removeChildFromMaster(childCourse.getId(), parentCourse.getId(), 
 					CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE);
