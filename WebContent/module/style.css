@@ -3,11 +3,20 @@
 		margin: 10px 0;
 		font-size: 1.2rem;
 	}
-	.CCMSpace {
+	.CCMSpace,
+	.CCMSpace p,
+	.CCMSpace ol {
 		margin-top: 8px;
 	}
-	.CCMSpace strong {
+	.CCMSpace h6 {
 		font-size: 1.3rem;
+	}
+	.CCMSpace ol {
+		list-style-type: decimal;
+		margin-left: 20px;
+	}
+	.CCMSpace ol li {
+		margin-top: 4px;
 	}
 	.CSSTableGenerator {
 		margin:10px 0px;padding:0px;

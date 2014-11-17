@@ -44,9 +44,32 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 <% } %>
 
 <div id="CCMPage1">
-	<div id="manageCourses">
-		<div class="CCMSpace">
-		<strong>Courses to which you are assigned as the primary instructor:</strong>
+	<div class="CCMSpace">
+		<h6>Courses to which you are assigned as the primary instructor:</h6>
+		
+		<% if(instMemberships.size() == 0) { %>
+			<p></p>
+		<% } %>
+	
+		<div id="manageCourses">
+	
+		<p>New processes allow you to create and manage your Bb Learn course spaces in real time 
+			- no waiting on support staff to respond to your request.  If you require assistance 
+			just email <a href="mailto:online.registrar@wsu.edu">online.registrar@wsu.edu</a>.</p>
+			
+		<ol>
+			<li>
+				Select <strong>ACTIVATE</strong> next to the course ID to create your new course space, manage and 
+				edit content. When the course ID is an active hyperlink, the course space has been activated.
+			</li>
+			<li>If needed, <strong>MERGE</strong> course spaces so that you can manage just one course space 
+				for multiple sections.- <a target="_blank" href="http://elearning.wsu.edu/pdf/bblearnmanagingcoursestutorial.pdf">Instructions</a> 
+			</li>
+			<li>
+				To <strong>COPY</strong> an existing Bb course into a newly activated one. 
+				<a target="_blank" href="http://elearning.wsu.edu/pdf/copyingcourseswithinblackboard.pdf">Instructions</a>
+			</li>
+		</ol>
 		
 		<!-- Instructor Courses -->
 		<div class="CSSTableGenerator">
@@ -137,13 +160,13 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 			
 		</table>
 		</div>
-		<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
+		<h6>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</h6>
 		</div>
 	</div><!-- END Manage Course -->
 
 	<!-- Active Student COURSE LIST -->
 	<div class="CCMSpace">		
-		<strong>Courses in which you are enrolled as a student:</strong>
+		<h6>Courses in which you are enrolled as a student:</h6>
 		<ul class="portletList-img courseListing">
 			<% if (activeStudentMemberships.size() == 0) { %>
 			<li>Sorry, you are not enrolled in any active courses as a student.</li>
@@ -161,11 +184,11 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 
 <div id="CCMPage2">
 	<div class="CCMSpace">
-		<strong>Parent Course Space</strong>
+		<h6>Parent Course Space</h6>
 		<br/>
 		<div id="parentCourse"></div>
 		<br/>
-		<strong>Select other rosters to include</strong>
+		<h6>Select other rosters to include</h6>
 		<ul id="mergeList" class="portletList-img courseListing">
 		<% 
 			for (int i = 0, l = rosterWrapper.size(); i < l; i++) {
@@ -185,12 +208,12 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
 		<!-- <button id="createCourseSection">Create Course Section</button>-->
 	</div>
-	<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
+	<h6>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</h6>
 </div><!-- End Page2 -->
 
 <div id="loadingRequest">
 	<div class="CCMSpace">
-		<strong>Loading...</strong>
+		<h6>Loading...</h6>
 		<p></p>
 	</div>
 </div>
