@@ -63,11 +63,11 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 				edit content. When the course ID is an active hyperlink, the course space has been activated.
 			</li>
 			<li>If needed, <strong>MERGE</strong> course spaces so that you can manage just one course space 
-				for multiple sections.- <a target="_blank" href="http://elearning.wsu.edu/pdf/bblearnmanagingcoursestutorial.pdf">Instructions</a> 
+				for multiple sections.- <strong><a target="_blank" href="http://elearning.wsu.edu/pdf/bblearnmanagingcoursestutorial.pdf">Instructions</a></strong> 
 			</li>
 			<li>
 				To <strong>COPY</strong> an existing Bb course into a newly activated one. 
-				<a target="_blank" href="http://elearning.wsu.edu/pdf/copyingcourseswithinblackboard.pdf">Instructions</a>
+				<strong><a target="_blank" href="http://elearning.wsu.edu/pdf/copyingcourseswithinblackboard.pdf">Instructions</a></strong>
 			</li>
 		</ol>
 		
@@ -116,14 +116,14 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					<td>
 					<% if (cm.course.isOnline) {	%>
 						<% if (!cm.course.isRoster) { %>
-						<a target="_blank" href="<%= cvUri + cm.course.courseId %>">Course Verificaion</a>
+						<a target="_blank" href="<%= cvUri + cm.course.courseId %>">Course Verification</a>
 						<% } else { %>
 						*
 						<% } %>
 					<% } else if (cm.course.isRoster) { %>
 						<a class="showLoading" href="<%= activateUri %>">Activate</a>
 					<% } else { %>
-						<a class="manageSection" href="#<%= cm.course.courseId %>">Manage</a>
+						<a class="manageSection" href="#<%= cm.course.courseId %>">Merge</a>
 					<% } %>
 					</td>
 				</tr>

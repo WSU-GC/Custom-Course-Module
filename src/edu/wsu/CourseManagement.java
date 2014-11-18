@@ -112,14 +112,14 @@ public class CourseManagement {
 		for (int i = 0, l = childIds.length; i < l; i++) {
 			if (!courseLoader.doesCourseIdExist(childIds[i])) {
 				//throw new Exception("Failed to merge courses. Child course " + childIds[i] + " does not exist. Parent course: " + parentId);
-				errorMessage += " Failed to merge courses, child course " + childIds[i] + " does not exist. parent course: " + parentId + ".";
+				errorMessage += "Failed to merge courses, child course " + childIds[i] + " does not exist. parent course: " + parentId + ".<br/>";
 			} else {
 				Course childCourse = courseLoader.loadByCourseId(childIds[i]);
 				try {
 					ccManager.addChildToMaster(childCourse.getId(), parentCourse.getId());
 				} catch (Exception e) {
 					//throw new Exception("Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i]);
-					errorMessage += "Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i];
+					errorMessage += "Failed to persist course merge for parent: " + parentId + " Child: " + childIds[i] + ".<br/>";
 				}
 				//CourseManagement.createGroup(parentId, childIds[i]);
 			}
