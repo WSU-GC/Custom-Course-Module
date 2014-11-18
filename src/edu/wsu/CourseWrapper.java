@@ -81,6 +81,14 @@ public class CourseWrapper {
 		return cwCourses;
 	}
 	
+	public static List<CourseWrapper> loadByCourses(List<Course> courses) {
+		List<CourseWrapper> cw = new ArrayList<CourseWrapper>();
+		for(Course course: courses) {
+			cw.add(new CourseWrapper(course));
+		}
+		return cw;
+	}
+	
 	public static void sort(List<CourseWrapper> courses) {
 		Collections.sort(courses, new Comparator<CourseWrapper>() {
 			public int compare(CourseWrapper o1, CourseWrapper o2) {
