@@ -57,10 +57,11 @@ public class CMWrapper {
 	
 	public static List<CMWrapper> filterCMWrappersByAvailability(List<CMWrapper> courses, 
 			boolean isAvailable) {
+		String userRegex = "^USER-.+";
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
-			if (cm.course.isAvailable == isAvailable) {
+			if (cm.course.isAvailable == isAvailable && !cm.course.courseId.matches(userRegex)) {
 				cmWrappers.add(cm);
 			}
 		}
@@ -69,15 +70,16 @@ public class CMWrapper {
 	
 	
 	public static List<CMWrapper> filterCMWrappersByRole(List<CMWrapper> courses, String role, boolean equals) {
+		String userRegex = "^USER-.+";
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
 			if (equals) {
-				if(cm.role.equalsIgnoreCase(role)) {
+				if(cm.role.equalsIgnoreCase(role) && !cm.course.courseId.matches(userRegex)) {
 					cmWrappers.add(cm);
 				}
 			} else {
-				if(!cm.role.equalsIgnoreCase(role)) {
+				if(!cm.role.equalsIgnoreCase(role) && !cm.course.courseId.matches(userRegex)) {
 					cmWrappers.add(cm);
 				}
 			}
@@ -86,10 +88,11 @@ public class CMWrapper {
 	}
 	
 	public static List<CMWrapper> filterIsolatedRosters(List<CMWrapper> courses) {
+		String userRegex = "^USER-.+";
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
-			if (cm.course.isRoster && !cm.course.isChild) {
+			if (cm.course.isRoster && !cm.course.isChild && !cm.course.courseId.matches(userRegex)) {
 				cmWrappers.add(cm);
 			}
 		}

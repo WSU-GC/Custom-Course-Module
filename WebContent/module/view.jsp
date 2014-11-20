@@ -32,7 +32,7 @@ String courseBasePath = "/webapps/blackboard/execute/launcher?type=Course&url=&i
 
 List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
 CMWrapper.sort(userMemberships);
-List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
+List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", true);
 List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
 List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", false);
 List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships);
@@ -89,7 +89,6 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					CMWrapper cm = instMemberships.get(i);
 					int enrl = cm.course.loadMemberships().size();
 					String role = cm.role;
-					String userRegex = "^USER-.+";
 					boolean isInstructor = role.equalsIgnoreCase("Instructor");
 					boolean isSecondaryInstructor = role.equalsIgnoreCase("SI");
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
@@ -98,7 +97,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					String activateUri = moduleBasePath + "activate.jsp?course-id=" 
 							+ cm.course.courseId + "&title=" + cm.course.title;
 					String displayTitle = cm.course.title + " (" + cm.course.courseId + ")";
-					if(!cm.course.isChild && !cm.course.courseId.matches(userRegex)) {
+					if(!cm.course.isChild) {
 				%>
 				<tr>
 					<%-- <td><%= role %></td> --%>
@@ -143,8 +142,8 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 						CourseWrapper.sort(childCourses);
 						for (int j=0, m = childCourses.size(); j < m; j++) {
 							CourseWrapper child = childCourses.get(j);
-							CMWrapper childMWrapper = new CMWrapper(user, child.course);
-							String childRole = childMWrapper.role;
+							//CMWrapper childMWrapper = new CMWrapper(user, child.course);
+							//String childRole = childMWrapper.role;
 							int childEnrl = child.loadMemberships().size();
 							String unmergeUri = moduleBasePath + "remove.jsp?parent-course=" + cm.course.courseId 
 									+ "&child-course=" + child.courseId;
@@ -161,7 +160,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 							<td>
 							</td>
 							<td>
-								<% if (!cm.course.isOnline && childRole.equalsIgnoreCase("Instructor")) {	%>
+								<% if (!cm.course.isOnline && isInstructor) {	%>
 									<a class="showLoading" href="<%= unmergeUri %>">Remove</a>
 								<% } %>
 							</td>
@@ -187,7 +186,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 				for(int i=0, l = activeStudentMemberships.size(); i < l; i++) {
 					CMWrapper cm = activeStudentMemberships.get(i);
 			%>
-				<li><a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.courseId %></a></li>	
+				<li><a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.title + " (" + cm.course.courseId + ")" %></a></li>	
 			<%	}
 			} %>
 		</ul>
