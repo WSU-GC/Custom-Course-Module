@@ -51,6 +51,8 @@ public class CourseAdmin extends HttpServlet {
     	searchOp.put("equals", SearchOperator.Equals);
     	searchOp.put("notblank", SearchOperator.NotBlank);
     	searchOp.put("startswith", SearchOperator.StartsWith);
+    	searchOp.put("greaterthan", SearchOperator.GreaterThan);
+    	searchOp.put("lessthan", SearchOperator.LessThan);
     	
     	searchKey = new HashMap<String, CourseSearch.SearchKey>();
     	searchKey.put("coursedescription", CourseSearch.SearchKey.CourseDescription);
@@ -58,6 +60,7 @@ public class CourseAdmin extends HttpServlet {
     	searchKey.put("coursename", CourseSearch.SearchKey.CourseName);
     	searchKey.put("term", CourseSearch.SearchKey.Term);
     	searchKey.put("instructor", CourseSearch.SearchKey.Instructor);
+    	searchKey.put("datecreated", CourseSearch.SearchKey.DateCreated);
     }
 
 	/**
@@ -98,7 +101,7 @@ public class CourseAdmin extends HttpServlet {
 				.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
 			
 			
-			User user = ctx.getUser();
+			//User user = ctx.getUser();
 			//Course course = courseLoader.loadByCourseId(courseId);
 			
 			List<CourseWrapper> courseWrappers = CourseWrapper.loadByCourses(courses);
