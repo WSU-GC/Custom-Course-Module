@@ -89,6 +89,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					CMWrapper cm = instMemberships.get(i);
 					int enrl = cm.course.loadMemberships().size();
 					String role = cm.role;
+					String userRegex = "^USER-.+";
 					boolean isInstructor = role.equalsIgnoreCase("Instructor");
 					boolean isSecondaryInstructor = role.equalsIgnoreCase("SI");
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
@@ -97,7 +98,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					String activateUri = moduleBasePath + "activate.jsp?course-id=" 
 							+ cm.course.courseId + "&title=" + cm.course.title;
 					String displayTitle = cm.course.title + " (" + cm.course.courseId + ")";
-					if(!cm.course.isChild) {
+					if(!cm.course.isChild && !cm.course.courseId.matches(userRegex)) {
 				%>
 				<tr>
 					<%-- <td><%= role %></td> --%>
