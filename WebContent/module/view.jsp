@@ -34,7 +34,7 @@ List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
 CMWrapper.sort(userMemberships);
 List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", false);
 List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
-List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "INSTRUCTOR", true);
+List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", false);
 List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships);
 
 %>
@@ -48,7 +48,8 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 		<h6>Courses to which you are assigned as the primary instructor:</h6>
 		
 		<% if(instMemberships.size() == 0) { %>
-			<p></p>
+			<!-- <p>You are not enrolled in any course as an instructor. If you believe this is a mistake please work with your 
+				department to ensure you are assigned to instruct a course or contact <a href="mailto:online.registrar@wsu.edu">online.registrar@wsu.edu</a></p> -->
 		<% } %>
 	
 		<div id="manageCourses">
@@ -76,6 +77,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 		<table class="four">
 			
 				<tr>
+					<!-- <td>Role</td> -->
 					<td>Enrl</td>
 					<td>Course Title (Course ID)</td>
 					<td id="availabilityTT">Availability <img height="20px" src='<%= moduleBasePath + "question_mark.png" %>' /></td>
@@ -86,6 +88,9 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 				for (int i=0, l = instMemberships.size(); i < l; i++) {
 					CMWrapper cm = instMemberships.get(i);
 					int enrl = cm.course.loadMemberships().size();
+					String role = cm.role;
+					boolean isInstructor = role.equalsIgnoreCase("Instructor");
+					boolean isSecondaryInstructor = role.equalsIgnoreCase("SI");
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
 					String disableUri = moduleBasePath + "disable.jsp?course-id=" + cm.course.courseId;
 					String enableUri = moduleBasePath + "enable.jsp?course-id=" + cm.course.courseId;
@@ -95,6 +100,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					if(!cm.course.isChild) {
 				%>
 				<tr>
+					<%-- <td><%= role %></td> --%>
 					<td><%= enrl %></td>
 					<td>
 					<% if (!cm.course.isRoster) { %>
@@ -104,7 +110,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					<% } %>
 					</td>
 					<td>
-					<% if (!cm.course.isRoster) { 
+					<% if (!cm.course.isRoster && isInstructor) { 
 						if (cm.course.isAvailable) {
 					%>
 						<a class="showLoading" href="<%= disableUri %>">Disable</a>
@@ -114,17 +120,19 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					} %>
 					</td>
 					<td>
-					<% if (cm.course.isOnline) {	%>
+					<% if (cm.course.isOnline && (isInstructor || isSecondaryInstructor)) {	%>
 						<% if (!cm.course.isRoster) { %>
 						<a target="_blank" href="<%= cvUri + cm.course.courseId %>">Course Verification</a>
 						<% } else { %>
 						*
-						<% } %>
-					<% } else if (cm.course.isRoster) { %>
-						<a class="showLoading" href="<%= activateUri %>">Activate</a>
-					<% } else { %>
-						<a class="manageSection" href="#<%= cm.course.courseId %>">Merge</a>
-					<% } %>
+						<% }
+					} else if (isInstructor) {
+						if (cm.course.isRoster) { %>
+							<a class="showLoading" href="<%= activateUri %>">Activate</a>
+						<% } else { %>
+							<a class="manageSection" href="#<%= cm.course.courseId %>">Merge</a>
+						<% } 
+					} %>
 					</td>
 				</tr>
 					<% } 
@@ -134,12 +142,15 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 						CourseWrapper.sort(childCourses);
 						for (int j=0, m = childCourses.size(); j < m; j++) {
 							CourseWrapper child = childCourses.get(j);
+							CMWrapper childMWrapper = new CMWrapper(user, child.course);
+							String childRole = childMWrapper.role;
 							int childEnrl = child.loadMemberships().size();
 							String unmergeUri = moduleBasePath + "remove.jsp?parent-course=" + cm.course.courseId 
 									+ "&child-course=" + child.courseId;
 							String childDisplayTitle = child.title + " (" + child.courseId +")";
 					%>
 						<tr>
+							<%-- <td><%= childRole %></td> --%>
 							<td>
 								<%= childEnrl %>
 							</td>
@@ -149,7 +160,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 							<td>
 							</td>
 							<td>
-								<% if (!cm.course.isOnline) {	%>
+								<% if (!cm.course.isOnline && childRole.equalsIgnoreCase("Instructor")) {	%>
 									<a class="showLoading" href="<%= unmergeUri %>">Remove</a>
 								<% } %>
 							</td>
@@ -160,7 +171,8 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 			
 		</table>
 		</div>
-		<h6>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</h6>
+		<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
+		<strong></strong>
 		</div>
 	</div><!-- END Manage Course -->
 
@@ -208,7 +220,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
 		<!-- <button id="createCourseSection">Create Course Section</button>-->
 	</div>
-	<h6>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</h6>
+	<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
 </div><!-- End Page2 -->
 
 <div id="loadingRequest">
