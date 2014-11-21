@@ -89,8 +89,8 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					CMWrapper cm = instMemberships.get(i);
 					int enrl = cm.course.loadMemberships().size();
 					String role = cm.role;
-					boolean isInstructor = role.equalsIgnoreCase("Instructor");
-					boolean isSecondaryInstructor = role.equalsIgnoreCase("SI");
+					boolean isInstructor = role.equalsIgnoreCase("Instructor") || role.equalsIgnoreCase("PCB");
+					boolean isSecondaryInstructor = role.equalsIgnoreCase("SI") || role.equalsIgnoreCase("SCB");
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
 					String disableUri = moduleBasePath + "disable.jsp?course-id=" + cm.course.courseId;
 					String enableUri = moduleBasePath + "enable.jsp?course-id=" + cm.course.courseId;
