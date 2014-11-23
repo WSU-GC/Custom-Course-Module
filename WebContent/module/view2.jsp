@@ -30,7 +30,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
  <bbNG:pageTitleBar title="Course Module"/> 
 </bbNG:pageHeader>
 
-<bbNG:includedPage ctxId="bbContext">
+<%-- <bbNG:includedPage ctxId="bbContext"> --%>
 
 
 <%
@@ -101,7 +101,7 @@ if(instMemberships.size() > 0) {
 		</ol>
 		
 		<!-- Instructor Courses -->
-		<div id="instCourses">
+		<div id="instCourses" class="CSSTableGenerator">
 		</div>
 
 		</div>
@@ -178,9 +178,11 @@ if(instMemberships.size() > 0) {
 		
 		termKeys.forEach(function(t) {
 			terms[t] = terms[t].map(function(courses) {
-				courses.course = JSON.parse(courses.course);
-				courses.course.children = JSON.parse(courses.course.children);
 				var role = courses.role.toLowerCase();
+				courses.course = JSON.parse(courses.course);
+				courses.course = courseInfo(role, courses.course);
+				/* courses.course.children = JSON.parse(courses.course.children);
+				//courses.course.children =
 				courses.course.isInstructor = role == "instructor" || role == "pcb";
 				courses.course.isSecondaryInstructor = role == "si" || role == "scb";
 				courses.course.displayTitle = courses.course.title + " (" + courses.course.courseId + ")";
@@ -189,12 +191,32 @@ if(instMemberships.size() > 0) {
 				courses.course.disableUri = moduleBasePath + "disable.jsp?course-id=" + courses.course.courseId;
 				courses.course.activateUri = moduleBasePath + "activate.jsp?course-id=" 
 					+ courses.course.courseId + "&title=" + courses.course.title;
-				courses.course.accessUri = "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + courses.course.coursePkId
+				courses.course.accessUri = "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + courses.course.coursePkId; */
 				return courses;
 			});
 		});
 		
 		return terms;
+	}
+	
+	function courseInfo(role, course, parent) {
+		course.children = JSON.parse(course.children);
+		course.children = course.children.map(function(c) {
+			return courseInfo(role, c, course);
+		});
+		course.isInstructor = role == "instructor" || role == "pcb";
+		course.isSecondaryInstructor = role == "si" || role == "scb";
+		course.displayTitle = course.title + " (" + course.courseId + ")";
+		course.cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + course.courseId;
+		course.enableUri = moduleBasePath + "enable.jsp?course-id=" + course.courseId;
+		course.disableUri = moduleBasePath + "disable.jsp?course-id=" + course.courseId;
+		course.activateUri = moduleBasePath + "activate.jsp?course-id=" 
+			+ course.courseId + "&title=" + course.title;
+		course.accessUri = "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + course.coursePkId;
+		course.unmergeUri = parent 
+			? moduleBasePath + "remove.jsp?parent-course=" + parent.courseId + "&child-course=" + course.courseId
+			: "";
+		return course;
 	}
 	
 	courses.Terms = function() {
@@ -226,19 +248,55 @@ if(instMemberships.size() > 0) {
 	}
 	
 	courses.view = function() {
-		return m("table", [
+		return m("table", [m("tr", [
+		                            m("td", "Enrl"),
+		                            m("td", "Course Title (Course ID)"),
+		                            m("td", {id: "availabilityTT"}, ["Availability", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})]),
+		                            m("td", {id: "actionTT"}, ["Action", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})])
+		                            ]),
 		                   courses.vm.selectedTerm().map(function(cm) {
-		                	   var c = cm.course;
-		                	   return m("tr", [
-		                	                   m("td", c.enrl),
-		                	                   m("td", (function() {
-		                	                	   return c.isRoster
-		                	                	   	? c.displayTitle
-                	                	   			: [m("a", {href: c.accessUri}, c.displayTitle)];
-		                	                   }())),
-		                	                   m("td", "disable"),
-		                	                   m("td", "cv")
-		                	                   ]);
+		                	   if (cm.course.isChild) return;
+		                	   var co = cm.course;
+		                	   var cc = co.children.length
+		                	   		? [co].concat(co.children)
+		                	   		: [co];
+		                	   return cc.map(function(c) {
+			                	   return m("tr", [
+			                	                   m("td", c.enrl),
+			                	                   m("td", {class: c.isChild ? "child": ""}, (function() {
+			                	                	   return c.isRoster
+			                	                	   	? c.displayTitle
+	                	                	   			: [m("a", {href: c.accessUri}, c.displayTitle)];
+			                	                   }())),
+			                	                   m("td", (function() {
+			                	                	   if (!c.isRoster && c.isInstructor) {
+			                	                		   if (c.isAvailable) {
+			                	                			   return m("a", {href: c.disableUri}, "Disable");
+			                	                		   } else {
+			                	                			   return m("a", {href: c.enableUri}, "Enable");
+			                	                		   }
+			                	                	   }
+			                	                	   return "";
+			                	                   }())),
+			                	                   m("td", (function() {
+			                	                	   if (c.isOnline && (c.isInstructor || c.isSecondaryInstructor) && !c.isChild) {
+			                	                		   if(!c.isRoster) {
+			                	                			   return m("a", {target: "_blank", href: c.cvUri}, "Course Verification");
+			                	                		   } else {
+			                	                			   return "*";
+			                	                		   }
+			                	                	   } else if (c.isInstructor && c.isChild) {
+			                	                		   return m("a", {href: c.unmergeUri}, "Remove");
+			                	                	   } else if (c.isInstructor) {
+			                	                		   if (c.isRoster) {
+			                	                			   return m("a", {href: c.activateUri}, "Activate");
+			                	                		   } else {
+			                	                			   return m("a", {href: "#" + c.courseId}, "Merge");
+			                	                		   }
+			                	                	   }
+			                	                   }()))
+			                	                   ]);
+		                	   });
 		                   })
 		                   ]);
 	}
@@ -247,6 +305,6 @@ if(instMemberships.size() > 0) {
 		
 </script>
 
-</bbNG:includedPage>
+<%-- </bbNG:includedPage> --%>
 
 </bbNG:learningSystemPage>

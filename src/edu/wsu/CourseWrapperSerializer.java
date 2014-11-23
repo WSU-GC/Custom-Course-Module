@@ -36,8 +36,10 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {
 			// TODO Auto-generated catch block
+			result.add("enrl", new JsonPrimitive(0));
 			e1.printStackTrace();
 		} catch (PersistenceException e1) {
+			result.add("enrl", new JsonPrimitive(0));
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
