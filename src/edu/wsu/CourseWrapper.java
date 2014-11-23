@@ -58,6 +58,11 @@ public class CourseWrapper {
 		return CourseMembershipDbLoader.Default.getInstance().loadByCourseId(this.id);
 	}
 	
+	public List<CourseWrapper> loadChildren() 
+			throws PersistenceException {
+		return CourseWrapper.loadChildCourseWrappersByParentCourse(this.course);
+	}
+	
 	public static List<CourseWrapper> loadCourseWrappersByUser(User user) 
 			throws KeyNotFoundException, PersistenceException {
 		List<CourseWrapper> cwCourses = new ArrayList<CourseWrapper>();

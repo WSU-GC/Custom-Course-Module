@@ -1,4 +1,5 @@
 <%@page import="com.google.gson.Gson"%>
+<%@page import="com.google.gson.GsonBuilder" %>
 <%@page import="edu.wsu.*"%>
 <%@page import="blackboard.platform.plugin.PlugInUtil" %>
 <%@page import="blackboard.data.user.*" %>
@@ -23,6 +24,12 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 	}
 </style>
 
+<bbNG:learningSystemPage  ctxId="bbContext">
+
+<bbNG:pageHeader> 
+ <bbNG:pageTitleBar title="Course Module"/> 
+</bbNG:pageHeader>
+
 <bbNG:includedPage ctxId="bbContext">
 
 
@@ -35,7 +42,8 @@ boolean isInstructor = false;
 List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
 CMWrapper.sort(userMemberships);
 
-
+Gson gson = new GsonBuilder()
+	.registerTypeAdapter(CMWrapper.class, new CMWrapperSerializer()).create();
 
 List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", true);
 List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
@@ -50,7 +58,8 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 
 TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 
-String jsonInstTerms = new Gson().toJson(instTerms);
+String jsonInstTerms = gson.toJson(instTerms);
+String jsonRosters = gson.toJson(rosterTerms);
 
 %>
 
@@ -92,6 +101,8 @@ if(instMemberships.size() > 0) {
 		</ol>
 		
 		<!-- Instructor Courses -->
+		<div id="instCourses">
+		</div>
 
 		</div>
 	</div><!-- END Manage Course -->
@@ -100,7 +111,7 @@ if(instMemberships.size() > 0) {
 	<div class="CCMSpace">		
 		<h6>Courses in which you are enrolled as a student:</h6>
 		
-		
+		<!-- Student module -->
 		
 	</div>
 	
@@ -123,6 +134,7 @@ if(instMemberships.size() > 0) {
 </div>
 
 <script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
+<script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
 <script type="text/javascript">
 	/* function ready(cb) {
 		typeof Opentip == 'undefined' // in = loadINg
@@ -155,9 +167,71 @@ if(instMemberships.size() > 0) {
 	var moduleBasePath = "<%= moduleBasePath %>";
 	var parentCourseId = '';
 	var isInstructor = <%= isInstructor %>;
+	var instCourses = <%= jsonInstTerms %>;	
+	var rosters = <%= jsonRosters %>;
 	
+	var courses = {};
 	
+	function convertFromJson(obj) {
+		var terms = obj.terms;
+		var termKeys = Object.keys(terms);
+		
+		termKeys.forEach(function(t) {
+			terms[t] = terms[t].map(function(courses) {
+				courses.course = JSON.parse(courses.course);
+				courses.course.children = JSON.parse(courses.course.children);
+				return courses;
+			});
+		});
+		
+		return terms;
+	}
+	
+	courses.Terms = function() {
+		return convertFromJson(instCourses);
+	}
+	
+	courses.Rosters = function() {
+		return convertFromJson(rosters);
+	}
+	
+	courses.vm = new function() {
+		var vm = {};
+		vm.init = function() {
+			vm.terms = new courses.Terms();
+			//vm.rosters = new courses.Rosters();
+			vm.termKeys = Object.keys(vm.terms).sort(function(a,b) {
+				return a.localeCompare(b);
+			});
+			
+			vm.selectedTermKey = m.prop(vm.termKeys[0]);
+			
+			vm.selectedTerm = vm.terms[vm.selectedTermKey()];
+		}
+		return vm;
+	}
+	
+	courses.controller = function() {
+		courses.vm.init();
+	}
+	
+	courses.view = function() {
+		return m("table", [
+		                   courses.vm.selectedTerm.map(function(cm) {
+		                	   return m("tr", [
+		                	                   m("td", cm.course.enrl),
+		                	                   m("td", cm.course.title),
+		                	                   m("td", "disable"),
+		                	                   m("td", "cv")
+		                	                   ]);
+		                   })
+		                   ]);
+	}
+
+	m.module(document.getElementById("instCourses"), {controller: courses.controller, view: courses.view});
 		
 </script>
 
 </bbNG:includedPage>
+
+</bbNG:learningSystemPage>
