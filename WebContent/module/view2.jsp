@@ -246,7 +246,11 @@ if(instMemberships.size() > 0) {
 	courses.view = function() {
 		return m("div", [
 			courses.vm.termKeys.map(function(termKey) {
-				return m("a", {onclick: courses.vm.changeTerm.bind(courses.vm, termKey)}, termKey);
+				return m("a", {onclick: courses.vm.changeTerm.bind(courses.vm, termKey), 
+					href: "#",
+					class: termKey == courses.vm.selectedTermKey()
+					? "active termTab"
+					: "termTab"}, termKey);
 			}),
 			
 			m("table", [m("tr", [
@@ -305,7 +309,7 @@ if(instMemberships.size() > 0) {
 	};
 
 	document.addEventListener("DOMContentLoaded", function() {
-		m.module(document.getElementById("instCourses"), {controller: courses.controller, view: courses.view});
+		m.module(document.getElementById("instCourses"), courses);
 		startOpenTip();
 	});
 		

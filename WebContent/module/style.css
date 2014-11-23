@@ -82,3 +82,9 @@
 	.CSSTableGenerator table.three td:last-child {
 		width: 15%;
 	}
+	.termTab {
+		margin: 4px;
+		padding: 8px;
+		background: #981e32;
+		color: #ffffff;
+	}
