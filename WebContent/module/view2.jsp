@@ -180,6 +180,16 @@ if(instMemberships.size() > 0) {
 			terms[t] = terms[t].map(function(courses) {
 				courses.course = JSON.parse(courses.course);
 				courses.course.children = JSON.parse(courses.course.children);
+				var role = courses.role.toLowerCase();
+				courses.course.isInstructor = role == "instructor" || role == "pcb";
+				courses.course.isSecondaryInstructor = role == "si" || role == "scb";
+				courses.course.displayTitle = courses.course.title + " (" + courses.course.courseId + ")";
+				courses.course.cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + courses.course.title;
+				courses.course.enableUri = moduleBasePath + "enable.jsp?course-id=" + courses.course.courseId;
+				courses.course.disableUri = moduleBasePath + "disable.jsp?course-id=" + courses.course.courseId;
+				courses.course.activateUri = moduleBasePath + "activate.jsp?course-id=" 
+					+ courses.course.courseId + "&title=" + courses.course.title;
+				courses.course.accessUri = "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + courses.course.coursePkId
 				return courses;
 			});
 		});
@@ -206,7 +216,7 @@ if(instMemberships.size() > 0) {
 			
 			vm.selectedTermKey = m.prop(vm.termKeys[0]);
 			
-			vm.selectedTerm = vm.terms[vm.selectedTermKey()];
+			vm.selectedTerm = m.prop(vm.terms[vm.selectedTermKey()]);
 		}
 		return vm;
 	}
@@ -217,10 +227,15 @@ if(instMemberships.size() > 0) {
 	
 	courses.view = function() {
 		return m("table", [
-		                   courses.vm.selectedTerm.map(function(cm) {
+		                   courses.vm.selectedTerm().map(function(cm) {
+		                	   var c = cm.course;
 		                	   return m("tr", [
-		                	                   m("td", cm.course.enrl),
-		                	                   m("td", cm.course.title),
+		                	                   m("td", c.enrl),
+		                	                   m("td", (function() {
+		                	                	   return c.isRoster
+		                	                	   	? c.displayTitle
+                	                	   			: [m("a", {href: c.accessUri}, c.displayTitle)];
+		                	                   }())),
 		                	                   m("td", "disable"),
 		                	                   m("td", "cv")
 		                	                   ]);
