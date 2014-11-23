@@ -136,32 +136,34 @@ if(instMemberships.size() > 0) {
 <script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
 <script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
 <script type="text/javascript">
-	/* function ready(cb) {
+	function ready(cb) {
 		typeof Opentip == 'undefined' // in = loadINg
         ? setTimeout('ready('+cb+')', 9)
         : cb();
 	}
 
-	ready(function() {
-		var availabilityMessage = "Enable/Disable your course for student viewing.";
-		var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
-			+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
-			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.";
-		
-		Opentip.styles.extendedAlert = {
-				extends: "alert",
-				background: "#981e32",
-				color: "#ffffff"
-		}
-		
-		var options = {
-			target: true,
-			tipJoint: "bottom",
-			style: "extendedAlert"
-		};
-		new Opentip("#availabilityTT", availabilityMessage, options);
-		new Opentip("#actionTT", actionMessage, options);
-	}); */
+	function  startOpenTip() {
+		ready(function() {
+			var availabilityMessage = "Enable/Disable your course for student viewing.";
+			var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
+				+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
+				+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.";
+			
+			Opentip.styles.extendedAlert = {
+					extends: "alert",
+					background: "#981e32",
+					color: "#ffffff"
+			}
+			
+			var options = {
+				target: true,
+				tipJoint: "bottom",
+				style: "extendedAlert"
+			};
+			new Opentip("#availabilityTT", availabilityMessage, options);
+			new Opentip("#actionTT", actionMessage, options);
+		});
+	}
 </script>
 <script type="text/javascript">
 	var moduleBasePath = "<%= moduleBasePath %>";
@@ -181,17 +183,6 @@ if(instMemberships.size() > 0) {
 				var role = courses.role.toLowerCase();
 				courses.course = JSON.parse(courses.course);
 				courses.course = courseInfo(role, courses.course);
-				/* courses.course.children = JSON.parse(courses.course.children);
-				//courses.course.children =
-				courses.course.isInstructor = role == "instructor" || role == "pcb";
-				courses.course.isSecondaryInstructor = role == "si" || role == "scb";
-				courses.course.displayTitle = courses.course.title + " (" + courses.course.courseId + ")";
-				courses.course.cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + courses.course.title;
-				courses.course.enableUri = moduleBasePath + "enable.jsp?course-id=" + courses.course.courseId;
-				courses.course.disableUri = moduleBasePath + "disable.jsp?course-id=" + courses.course.courseId;
-				courses.course.activateUri = moduleBasePath + "activate.jsp?course-id=" 
-					+ courses.course.courseId + "&title=" + courses.course.title;
-				courses.course.accessUri = "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + courses.course.coursePkId; */
 				return courses;
 			});
 		});
@@ -239,6 +230,11 @@ if(instMemberships.size() > 0) {
 			vm.selectedTermKey = m.prop(vm.termKeys[0]);
 			
 			vm.selectedTerm = m.prop(vm.terms[vm.selectedTermKey()]);
+			
+			vm.changeTerm = function(newTermKey) {
+				vm.selectedTermKey(newTermKey);
+				vm.selectedTerm(vm.terms[vm.selectedTermKey()]);
+			};
 		}
 		return vm;
 	}
@@ -248,60 +244,70 @@ if(instMemberships.size() > 0) {
 	}
 	
 	courses.view = function() {
-		return m("table", [m("tr", [
-		                            m("td", "Enrl"),
-		                            m("td", "Course Title (Course ID)"),
-		                            m("td", {id: "availabilityTT"}, ["Availability", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})]),
-		                            m("td", {id: "actionTT"}, ["Action", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})])
-		                            ]),
-		                   courses.vm.selectedTerm().map(function(cm) {
-		                	   if (cm.course.isChild) return;
-		                	   var co = cm.course;
-		                	   var cc = co.children.length
-		                	   		? [co].concat(co.children)
-		                	   		: [co];
-		                	   return cc.map(function(c) {
-			                	   return m("tr", [
-			                	                   m("td", c.enrl),
-			                	                   m("td", {class: c.isChild ? "child": ""}, (function() {
-			                	                	   return c.isRoster
-			                	                	   	? c.displayTitle
-	                	                	   			: [m("a", {href: c.accessUri}, c.displayTitle)];
-			                	                   }())),
-			                	                   m("td", (function() {
-			                	                	   if (!c.isRoster && c.isInstructor) {
-			                	                		   if (c.isAvailable) {
-			                	                			   return m("a", {href: c.disableUri}, "Disable");
-			                	                		   } else {
-			                	                			   return m("a", {href: c.enableUri}, "Enable");
-			                	                		   }
-			                	                	   }
-			                	                	   return "";
-			                	                   }())),
-			                	                   m("td", (function() {
-			                	                	   if (c.isOnline && (c.isInstructor || c.isSecondaryInstructor) && !c.isChild) {
-			                	                		   if(!c.isRoster) {
-			                	                			   return m("a", {target: "_blank", href: c.cvUri}, "Course Verification");
-			                	                		   } else {
-			                	                			   return "*";
-			                	                		   }
-			                	                	   } else if (c.isInstructor && c.isChild) {
-			                	                		   return m("a", {href: c.unmergeUri}, "Remove");
-			                	                	   } else if (c.isInstructor) {
-			                	                		   if (c.isRoster) {
-			                	                			   return m("a", {href: c.activateUri}, "Activate");
-			                	                		   } else {
-			                	                			   return m("a", {href: "#" + c.courseId}, "Merge");
-			                	                		   }
-			                	                	   }
-			                	                   }()))
-			                	                   ]);
-		                	   });
-		                   })
-		                   ]);
-	}
+		return m("div", [
+			courses.vm.termKeys.map(function(termKey) {
+				return m("a", {onclick: courses.vm.changeTerm.bind(courses.vm, termKey)}, termKey);
+			}),
+			
+			m("table", [m("tr", [
+		        m("td", "Enrl"),
+		        m("td", "Course Title (Course ID)"),
+		        m("td", {id: "availabilityTT"}, ["Availability", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})]),
+		        m("td", {id: "actionTT"}, ["Action", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})])
+	        ]),
+	      	courses.vm.selectedTerm().map(function(cm) {
+		   	   if (cm.course.isChild) return;
+		   	   var co = cm.course;
+		   	   var cc = co.children.length
+		   	   		? [co].concat(co.children)
+		   	   		: [co];
+		   	   return cc.map(function(c) {
+		    	   return m("tr", [
+	                   m("td", c.enrl),
+	                   m("td", {class: c.isChild ? "child": ""}, (function() {
+                	   		return c.isRoster
+		                	   	? c.displayTitle
+	              	   			: [m("a", {href: c.accessUri}, c.displayTitle)];
+	                   }())),
+	                   m("td", (function() {
+	                	   if (!c.isRoster && c.isInstructor) {
+	                		   if (c.isAvailable) {
+	                			   return m("a", {href: c.disableUri}, "Disable");
+	                		   } else {
+	                			   return m("a", {href: c.enableUri}, "Enable");
+	                		   }
+	                	   }
+	                	   return "";
+	                   }())),
+	                   m("td", (function() {
+	                	   if (c.isOnline && (c.isInstructor || c.isSecondaryInstructor) && !c.isChild) {
+	                		   if(!c.isRoster) {
+	                			   return m("a", {target: "_blank", href: c.cvUri}, "Course Verification");
+	                		   } else {
+	                			   return "*";
+	                		   }
+	                	   } else if (c.isInstructor && c.isChild) {
+	                		   return m("a", {href: c.unmergeUri}, "Remove");
+	                	   } else if (c.isInstructor) {
+	                		   if (c.isRoster) {
+	                			   return m("a", {href: c.activateUri}, "Activate");
+	                		   } else {
+	                			   return m("a", {href: "#" + c.courseId}, "Merge");
+	                		   }
+	                	   }
+	                   }()))
+                   ]);
+	   	   		});
+		      })
+	      ])
+        ]);
+		
+	};
 
-	m.module(document.getElementById("instCourses"), {controller: courses.controller, view: courses.view});
+	document.addEventListener("DOMContentLoaded", function() {
+		m.module(document.getElementById("instCourses"), {controller: courses.controller, view: courses.view});
+		startOpenTip();
+	});
 		
 </script>
 
