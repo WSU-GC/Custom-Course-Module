@@ -55,7 +55,8 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 		<div id="manageCourses">
 	
 		<p>New processes allow you to create and manage your Bb Learn course spaces in real time 
-			- no waiting on support staff to respond to your request.  If you require assistance 
+			- no waiting on support staff to respond to your request. Watch the 
+			<a href="http://youtu.be/aDUJ-yHeB3A" target="_blank">video tutorial</a>. If you require assistance 
 			just email <a href="mailto:online.registrar@wsu.edu">online.registrar@wsu.edu</a>.</p>
 			
 		<ol>
