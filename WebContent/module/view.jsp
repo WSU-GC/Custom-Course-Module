@@ -73,6 +73,12 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 			</li>
 		</ol>
 		
+		<!-- <p>
+			<strong style="font-size: 1.4 rem; color: #000000;">Message 12/12/2014: The ability to activate course rosters or manage course merges is 
+			temporarily unavailable while a minor update is applied. 
+			Functionality is expected to return to normal by this afternoon.</strong>
+		</p>-->
+		
 		<!-- Instructor Courses -->
 		<div class="CSSTableGenerator">
 		<table class="four">
@@ -161,7 +167,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 							<td>
 							</td>
 							<td>
-								<% if (!cm.course.isOnline && isInstructor) {	%>
+								<% if (!cm.course.isOnline && isInstructor) { %>
 									<a class="showLoading" href="<%= unmergeUri %>">Remove</a>
 								<% } %>
 							</td>
@@ -243,7 +249,8 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 		var availabilityMessage = "Enable/Disable your course for student viewing.";
 		var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
 			+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
-			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.";
+			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses. <br/>"
+			+ "<strong style='text-decoration: underline;'>Merge</strong>: Add roster sections to the selected course space.";
 		
 		Opentip.styles.extendedAlert = {
 				extends: "alert",

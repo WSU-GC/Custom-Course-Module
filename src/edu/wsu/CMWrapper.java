@@ -61,7 +61,7 @@ public class CMWrapper {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
-			if (cm.course.isAvailable == isAvailable && !cm.course.courseId.matches(userRegex)) {
+			if (cm.course.isAvailable == isAvailable) {
 				cmWrappers.add(cm);
 			}
 		}
@@ -75,11 +75,11 @@ public class CMWrapper {
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
 			if (equals) {
-				if(cm.role.equalsIgnoreCase(role) && !cm.course.courseId.matches(userRegex)) {
+				if(cm.role.equalsIgnoreCase(role)) {
 					cmWrappers.add(cm);
 				}
 			} else {
-				if(!cm.role.equalsIgnoreCase(role) && !cm.course.courseId.matches(userRegex)) {
+				if(!cm.role.equalsIgnoreCase(role)) {
 					cmWrappers.add(cm);
 				}
 			}
@@ -92,7 +92,7 @@ public class CMWrapper {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
-			if (cm.course.isRoster && !cm.course.isChild && !cm.course.courseId.matches(userRegex)) {
+			if (cm.course.isRoster && !cm.course.isChild) {
 				cmWrappers.add(cm);
 			}
 		}

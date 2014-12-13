@@ -28,7 +28,7 @@ public class CourseManagement {
 	public static String[] getBatchAndCourseIdFromRoster(String rosterId) 
 			throws Exception {
 		int lastDigit = 0;
-		String rosterRegex = "(?i)ROSTER-\\d+-\\w+-\\w+-\\w+-\\w+-\\d+-\\w+-\\w+";
+		String rosterRegex = "(?i)ROSTER-\\d+-\\w+-\\w+-\\w+-\\w+-\\d+-.+";
 		String invalidRosterId = "Invalid Roster ID: " + rosterId + ", cannot generate batchuid or courseid from roster Id.";
 		
 		if(rosterId == null || !rosterId.matches(rosterRegex)) {
@@ -64,7 +64,7 @@ public class CourseManagement {
 				+ "-" + courseIdArr[6]
 				+ "-" + courseIdArr[7];
 		
-		return new String[] {id, publicCourseId};
+		return new String[] {publicCourseId, publicCourseId};
 	}
 	
 	
