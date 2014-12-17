@@ -96,7 +96,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					CMWrapper cm = instMemberships.get(i);
 					int enrl = cm.course.loadMemberships().size();
 					String role = cm.role;
-					boolean isInstructor = role.equalsIgnoreCase("Instructor") || role.equalsIgnoreCase("PCB");
+					boolean isInstructor = role.equalsIgnoreCase("Instructor") || role.equalsIgnoreCase("PCB") || role.equalsIgnoreCase("SUPPORT");
 					boolean isSecondaryInstructor = role.equalsIgnoreCase("SI") || role.equalsIgnoreCase("SCB");
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
 					String disableUri = moduleBasePath + "disable.jsp?course-id=" + cm.course.courseId;
@@ -110,7 +110,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 					<%-- <td><%= role %></td> --%>
 					<td><%= enrl %></td>
 					<td>
-					<% if (!cm.course.isRoster) { %>
+					<% if (!cm.course.isRoster || cm.course.isAvailable) { %>
 						<a href="<%= courseBasePath + cm.course.coursePkId %>"><%= displayTitle %></a>
 					<% } else { %>
 						<%= displayTitle %>
