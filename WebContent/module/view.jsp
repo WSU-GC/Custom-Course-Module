@@ -67,7 +67,8 @@ TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 		<div id="manageCourses">
 	
 		<p>New processes allow you to create and manage your Bb Learn course spaces in real time 
-			- no waiting on support staff to respond to your request.  If you require assistance 
+			- no waiting on support staff to respond to your request. Watch the 
+			<a href="http://youtu.be/aDUJ-yHeB3A" target="_blank">video tutorial</a>. If you require assistance 
 			just email <a href="mailto:online.registrar@wsu.edu">online.registrar@wsu.edu</a>.</p>
 			
 		<ol>
@@ -83,6 +84,12 @@ TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 				<strong><a target="_blank" href="http://elearning.wsu.edu/pdf/copyingcourseswithinblackboard.pdf">Instructions</a></strong>
 			</li>
 		</ol>
+		
+		<!-- <p>
+			<strong style="font-size: 1.4 rem; color: #000000;">Message 12/12/2014: The ability to activate course rosters or manage course merges is 
+			temporarily unavailable while a minor update is applied. 
+			Functionality is expected to return to normal by this afternoon.</strong>
+		</p>-->
 		
 		<!-- Instructor Courses -->
 		<div class="CSSTableGenerator">
@@ -101,7 +108,7 @@ TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 					CMWrapper cm = instMemberships.get(i);
 					int enrl = cm.course.loadMemberships().size();
 					String role = cm.role;
-					boolean isInstructor = role.equalsIgnoreCase("Instructor") || role.equalsIgnoreCase("PCB");
+					boolean isInstructor = role.equalsIgnoreCase("Instructor") || role.equalsIgnoreCase("PCB") || role.equalsIgnoreCase("SUPPORT");
 					boolean isSecondaryInstructor = role.equalsIgnoreCase("SI") || role.equalsIgnoreCase("SCB");
 					String cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=";
 					String disableUri = moduleBasePath + "disable.jsp?course-id=" + cm.course.courseId;
@@ -115,7 +122,7 @@ TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 					<%-- <td><%= role %></td> --%>
 					<td><%= enrl %></td>
 					<td>
-					<% if (!cm.course.isRoster) { %>
+					<% if (!cm.course.isRoster || cm.course.isAvailable) { %>
 						<a href="<%= courseBasePath + cm.course.coursePkId %>"><%= displayTitle %></a>
 					<% } else { %>
 						<%= displayTitle %>
@@ -172,7 +179,7 @@ TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 							<td>
 							</td>
 							<td>
-								<% if (!cm.course.isOnline && isInstructor) {	%>
+								<% if (!cm.course.isOnline && isInstructor) { %>
 									<a class="showLoading" href="<%= unmergeUri %>">Remove</a>
 								<% } %>
 							</td>
@@ -254,7 +261,8 @@ TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 		var availabilityMessage = "Enable/Disable your course for student viewing.";
 		var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
 			+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
-			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.";
+			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses. <br/>"
+			+ "<strong style='text-decoration: underline;'>Merge</strong>: Add roster sections to the selected course space.";
 		
 		Opentip.styles.extendedAlert = {
 				extends: "alert",

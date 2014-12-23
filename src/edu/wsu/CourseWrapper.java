@@ -37,7 +37,8 @@ public class CourseWrapper {
 	}
 	
 	public CourseWrapper(Course course) {
-		String saipRegex = "^\\d+-\\d+-\\d+-\\w+-\\w+-\\d+$";
+		//String saipRegex = "^\\d+-\\d+-\\d+-\\w+-\\w+-\\d+$";
+		String saipRegex = "^ROSTER-.+";
 		String onlineRegex = "(?i).+-ONLIN-.+";
 		this.course = course;
 		this.title = this.course.getTitle();
@@ -46,7 +47,7 @@ public class CourseWrapper {
 		this.courseId = this.course.getCourseId();
 		this.courseBatchUid = this.course.getBatchUid();
 		this.isAvailable = this.course.getIsAvailable();
-		this.isRoster = this.courseBatchUid.matches(saipRegex);
+		this.isRoster = this.courseId.matches(saipRegex);
 		this.isOnline = this.courseId.matches(onlineRegex);
 		this.isParent = course.isParent();
 		this.isChild = course.isChild();
