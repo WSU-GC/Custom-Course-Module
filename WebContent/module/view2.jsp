@@ -111,9 +111,17 @@ if(instMemberships.size() > 0) {
 	<!-- Active Student COURSE LIST -->
 	<div class="CCMSpace">		
 		<h6>Courses in which you are enrolled as a student:</h6>
-		
-		<!-- Student module -->
-		
+		<ul class="portletList-img courseListing">
+			<% if (activeStudentMemberships.size() == 0) { %>
+			<li>Sorry, you are not enrolled in any active courses as a student.</li>
+			<% } else { 
+				for(int i=0, l = activeStudentMemberships.size(); i < l; i++) {
+					CMWrapper cm = activeStudentMemberships.get(i);
+			%>
+				<li><a href="<%= courseBasePath + cm.course.coursePkId %>"><%= cm.course.title + " (" + cm.course.courseId + ")" %></a></li>	
+			<%	}
+			} %>
+		</ul>
 	</div>
 	
 </div><!-- End Page1 -->
@@ -134,6 +142,7 @@ if(instMemberships.size() > 0) {
 	</div>
 </div>
 
+<script type="text/javascript" src='<%= moduleBasePath + "jquery.js" %>'></script>
 <script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
 <script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
 <script type="text/javascript">
@@ -198,51 +207,41 @@ if(instMemberships.size() > 0) {
 	var instCourses = <%= jsonInstTerms %>;	
 	var rosters = <%= jsonRosters %>;
 	
-	function convertFromJson(obj) {
-		var terms = obj.terms;
-		var termKeys = Object.keys(terms);
-		
-		termKeys.forEach(function(t) {
-			terms[t] = terms[t].map(function(courses) {
-				var role = courses.role.toLowerCase();
-				courses.course = JSON.parse(courses.course);
-				courses.course = courseInfo(role, courses.course);
-				return courses;
-			});
+	function mapCourses(courses, role) {
+		return courses.map(function(el, i) {
+			var c = {};
+			c.course = el.course || el;
+			c.role = el.role || role;
+			role = (role || el.role).toLowerCase();
+			c.course.isInstructor = role == "instructor" || role == "pcb" || role == "support";
+			c.course.isSecondaryInstructor = role == "si" || role == "scb";
+			c.course.isInstructor = c.course.isInstructor || c.course.isSecondaryInstructor;
+			c.course.children = mapCourses(c.course.children, c.role);
+			return c;
 		});
-		
-		return terms;
 	}
 	
-	function courseInfo(role, course, parent) {
-		course.children = JSON.parse(course.children);
-		course.children = course.children.map(function(c) {
-			return courseInfo(role, c, course);
-		});
-		course.isInstructor = role == "instructor" || role == "pcb" || "support";
-		course.isSecondaryInstructor = role == "si" || role == "scb";
-		course.displayTitle = course.title + " (" + course.courseId + ")";
-		course.cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + course.courseId;
-		course.enableUri = moduleBasePath + "enable.jsp?course-id=" + course.courseId;
-		course.disableUri = moduleBasePath + "disable.jsp?course-id=" + course.courseId;
-		course.activateUri = moduleBasePath + "activate.jsp?course-id=" 
-			+ course.courseId + "&title=" + course.title;
-		course.accessUri = "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + course.coursePkId;
-		course.unmergeUri = parent 
-			? moduleBasePath + "remove.jsp?parent-course=" + parent.courseId + "&child-course=" + course.courseId
-			: "";
-		return course;
+	function mapTerms(_terms) {
+		var keys = Object.keys(_terms);
+		var terms = {};
+		
+		for(var i = 0, l = keys.length; i < l; i++) {
+			terms[keys[i]] = mapCourses(_terms[keys[i]]);
+		}
+		
+		return terms;
 	}
 	
 	var Terms = {};
 	
 	Terms.listAll = function() {
 		//return convertFromJson(instCourses);
-		return instCourses.terms;
+		return mapTerms(instCourses.terms);
 	}
 	
 	Terms.listRosters = function() {
 		//return convertFromJson(rosters);
+		return mapTerms(rosters.terms);
 	}
 	
 	var Module = function(m) {
@@ -345,7 +344,7 @@ if(instMemberships.size() > 0) {
 		},
 		
 		viewModel: function() {
-			this.showChildren = m.prop(false);
+			this.showChildren = m.prop(true);
 		},
 		
 		view: function() {
@@ -372,6 +371,10 @@ if(instMemberships.size() > 0) {
 			this.itemsPerPage = m.prop(Infinity);
 			this.selectedPage = m.prop(1);
 			this.showChildren = m.prop(false);
+			
+			this.showRosters = function() {
+				
+			}
 		},
 		
 		view: function() {

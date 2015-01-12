@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
+import blackboard.platform.plugin.PlugInUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,6 +18,8 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 
 	public JsonElement serialize(final CourseWrapper cw, final Type type,
 			final JsonSerializationContext context) {
+		
+		String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "") + "module/";
 		
 		Gson gson = new GsonBuilder()
 			.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
@@ -32,10 +35,11 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.add("isOnline", new JsonPrimitive(cw.isOnline));
 		result.add("isParent", new JsonPrimitive(cw.isParent));
 		result.add("isChild", new JsonPrimitive(cw.isChild));
+		result.add("parent", new JsonPrimitive(cw.parent));
 		result.addProperty("cvUri", "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + cw.courseId);
-		result.addProperty("disableUri", "/webapps/wsu-wsu-custom-course-module-BBLEARN/module/disable.jsp?course-id=" + cw.courseId);
+		result.addProperty("disableUri", moduleBasePath + "disable.jsp?course-id=" + cw.courseId);
 		result.addProperty("displayTitle", cw.title + "(" + cw.courseId + ")");
-		result.addProperty("enableUri", "/webapps/wsu-wsu-custom-course-module-BBLEARN/module/enable.jsp?course-id=" + cw.courseId);
+		result.addProperty("enableUri", moduleBasePath + "enable.jsp?course-id=" + cw.courseId);
 		try {
 			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {

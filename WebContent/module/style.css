@@ -92,6 +92,11 @@
 		clear: both;
 	}
 	
+	#appHeader {
+		margin-top: 15px;
+	}
+	
 	#appHeader > div {
 		float: left;
+		width: 33%;
 	}
