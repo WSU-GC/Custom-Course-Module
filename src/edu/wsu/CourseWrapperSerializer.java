@@ -32,6 +32,10 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.add("isOnline", new JsonPrimitive(cw.isOnline));
 		result.add("isParent", new JsonPrimitive(cw.isParent));
 		result.add("isChild", new JsonPrimitive(cw.isChild));
+		result.addProperty("cvUri", "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + cw.courseId);
+		result.addProperty("disableUri", "/webapps/wsu-wsu-custom-course-module-BBLEARN/module/disable.jsp?course-id=" + cw.courseId);
+		result.addProperty("displayTitle", cw.title + "(" + cw.courseId + ")");
+		result.addProperty("enableUri", "/webapps/wsu-wsu-custom-course-module-BBLEARN/module/enable.jsp?course-id=" + cw.courseId);
 		try {
 			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {
@@ -44,7 +48,9 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 			e1.printStackTrace();
 		}
 		try {
-			result.addProperty("children", gson.toJson(cw.loadChildren()));
+			result.add("children", gson.toJsonTree(cw.loadChildren()));
+			//result.add("children", new JsonPrimitive(gson.toJson(cw.loadChildren())));
+			//result.addProperty("children", gson.toJson(cw.loadChildren()));
 		} catch (PersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

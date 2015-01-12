@@ -19,7 +19,9 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 			.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
 		
 		JsonObject result = new JsonObject();
-		result.addProperty("course", gson.toJson(cm.course));
+		result.add("course", gson.toJsonTree(cm.course));
+		//result.add("course", new JsonPrimitive(gson.toJson(cm.course)));
+		//result.addProperty("course", gson.toJson(cm.course));
 		result.add("role", new JsonPrimitive(cm.role));
 		return result;
 	}

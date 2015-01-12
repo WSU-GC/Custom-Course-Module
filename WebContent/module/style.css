@@ -88,3 +88,10 @@
 		background: #981e32;
 		color: #ffffff;
 	}
+	.clear {
+		clear: both;
+	}
+	
+	#appHeader > div {
+		float: left;
+	}

@@ -59,6 +59,7 @@ List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships)
 TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
 
 String jsonInstTerms = gson.toJson(instTerms);
+//String jsonInstTerms = new Gson().toJson(instTerms.terms);
 String jsonRosters = gson.toJson(rosterTerms);
 
 %>
@@ -101,7 +102,7 @@ if(instMemberships.size() > 0) {
 		</ol>
 		
 		<!-- Instructor Courses -->
-		<div id="instCourses" class="CSSTableGenerator">
+		<div id="instCourses">
 		</div>
 
 		</div>
@@ -136,6 +137,31 @@ if(instMemberships.size() > 0) {
 <script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
 <script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
 <script type="text/javascript">
+	if (!Object.assign) {
+	  Object.defineProperty(Object, "assign", {
+	    enumerable: false,
+	    configurable: true,
+	    writable: true,
+	    value: function(target, firstSource) {
+	      "use strict";
+	      if (target === undefined || target === null)
+	        throw new TypeError("Cannot convert first argument to object");
+	      var to = Object(target);
+	      for (var i = 1; i < arguments.length; i++) {
+	        var nextSource = arguments[i];
+	        if (nextSource === undefined || nextSource === null) continue;
+	        var keysArray = Object.keys(Object(nextSource));
+	        for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+	          var nextKey = keysArray[nextIndex];
+	          var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+	          if (desc !== undefined && desc.enumerable) to[nextKey] = nextSource[nextKey];
+	        }
+	      }
+	      return to;
+	    }
+	  });
+	}
+
 	function ready(cb) {
 		typeof Opentip == 'undefined' // in = loadINg
         ? setTimeout('ready('+cb+')', 9)
@@ -172,8 +198,6 @@ if(instMemberships.size() > 0) {
 	var instCourses = <%= jsonInstTerms %>;	
 	var rosters = <%= jsonRosters %>;
 	
-	var courses = {};
-	
 	function convertFromJson(obj) {
 		var terms = obj.terms;
 		var termKeys = Object.keys(terms);
@@ -195,7 +219,7 @@ if(instMemberships.size() > 0) {
 		course.children = course.children.map(function(c) {
 			return courseInfo(role, c, course);
 		});
-		course.isInstructor = role == "instructor" || role == "pcb";
+		course.isInstructor = role == "instructor" || role == "pcb" || "support";
 		course.isSecondaryInstructor = role == "si" || role == "scb";
 		course.displayTitle = course.title + " (" + course.courseId + ")";
 		course.cvUri = "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + course.courseId;
@@ -210,106 +234,257 @@ if(instMemberships.size() > 0) {
 		return course;
 	}
 	
-	courses.Terms = function() {
-		return convertFromJson(instCourses);
+	var Terms = {};
+	
+	Terms.listAll = function() {
+		//return convertFromJson(instCourses);
+		return instCourses.terms;
 	}
 	
-	courses.Rosters = function() {
-		return convertFromJson(rosters);
+	Terms.listRosters = function() {
+		//return convertFromJson(rosters);
 	}
 	
-	courses.vm = new function() {
-		var vm = {};
-		vm.init = function() {
-			vm.terms = new courses.Terms();
-			//vm.rosters = new courses.Rosters();
-			vm.termKeys = Object.keys(vm.terms).sort(function(a,b) {
-				return a.localeCompare(b);
-			});
-			
-			vm.selectedTermKey = m.prop(vm.termKeys[0]);
-			
-			vm.selectedTerm = m.prop(vm.terms[vm.selectedTermKey()]);
-			
-			vm.changeTerm = function(newTermKey) {
-				vm.selectedTermKey(newTermKey);
-				vm.selectedTerm(vm.terms[vm.selectedTermKey()]);
-			};
-		}
-		return vm;
-	}
-	
-	courses.controller = function() {
-		courses.vm.init();
-	}
-	
-	courses.view = function() {
-		return m("div", [
-			courses.vm.termKeys.map(function(termKey) {
-				return m("a", {onclick: courses.vm.changeTerm.bind(courses.vm, termKey), 
-					href: "#",
-					class: termKey == courses.vm.selectedTermKey()
-					? "active termTab"
-					: "termTab"}, termKey);
-			}),
-			
-			m("table", [m("tr", [
-		        m("td", "Enrl"),
-		        m("td", "Course Title (Course ID)"),
-		        m("td", {id: "availabilityTT"}, ["Availability", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})]),
-		        m("td", {id: "actionTT"}, ["Action", m("img", {height: 20, src: moduleBasePath + "question_mark.png"})])
-	        ]),
-	      	courses.vm.selectedTerm().map(function(cm) {
-		   	   if (cm.course.isChild) return;
-		   	   var co = cm.course;
-		   	   var cc = co.children.length
-		   	   		? [co].concat(co.children)
-		   	   		: [co];
-		   	   return cc.map(function(c) {
-		    	   return m("tr", [
-	                   m("td", c.enrl),
-	                   m("td", {class: c.isChild ? "child": ""}, (function() {
-                	   		return c.isRoster
-		                	   	? c.displayTitle
-	              	   			: [m("a", {href: c.accessUri}, c.displayTitle)];
-	                   }())),
-	                   m("td", (function() {
-	                	   if (!c.isRoster && c.isInstructor) {
-	                		   if (c.isAvailable) {
-	                			   return m("a", {href: c.disableUri}, "Disable");
-	                		   } else {
-	                			   return m("a", {href: c.enableUri}, "Enable");
-	                		   }
-	                	   }
-	                	   return "";
-	                   }())),
-	                   m("td", (function() {
-	                	   if (c.isOnline && (c.isInstructor || c.isSecondaryInstructor) && !c.isChild) {
-	                		   if(!c.isRoster) {
-	                			   return m("a", {target: "_blank", href: c.cvUri}, "Course Verification");
-	                		   } else {
-	                			   return "*";
-	                		   }
-	                	   } else if (c.isInstructor && c.isChild) {
-	                		   return m("a", {href: c.unmergeUri}, "Remove");
-	                	   } else if (c.isInstructor) {
-	                		   if (c.isRoster) {
-	                			   return m("a", {href: c.activateUri}, "Activate");
-	                		   } else {
-	                			   return m("a", {href: "#" + c.courseId}, "Merge");
-	                		   }
-	                	   }
-	                   }()))
-                   ]);
-	   	   		});
-		      })
-	      ])
-        ]);
+	var Module = function(m) {
+		this._m = m;
+		this.vm = {};
+		this.ctrl = {};
+		this.controller = controller.bind(this);
+		this.view = this._m.view.bind(this);
 		
+		function controller () {
+			this._m.controller.call(this.ctrl);
+			var ctrl = this.ctrl;
+			this.controller = function () {
+				return ctrl;
+			};
+		};
 	};
 
-	document.addEventListener("DOMContentLoaded", function() {
-		m.module(document.getElementById("instCourses"), courses);
+	Module.prototype.controllerInit = function(options) {
+		var merge = function merge(opts) {
+			if (opts) this.ctrl = Object.assign(this.ctrl, opts);
+		}.bind(this);
+		
+		this.controller();
+		merge(options);
+
+		this.controllerInit = merge;
+		return this;
+	};
+
+	Module.prototype.vmInit = function(options) {
+		var merge = function merge(opts) {
+			if (opts) this.vm = Object.assign(this.vm, opts);
+		}.bind(this);
+		
+		this._m.viewModel.call(this.vm, this.ctrl);
+		merge(options);
+
+		this.vmInit = merge;
+		return this;
+	};
+
+	Module.prototype.init = function(ctrlOptions, vmOptions) {
+		this.controllerInit.call(this, ctrlOptions);
+		this.vmInit.call(this, vmOptions);
+		return this;
+	};
+
+	var filter = new Module({
+		controller: function() {
+					
+		},
+		
+		viewModel: function() {
+			this.searchTerm = m.prop("");
+		},
+		
+		view: function() {
+			var ctrl = this.ctrl;
+			var vm = this.vm;
+			return m('input', {
+			    oninput: m.withAttr('value', vm.searchTerm),
+			    placeholder: 'search',
+			    value: vm.searchTerm()
+			  });
+		}
+	});
+
+	var selectedTerm = new Module({
+		controller: function() {
+			this.terms = Object.keys(Terms.listAll()).sort().reverse();
+		},
+		
+		viewModel: function(ctrl) {
+			this.selectedTerm = m.prop(ctrl.terms[0]);
+		},
+		
+		view: function() {
+			var ctrl = this.ctrl;
+			var vm = this.vm;
+			return m('div', [
+		   	  "Term ",
+		   	  m('select', {
+		   		  onchange: m.withAttr('value', vm.selectedTerm)
+		   	  }, [
+		   	    ctrl.terms.map(function(item) {
+		   	      return m('option', {
+		   	    	  value: item,
+		   	    	  selected: vm.selectedTerm() == item ? true : false
+		   	      }, item)
+		   	    })
+		   	  ])
+		   	]);
+		}
+	});
+
+	var showChildren = new Module({
+		controller: function() {
+			
+		},
+		
+		viewModel: function() {
+			this.showChildren = m.prop(false);
+		},
+		
+		view: function() {
+			var ctrl = this.ctrl;
+			var vm = this.vm;
+			return m('div', ['Show Rosters', m('input', {
+				type: 'checkbox',
+			    onclick: m.withAttr('checked', vm.showChildren),
+			    checked: vm.showChildren()
+			})]);
+		}
+	});
+
+	var table = new Module({
+		controller: function() {
+			this.terms = new Terms.listAll();
+			this.filter = function(item) {
+				return true;
+			};
+		},
+		
+		viewModel: function() {
+			this.selectedTerm = m.prop("2015 Spring");
+			this.itemsPerPage = m.prop(Infinity);
+			this.selectedPage = m.prop(1);
+			this.showChildren = m.prop(false);
+		},
+		
+		view: function() {
+			var ctrl = this.ctrl;
+			var vm = this.vm;
+			return m("table", [m("tr", [
+		        m("td", "Enrl"),
+		        m("td", "Course Title (Course ID)"),
+		        m("td", {id: "availabilityTT"}, "Availability"),
+		        m("td", {id: "actionTT"}, "Action")
+		    ]),
+		  	ctrl.terms[vm.selectedTerm()].filter(ctrl.filter).map(function(cm) {
+		  		var co = cm.course;
+		  		var cc = co.children.length && vm.showChildren()
+			   		? [co].concat(co.children.map(function(child) {return child.course; }))
+			   		: [co];
+		   	   return cc.map(function(c) {
+		    	   return m('tr', [
+		             m('td', c.enrl),
+		             m('td', {class: c.isChild ? "child" : ""}, (function() {
+		            	 return c.isRoster 
+		            	 ? c.displayTitle
+		            	 : [m('a', {href: c.accessUri}, c.displayTitle)];
+		             }())),
+		             m("td", (function() {
+		          	   if (!c.isRoster && c.isInstructor) {
+		          		   if (c.isAvailable) {
+		          			   return m("a", {href: c.disableUri}, "Disable");
+		          		   } else {
+		          			   return m("a", {href: c.enableUri}, "Enable");
+		          		   }
+		          	   }
+		          	   return "";
+		             }())),
+		             m("td", (function() {
+		          	   if (c.isOnline && (c.isInstructor || c.isSecondaryInstructor) && !c.isChild) {
+		          		   if(!c.isRoster) {
+		          			   return m("a", {target: "_blank", href: c.cvUri}, "Course Verification");
+		          		   } else {
+		          			   return "*";
+		          		   }
+		          	   } else if (c.isInstructor && c.isChild) {
+		          		   return m("a", {href: c.unmergeUri}, "Remove");
+		          	   } else if (c.isInstructor) {
+		          		   if (c.isRoster) {
+		          			   return m("a", {href: c.activateUri}, "Activate");
+		          		   } else {
+		          			   return m("a", {href: "#" + c.courseId}, "Merge");
+		          		   }
+		          	   }
+		             }()))
+		           ]);
+		   		});
+		      })
+		  ]);
+		}
+	});
+
+	var app = new Module({
+		controller: function() {
+			var filterCourses = function filterCourses(item, ind) {
+				if (item.course.isChild) return false;
+				var course = item.course;
+				var searchVal = filter.vm.searchTerm().toLowerCase();
+				var page = table.vm.selectedPage() - 1;
+				var pageSize = table.vm.itemsPerPage();
+				
+				if (searchVal == "")
+					if (ind < page || ind >= page + pageSize) return false;
+				
+				var name = course.title.toLowerCase();
+				var id = course.courseId.toLowerCase();
+				var children = course.children.filter(filterCourses);
+				return name.indexOf(searchVal) > -1 || id.indexOf(searchVal) > -1 || children.length;
+			};
+			
+			this.filter = filter.init();
+			
+			this.selectedTerm = selectedTerm.init();
+			
+			this.showChildren = showChildren.init();
+			
+			this.table = table.init({
+				filter: filterCourses
+			}, {
+				showChildren: showChildren.vm.showChildren,
+				selectedTerm: selectedTerm.vm.selectedTerm
+			});
+			
+		},
+		
+		viewModel: function() {
+			
+		},
+		
+		view: function() {
+			var ctrl = this.ctrl;
+			return m("div", [
+			  m('#appHeader', [
+				ctrl.selectedTerm.view(),
+			  	ctrl.showChildren.view(),
+			  	ctrl.filter.view(),
+			  	m('br', {class: 'clear'})
+			  ]), m('.CSSTableGenerator', [
+				  ctrl.table.view()
+			  ])
+		    ]);
+		}
+	});
+
+	document.addEventListener('DOMContentLoaded', function() {
+	  	//console.log('dom loaded');
+	  	m.module(document.getElementById('instCourses'), app.init());
 		startOpenTip();
 	});
 		

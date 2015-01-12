@@ -24,8 +24,8 @@ public class TermWrapper {
 		terms.put("2014 Fall", new ArrayList<CMWrapper>());
 		terms.put("2015 Spring", new ArrayList<CMWrapper>());
 		terms.put("2015 Summer", new ArrayList<CMWrapper>());
-		terms.put("2015 Fall", new ArrayList<CMWrapper>());*/
-		terms.put("Continuous", new ArrayList<CMWrapper>());
+		terms.put("2015 Fall", new ArrayList<CMWrapper>());
+		terms.put("Continuous", new ArrayList<CMWrapper>());*/
 		
 		Map<String, String> regExMapping = new HashMap<String, String>();
 		regExMapping.put(".*2011.+(?i)spr.+", "2011 Spring");
@@ -57,6 +57,9 @@ public class TermWrapper {
 				}
 			}
 			if (!match) {
+				if(!terms.containsKey("Continuous")) {
+					terms.put("Continuous", new ArrayList<CMWrapper>());
+				}
 				terms.get("Continuous").add(membership);
 			}
 		}
