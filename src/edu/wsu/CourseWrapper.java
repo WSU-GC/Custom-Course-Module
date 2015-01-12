@@ -77,12 +77,18 @@ public class CourseWrapper {
 	
 	public static List<CourseWrapper> loadChildCourseWrappersByParentCourse(Course course) 
 			throws PersistenceException {
+		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
 		List<CourseWrapper> cwCourses = new ArrayList<CourseWrapper>();
 		List<CourseCourse> ccMappings = CourseCourseDbLoader.Default.getInstance().loadByParentId(course.getId());
 		for (int i = 0, l = ccMappings.size(); i < l; i++) {
 			CourseCourse ccMap = ccMappings.get(i);
-			Course child = CourseDbLoader.Default.getInstance().loadById(ccMap.getChildCourseId());
-			cwCourses.add(new CourseWrapper(child));
+			try {
+				Course child = CourseDbLoader.Default.getInstance().loadById(ccMap.getChildCourseId());
+				cwCourses.add(new CourseWrapper(child));								
+			} catch (Exception e) {
+				
+			}
+			
 		}
 		return cwCourses;
 	}
