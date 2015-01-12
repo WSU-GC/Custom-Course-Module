@@ -10,22 +10,6 @@ public class TermWrapper {
 	public Map<String, List<CMWrapper>> terms = new HashMap<String, List<CMWrapper>>();
 
 	public TermWrapper(List<CMWrapper> memberships) {
-		/*terms.put("2011 Spring", new ArrayList<CMWrapper>());
-		terms.put("2011 Summer", new ArrayList<CMWrapper>());
-		terms.put("2011 Fall", new ArrayList<CMWrapper>());
-		terms.put("2012 Spring", new ArrayList<CMWrapper>());
-		terms.put("2012 Summer", new ArrayList<CMWrapper>());
-		terms.put("2012 Fall", new ArrayList<CMWrapper>());
-		terms.put("2013 Spring", new ArrayList<CMWrapper>());
-		terms.put("2013 Summer", new ArrayList<CMWrapper>());
-		terms.put("2013 Fall", new ArrayList<CMWrapper>());
-		terms.put("2014 Spring", new ArrayList<CMWrapper>());
-		terms.put("2014 Summer", new ArrayList<CMWrapper>());
-		terms.put("2014 Fall", new ArrayList<CMWrapper>());
-		terms.put("2015 Spring", new ArrayList<CMWrapper>());
-		terms.put("2015 Summer", new ArrayList<CMWrapper>());
-		terms.put("2015 Fall", new ArrayList<CMWrapper>());
-		terms.put("Continuous", new ArrayList<CMWrapper>());*/
 		
 		Map<String, String> regExMapping = new HashMap<String, String>();
 		regExMapping.put(".*2011.+(?i)spr.+", "2011 Spring");

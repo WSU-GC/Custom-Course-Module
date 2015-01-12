@@ -127,9 +127,7 @@ if(instMemberships.size() > 0) {
 </div><!-- End Page1 -->
 
 <div id="CCMPage2">
-	<div class="CCMSpace">
-		
-		<!-- Merging section -->
+	<div id="rosterContainer" class="CCMSpace">
 		
 	</div>
 	<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
@@ -141,6 +139,30 @@ if(instMemberships.size() > 0) {
 		<p></p>
 	</div>
 </div>
+
+<script id="rosterTemplate" type="text/x-jsrender">
+		<a id="back" href="#">back</a>
+		<h6>Parent Course Space</h6>
+		<br/>
+		<div id="parentCourse">{{:parentCourse}}</div>
+		<br/>
+		<h6>Select rosters to include</h6>
+		<ul id="mergeList" class="portletList-img courseListing">
+		{{for courses}}
+			<li>
+			{{for course}}
+				{{if !isOnline}}
+					<input type='checkbox' value='{{:courseId}}' />
+				{{else}}
+					*
+				{{/if}}
+				{{:displayTitle}}
+			{{/for}}
+			</li>
+		{{/for}}
+		</ul>
+		<bbNG:button id="createCourseSection" url="#" label="Save" />
+</script>
 
 <script type="text/javascript" src='<%= moduleBasePath + "jquery.js" %>'></script>
 <script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
@@ -206,6 +228,32 @@ if(instMemberships.size() > 0) {
 	var isInstructor = <%= isInstructor %>;
 	var instCourses = <%= jsonInstTerms %>;	
 	var rosters = <%= jsonRosters %>;
+	
+	function showLoading(evt) {
+        document.getElementById("CCMPage1").style.display = "none";
+        document.getElementById("CCMPage2").style.display = "none";
+        document.getElementById("loadingRequest").style.display = "block";
+	}
+	
+	jQuery(document).on('click', '#back', function() {
+        document.getElementById("CCMPage2").style.display = "none";
+		document.getElementById("CCMPage1").style.display = "block";
+	});
+	
+	jQuery(document).on('click', '#createCourseSection', function(evt){
+		evt.stopPropagation();
+		evt.preventDefault();
+		
+		showLoading();
+		
+		var uri = moduleBasePath + 'merge.jsp?parent-course=' + parentCourseId + "&child-courses=";
+		var childCourses = document.querySelectorAll('#mergeList input:checked');
+		[].forEach.call(childCourses, function(el, i) {
+			var prefix = i > 0 ? ',' : '';
+			uri += prefix + el.getAttribute("value");
+		});
+		window.location.replace(uri);
+	});
 	
 	function mapCourses(courses, role) {
 		return courses.map(function(el, i) {
@@ -302,17 +350,21 @@ if(instMemberships.size() > 0) {
 		view: function() {
 			var ctrl = this.ctrl;
 			var vm = this.vm;
-			return m('input', {
+			return m('div', [m('input', {
 			    oninput: m.withAttr('value', vm.searchTerm),
 			    placeholder: 'search',
 			    value: vm.searchTerm()
-			  });
+			  })
+			]);
 		}
 	});
 
 	var selectedTerm = new Module({
 		controller: function() {
 			this.terms = Object.keys(Terms.listAll()).sort().reverse();
+			if(this.terms[0] == "Continuous") {
+				this.terms.push(this.terms.shift());
+			}
 		},
 		
 		viewModel: function(ctrl) {
@@ -367,14 +419,24 @@ if(instMemberships.size() > 0) {
 		},
 		
 		viewModel: function() {
+			var $ = jQuery;
 			this.selectedTerm = m.prop("2015 Spring");
 			this.itemsPerPage = m.prop(Infinity);
 			this.selectedPage = m.prop(1);
 			this.showChildren = m.prop(false);
 			
-			this.showRosters = function() {
-				
-			}
+			this.showRosters = function(parentCourse) {
+				var data = {};
+				var rosters = Terms.listRosters();
+				var template = $.templates('#rosterTemplate');
+				data.parentCourse = parentCourse;
+				parentCourseId = parentCourse;
+				data.courses = rosters[this.selectedTerm()] || [];
+				var html = template.render(data);
+				$('#rosterContainer').html(html);
+				$('#CCMPage1').css('display', 'none');
+				$('#CCMPage2').css('display', 'block');
+			};
 		},
 		
 		view: function() {
@@ -402,9 +464,9 @@ if(instMemberships.size() > 0) {
 		             m("td", (function() {
 		          	   if (!c.isRoster && c.isInstructor) {
 		          		   if (c.isAvailable) {
-		          			   return m("a", {href: c.disableUri}, "Disable");
+		          			   return m("a", {href: c.disableUri, onclick: showLoading}, "Disable");
 		          		   } else {
-		          			   return m("a", {href: c.enableUri}, "Enable");
+		          			   return m("a", {href: c.enableUri, onclick: showLoading}, "Enable");
 		          		   }
 		          	   }
 		          	   return "";
@@ -420,9 +482,12 @@ if(instMemberships.size() > 0) {
 		          		   return m("a", {href: c.unmergeUri}, "Remove");
 		          	   } else if (c.isInstructor) {
 		          		   if (c.isRoster) {
-		          			   return m("a", {href: c.activateUri}, "Activate");
+		          			   return m("a", {href: c.activateUri, onclick: showLoading}, "Activate");
 		          		   } else {
-		          			   return m("a", {href: "#" + c.courseId}, "Merge");
+		          			   return m("a", {
+		          				    href: "#" + c.courseId,
+		          					onclick: vm.showRosters.bind(vm, c.courseId)
+		          			   }, "Merge");
 		          		   }
 		          	   }
 		             }()))

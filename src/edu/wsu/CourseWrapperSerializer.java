@@ -40,6 +40,8 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.addProperty("disableUri", moduleBasePath + "disable.jsp?course-id=" + cw.courseId);
 		result.addProperty("displayTitle", cw.title + "(" + cw.courseId + ")");
 		result.addProperty("enableUri", moduleBasePath + "enable.jsp?course-id=" + cw.courseId);
+		result.addProperty("unmergeUri", moduleBasePath + "remove.jsp?parent-course=" + cw.parent + "&child-course=" + cw.courseId);
+		result.addProperty("activateUri", moduleBasePath + "activate.jsp?course-id=" + cw.courseId + "&title=" + cw.title);
 		try {
 			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {
