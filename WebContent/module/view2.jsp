@@ -15,6 +15,10 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "style.css" %>' />
 <link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "opentip.css" %>' />
 
+<script type="text/javascript" src='<%= moduleBasePath + "jquery.js" %>'></script>
+<script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
+<script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
+
 <style>
 	.CSSTableGenerator tr td.child {
 		background-image: url('<%= moduleBasePath + "xchild.png" %>');
@@ -24,14 +28,11 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 	}
 </style>
 
-<bbNG:learningSystemPage  ctxId="bbContext">
-
-<bbNG:pageHeader> 
+<%--<bbNG:pageHeader> 
  <bbNG:pageTitleBar title="Course Module"/> 
-</bbNG:pageHeader>
+</bbNG:pageHeader> --%>
 
-<%-- <bbNG:includedPage ctxId="bbContext"> --%>
-
+<bbNG:includedPage ctxId="bbContext">
 
 <%
 
@@ -83,30 +84,30 @@ if(instMemberships.size() > 0) {
 	
 		<div id="manageCourses">
 	
-		<p>New processes allow you to create and manage your Bb Learn course spaces in real time 
-			- no waiting on support staff to respond to your request.  If you require assistance 
-			just email <a href="mailto:online.registrar@wsu.edu">online.registrar@wsu.edu</a>.</p>
+			<p>New processes allow you to create and manage your Bb Learn course spaces in real time 
+				- no waiting on support staff to respond to your request.  If you require assistance 
+				just email <a href="mailto:online.registrar@wsu.edu">online.registrar@wsu.edu</a>.</p>
+				
+			<ol>
+				<li>
+					Select <strong>ACTIVATE</strong> next to the course ID to create your new course space, manage and 
+					edit content. When the course ID is an active hyperlink, the course space has been activated.
+				</li>
+				<li>If needed, <strong>MERGE</strong> course spaces so that you can manage just one course space 
+					for multiple sections.- <strong><a target="_blank" href="http://elearning.wsu.edu/pdf/bblearnmanagingcoursestutorial.pdf">Instructions</a></strong> 
+				</li>
+				<li>
+					To <strong>COPY</strong> an existing Bb course into a newly activated one. 
+					<strong><a target="_blank" href="http://elearning.wsu.edu/pdf/copyingcourseswithinblackboard.pdf">Instructions</a></strong>
+				</li>
+			</ol>
 			
-		<ol>
-			<li>
-				Select <strong>ACTIVATE</strong> next to the course ID to create your new course space, manage and 
-				edit content. When the course ID is an active hyperlink, the course space has been activated.
-			</li>
-			<li>If needed, <strong>MERGE</strong> course spaces so that you can manage just one course space 
-				for multiple sections.- <strong><a target="_blank" href="http://elearning.wsu.edu/pdf/bblearnmanagingcoursestutorial.pdf">Instructions</a></strong> 
-			</li>
-			<li>
-				To <strong>COPY</strong> an existing Bb course into a newly activated one. 
-				<strong><a target="_blank" href="http://elearning.wsu.edu/pdf/copyingcourseswithinblackboard.pdf">Instructions</a></strong>
-			</li>
-		</ol>
-		
-		<!-- Instructor Courses -->
-		<div id="instCourses">
-		</div>
-
-		</div>
-	</div><!-- END Manage Course -->
+			<!-- Instructor Courses -->
+			<div id="instCourses">
+			</div>
+			<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
+		</div> <!-- END Manage Course -->
+	</div><!-- End CCMSPace -->
 
 	<!-- Active Student COURSE LIST -->
 	<div class="CCMSpace">		
@@ -122,12 +123,13 @@ if(instMemberships.size() > 0) {
 			<%	}
 			} %>
 		</ul>
-	</div>
+	</div><!-- End CCMSpace -->
 	
 </div><!-- End Page1 -->
 
 <div id="CCMPage2">
 	<div id="rosterContainer" class="CCMSpace">
+	<!-- Container where the available rosters will display for merges -->
 		
 	</div>
 	<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
@@ -140,7 +142,7 @@ if(instMemberships.size() > 0) {
 	</div>
 </div>
 
-<script id="rosterTemplate" type="text/x-jsrender">
+<div id="rosterTemplate" style="display: none;">
 		<a id="back" href="#">back</a>
 		<h6>Parent Course Space</h6>
 		<br/>
@@ -148,7 +150,7 @@ if(instMemberships.size() > 0) {
 		<br/>
 		<h6>Select rosters to include</h6>
 		<ul id="mergeList" class="portletList-img courseListing">
-		{{for courses}}
+		{{for rosters}}
 			<li>
 			{{for course}}
 				{{if !isOnline}}
@@ -162,11 +164,8 @@ if(instMemberships.size() > 0) {
 		{{/for}}
 		</ul>
 		<bbNG:button id="createCourseSection" url="#" label="Save" />
-</script>
+</div>
 
-<script type="text/javascript" src='<%= moduleBasePath + "jquery.js" %>'></script>
-<script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
-<script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
 <script type="text/javascript">
 	if (!Object.assign) {
 	  Object.defineProperty(Object, "assign", {
@@ -192,34 +191,33 @@ if(instMemberships.size() > 0) {
 	    }
 	  });
 	}
-
-	function ready(cb) {
-		typeof Opentip == 'undefined' // in = loadINg
+	
+  	function ready(cb) {
+		typeof Opentip == 'undefined' || typeof m == 'undefined' || typeof jQuery == 'undefined' // in = loadINg
         ? setTimeout('ready('+cb+')', 9)
         : cb();
 	}
 
 	function  startOpenTip() {
-		ready(function() {
-			var availabilityMessage = "Enable/Disable your course for student viewing.";
-			var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
-				+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
-				+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.";
-			
-			Opentip.styles.extendedAlert = {
-					extends: "alert",
-					background: "#981e32",
-					color: "#ffffff"
-			}
-			
-			var options = {
-				target: true,
-				tipJoint: "bottom",
-				style: "extendedAlert"
-			};
-			new Opentip("#availabilityTT", availabilityMessage, options);
-			new Opentip("#actionTT", actionMessage, options);
-		});
+		var availabilityMessage = "Enable/Disable your course for student viewing.";
+		var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
+			+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
+			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.<br />"
+			+ "<strong style='text-decoration: underline;'>Merge</strong>: Add roster sections to the selected course space.";
+		
+		Opentip.styles.extendedAlert = {
+				extends: "alert",
+				background: "#981e32",
+				color: "#ffffff"
+		}
+		
+		var options = {
+			target: true,
+			tipJoint: "bottom",
+			style: "extendedAlert"
+		};
+		new Opentip("#availabilityTT", availabilityMessage, options);
+		new Opentip("#actionTT", actionMessage, options);
 	}
 </script>
 <script type="text/javascript">
@@ -350,7 +348,7 @@ if(instMemberships.size() > 0) {
 		view: function() {
 			var ctrl = this.ctrl;
 			var vm = this.vm;
-			return m('div', [m('input', {
+			return m('div', {id: 'filter'}, [m('input', {
 			    oninput: m.withAttr('value', vm.searchTerm),
 			    placeholder: 'search',
 			    value: vm.searchTerm()
@@ -431,7 +429,7 @@ if(instMemberships.size() > 0) {
 				var template = $.templates('#rosterTemplate');
 				data.parentCourse = parentCourse;
 				parentCourseId = parentCourse;
-				data.courses = rosters[this.selectedTerm()] || [];
+				data.rosters = rosters[this.selectedTerm()] || [];
 				var html = template.render(data);
 				$('#rosterContainer').html(html);
 				$('#CCMPage1').css('display', 'none');
@@ -442,11 +440,23 @@ if(instMemberships.size() > 0) {
 		view: function() {
 			var ctrl = this.ctrl;
 			var vm = this.vm;
-			return m("table", [m("tr", [
+			return m("table", {class: 'four'}, [m("tr", [
 		        m("td", "Enrl"),
 		        m("td", "Course Title (Course ID)"),
-		        m("td", {id: "availabilityTT"}, "Availability"),
-		        m("td", {id: "actionTT"}, "Action")
+		        m("td", {id: "availabilityTT"}, [
+		             "Availability ",
+		             m("img", {
+		            	 height: 20,
+		            	 src: moduleBasePath + 'question_mark.png'
+		             })
+		        ]),
+		        m("td", {id: "actionTT"}, [
+		             "Action ",
+		             m('img', {
+		            	 height: 20,
+		            	 src: moduleBasePath + 'question_mark.png'
+		             })
+		        ])
 		    ]),
 		  	ctrl.terms[vm.selectedTerm()].filter(ctrl.filter).map(function(cm) {
 		  		var co = cm.course;
@@ -550,14 +560,13 @@ if(instMemberships.size() > 0) {
 		}
 	});
 
-	document.addEventListener('DOMContentLoaded', function() {
-	  	//console.log('dom loaded');
+  	ready(function() {
+  		console.log('dom loaded');
 	  	m.module(document.getElementById('instCourses'), app.init());
 		startOpenTip();
-	});
+  	});
+
 		
 </script>
 
-<%-- </bbNG:includedPage> --%>
-
-</bbNG:learningSystemPage>
+</bbNG:includedPage>
