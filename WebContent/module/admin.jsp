@@ -20,7 +20,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
  <bbNG:pageTitleBar title="Course Module"/> 
 </bbNG:pageHeader>
 
-<input type="text" id="searchParams" />
+<input style="width:400px;" type="text" id="searchParams" />
 <button id="submitSearch">Submit</button>
 
 <script>
