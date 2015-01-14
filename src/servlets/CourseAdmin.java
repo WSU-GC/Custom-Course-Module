@@ -83,16 +83,16 @@ public class CourseAdmin extends HttpServlet {
 			String searchTerm = request.getParameter("search");
 			String so = request.getParameter("operator");
 			String sk = request.getParameter("key");
-			int page = Integer.parseInt(request.getParameter("page"));
+			//int page = Integer.parseInt(request.getParameter("page"));
 			CourseSearch.SearchKey key = searchKey.get(sk);
 			SearchOperator operator = searchOp.get(so);
 			
 			
 			CourseSearch.SearchParameter param = new CourseSearch.SearchParameter(key, searchTerm, operator);
 			
-			courseSearch.setUsePaging(true);
+			/*courseSearch.setUsePaging(true);
 			courseSearch.setPageSize(50);
-			courseSearch.setCurrentPage(page);
+			courseSearch.setCurrentPage(page);*/
 			courseSearch.addParameter(param);
 			
 			List<Course> courses = courseLoader.loadByCourseSearch(courseSearch);
