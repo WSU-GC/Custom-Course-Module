@@ -38,15 +38,15 @@ CMWrapper.sort(userMemberships);
 List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", true);
 List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
 
-TermWrapper activeStudentTerms = new TermWrapper(activeStudentMemberships);
+/* TermWrapper activeStudentTerms = new TermWrapper(activeStudentMemberships); */
 
 List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", false);
 
-TermWrapper instTerms = new TermWrapper(instMemberships);
+/* TermWrapper instTerms = new TermWrapper(instMemberships); */
 
 List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships);
 
-TermWrapper rosterTerms = new TermWrapper(rosterWrapper);
+/* TermWrapper rosterTerms = new TermWrapper(rosterWrapper); */
 
 %>
 
