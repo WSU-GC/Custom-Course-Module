@@ -24,6 +24,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <button id="submitSearch">Submit</button>
 
 <script>
+
 function ready(cb) {
 	typeof jQuery == 'undefined' // in = loadINg
     	? setTimeout('ready('+cb+')', 9)

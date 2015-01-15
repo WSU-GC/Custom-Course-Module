@@ -4,7 +4,7 @@
     <name value= "WSU Custom Course Module"/>
     <handle value= "wsu-custom-course-module"/>
     <description value= "WSU Custom Course Module for managing course sections and merges."/>
-    <version value= "1.0.8"/>
+    <version value= "1.0.9"/>
     <requires>
     	<bbversion value="9.0.0"/>
     </requires>
@@ -19,7 +19,7 @@
       <module-type ext-ref="wsu-course-module" title="My Courses" uicreatable="true">
         <jsp-dir>module</jsp-dir>
         <jsp>
-          <view>view.jsp</view>
+          <view>view2.jsp</view>
         </jsp>
       </module-type>  
       <module type="wsu-course-module" isadmin="false" isavailabletocourse="true" useraddable="true" isdeletable="true" title="My Courses">

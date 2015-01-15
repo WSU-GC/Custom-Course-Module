@@ -15,6 +15,95 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "style.css" %>' />
 <link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "opentip.css" %>' />
 
+<script>
+(function(win, doc){
+	if(win.addEventListener)return;		//No need to polyfill
+
+	function docHijack(p){var old = doc[p];doc[p] = function(v){return addListen(old(v))}}
+	function addEvent(on, fn, self){
+		return (self = this).attachEvent('on' + on, function(e){
+			var e = e || win.event;
+			e.preventDefault  = e.preventDefault  || function(){e.returnValue = false}
+			e.stopPropagation = e.stopPropagation || function(){e.cancelBubble = true}
+			fn.call(self, e);
+		});
+	}
+	function addListen(obj, i){
+		if(i = obj.length)while(i--)obj[i].addEventListener = addEvent;
+		else obj.addEventListener = addEvent;
+		return obj;
+	}
+
+	addListen([doc, win]);
+	if('Element' in win)win.Element.prototype.addEventListener = addEvent;			//IE8
+	else{																			//IE < 8
+		doc.attachEvent('onreadystatechange', function(){addListen(doc.all)});		//Make sure we also init at domReady
+		docHijack('getElementsByTagName');
+		docHijack('getElementById');
+		docHijack('createElement');
+		addListen(doc.all);	
+	}
+})(window, document);
+if (!Function.prototype.bind) {
+	  Function.prototype.bind = function(oThis) {
+	    if (typeof this !== 'function') {
+	      // closest thing possible to the ECMAScript 5
+	      // internal IsCallable function
+	      throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+	    }
+
+	    var aArgs   = Array.prototype.slice.call(arguments, 1),
+	        fToBind = this,
+	        fNOP    = function() {},
+	        fBound  = function() {
+	          return fToBind.apply(this instanceof fNOP && oThis
+	                 ? this
+	                 : oThis,
+	                 aArgs.concat(Array.prototype.slice.call(arguments)));
+	        };
+
+	    fNOP.prototype = this.prototype;
+	    fBound.prototype = new fNOP();
+
+	    return fBound;
+	  };
+	}
+if (!Array.prototype.filter) {
+	  Array.prototype.filter = function(fun/*, thisArg*/) {
+	    'use strict';
+
+	    if (this === void 0 || this === null) {
+	      throw new TypeError();
+	    }
+
+	    var t = Object(this);
+	    var len = t.length >>> 0;
+	    if (typeof fun !== 'function') {
+	      throw new TypeError();
+	    }
+
+	    var res = [];
+	    var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+	    for (var i = 0; i < len; i++) {
+	      if (i in t) {
+	        var val = t[i];
+
+	        // NOTE: Technically this should Object.defineProperty at
+	        //       the next index, as push can be affected by
+	        //       properties on Object.prototype and Array.prototype.
+	        //       But that method's new, and collisions should be
+	        //       rare, so use the more-compatible alternative.
+	        if (fun.call(thisArg, val, i, t)) {
+	          res.push(val);
+	        }
+	      }
+	    }
+
+	    return res;
+	  };
+	}
+</script>
+
 <script type="text/javascript" src='<%= moduleBasePath + "jquery.js" %>'></script>
 <script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
 <script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
@@ -192,11 +281,25 @@ if(instMemberships.size() > 0) {
 	  });
 	}
 	
-  	function ready(cb) {
-		typeof Opentip == 'undefined' || typeof m == 'undefined' || typeof jQuery == 'undefined' // in = loadINg
+	function ready(cb) {
+		var args = Array.prototype.slice.call(arguments, 1);
+		var loading = args.filter(function(el) {
+			return typeof window[el] == 'undefined';
+		});
+		function run() {
+			ready.apply(this, [cb].concat(args));
+		}
+
+		/in/.test(document.readyState) || loading.length
+		? setTimeout(run.bind(this), 9)
+		: cb();
+	}
+	
+  	/* function ready(cb) {
+  		/in/.test(document.readyState) || typeof Opentip == 'undefined' || typeof m == 'undefined' || typeof jQuery == 'undefined' // in = loadINg
         ? setTimeout('ready('+cb+')', 9)
         : cb();
-	}
+	} */
 
 	function  startOpenTip() {
 		var availabilityMessage = "Enable/Disable your course for student viewing.";
@@ -564,9 +667,9 @@ if(instMemberships.size() > 0) {
   		console.log('dom loaded');
 	  	m.module(document.getElementById('instCourses'), app.init());
 		startOpenTip();
-  	});
+  	}, "Opentip", "m", "jQuery");
 
-		
+  	//typeof Opentip == 'undefined' || typeof m == 'undefined' || typeof jQuery == 'undefined' // in = loadINg
 </script>
 
 </bbNG:includedPage>
