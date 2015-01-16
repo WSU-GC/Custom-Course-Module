@@ -20,6 +20,16 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
  <bbNG:pageTitleBar title="Course Module"/> 
 </bbNG:pageHeader>
 
+<ul>
+	<li>search: The value to search for</li>
+	<li>operator: contains, equals, notblank, startswith, greaterthan, lessthan</li>
+	<li>key: coursedescription, courseid, coursename, term, instructor, datecreated</li>
+</ul>
+
+<p>
+example: search=2015-spri-onlin&operator=startswith&key=courseid
+</p>
+
 <input style="width:400px;" type="text" id="searchParams" />
 <button id="submitSearch">Submit</button>
 
