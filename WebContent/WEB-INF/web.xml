@@ -9,9 +9,20 @@
 		<servlet-name>TestHttpServ</servlet-name>
 		<servlet-class>test.TestHttpServ</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>CourseAdmin</display-name>
+		<servlet-name>CourseAdmin</servlet-name>
+		<servlet-class>servlets.CourseAdmin</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>TestHttpServ</servlet-name>
 		<url-pattern>/TestHttpServ</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>CourseAdmin</servlet-name>
+		<url-pattern>/CourseAdmin</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

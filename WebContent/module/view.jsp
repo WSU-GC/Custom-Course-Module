@@ -32,12 +32,24 @@ String courseBasePath = "/webapps/blackboard/execute/launcher?type=Course&url=&i
 
 List<CMWrapper> userMemberships = CMWrapper.loadCMWrappersByUser(user);
 CMWrapper.sort(userMemberships);
+
+
+
 List<CMWrapper> studentMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", true);
 List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailability(studentMemberships, true);
+
+/* TermWrapper activeStudentTerms = new TermWrapper(activeStudentMemberships); */
+
 List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", false);
+
+/* TermWrapper instTerms = new TermWrapper(instMemberships); */
+
 List<CMWrapper> rosterWrapper = CMWrapper.filterIsolatedRosters(instMemberships);
 
+/* TermWrapper rosterTerms = new TermWrapper(rosterWrapper); */
+
 %>
+
 
 <% if(instMemberships.size() > 0) { %>
 	<style> #manageCourses { display: block; } </style>

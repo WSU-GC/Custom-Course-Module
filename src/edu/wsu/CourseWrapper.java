@@ -24,6 +24,7 @@ public class CourseWrapper {
 	public String courseId;
 	public String courseBatchUid; 
 	public String title;
+	public String parent;
 	public boolean isAvailable;
 	public boolean isRoster;
 	public boolean isOnline;
@@ -51,12 +52,34 @@ public class CourseWrapper {
 		this.isOnline = this.courseId.matches(onlineRegex);
 		this.isParent = course.isParent();
 		this.isChild = course.isChild();
+		this.parent = this.loadParentCourseId();
 		//this.memberships = CourseMembershipDbLoader.Default.getInstance().loadByCourseId(this.id);
 		//this.enrollment = this.memberships != null ? this.memberships.size() : 0;
 	}
 	
 	public List<CourseMembership> loadMemberships() throws KeyNotFoundException, PersistenceException {
 		return CourseMembershipDbLoader.Default.getInstance().loadByCourseId(this.id);
+	}
+	
+	public List<CourseWrapper> loadChildren() 
+			throws PersistenceException {
+		return CourseWrapper.loadChildCourseWrappersByParentCourse(this.course);
+	}
+	
+	public String loadParentCourseId () {
+		String id = "";
+		if (this.isChild) {
+			try {
+				id =  CourseDbLoader.Default.getInstance().loadById(CourseCourseDbLoader.Default.getInstance().loadParent(this.id).getParentCourseId()).getCourseId();
+			} catch (KeyNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PersistenceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return id;
 	}
 	
 	public static List<CourseWrapper> loadCourseWrappersByUser(User user) 
@@ -86,6 +109,14 @@ public class CourseWrapper {
 			
 		}
 		return cwCourses;
+	}
+	
+	public static List<CourseWrapper> loadByCourses(List<Course> courses) {
+		List<CourseWrapper> cw = new ArrayList<CourseWrapper>();
+		for(Course course: courses) {
+			cw.add(new CourseWrapper(course));
+		}
+		return cw;
 	}
 	
 	public static void sort(List<CourseWrapper> courses) {
