@@ -593,7 +593,11 @@ if(instMemberships.size() > 0) {
 		          			   return "*";
 		          		   }
 		          	   } else if (c.isInstructor && c.isChild) {
-		          		   return m("a", {href: c.unmergeUri}, "Remove");
+		          		   if (!/onlin-/ig.test(c.parent)) {
+			          		   return m("a", {href: c.unmergeUri}, "Remove");
+		          		   } else {
+		          			   return "*";
+		          		   }
 		          	   } else if (c.isInstructor) {
 		          		   if (c.isRoster) {
 		          			   return m("a", {href: c.activateUri, onclick: showLoading}, "Activate");
