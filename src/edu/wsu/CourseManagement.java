@@ -83,7 +83,8 @@ public class CourseManagement {
 		Course course = new Course();
 		
 		if (courseLoader.doesCourseIdExist(courseId)) {
-			throw new IllegalArgumentException(errorMessage);
+			//throw new IllegalArgumentException(errorMessage);
+			return;
 		}
 		
 		try {
