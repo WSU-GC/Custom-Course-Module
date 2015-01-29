@@ -2,6 +2,8 @@ package edu.wsu;
 
 import java.util.List;
 
+import blackboard.admin.data.datasource.DataSource;
+import blackboard.admin.persist.datasource.DataSourceLoader;
 import blackboard.base.FormattedText;
 import blackboard.data.ValidationException;
 import blackboard.data.course.Course;
@@ -10,6 +12,7 @@ import blackboard.data.course.CourseCourseManagerFactory;
 import blackboard.data.course.CourseMembership;
 import blackboard.data.course.Group;
 import blackboard.data.course.GroupMembership;
+import blackboard.persist.Id;
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.course.CourseDbLoader;
@@ -74,6 +77,12 @@ public class CourseManagement {
 		CourseManagement.createCourseSpace(ids[0], ids[1], title);
 	}
 	
+	public static void createCourseSpaceFromRoster(String courseId, String title, String dataSource) 
+			throws Exception {
+		String[] ids = CourseManagement.getBatchAndCourseIdFromRoster(courseId);
+		CourseManagement.createCourseSpace(ids[0], ids[1], title, dataSource);
+	}
+	
 	public static void createCourseSpace(String batchUid, String courseId, String title) 
 			throws Exception {
 		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
@@ -91,6 +100,39 @@ public class CourseManagement {
 			course.setBatchUid(batchUid);
 			course.setCourseId(courseId);
 			course.setTitle(title);
+			CourseDbPersister.Default.getInstance().persist(course);
+		} catch (Exception e) {
+			throw new Exception("Could not persist course to DB. BatchUid: " + batchUid + ".");
+		}
+		
+	}
+	
+	public static void createCourseSpace(String batchUid, String courseId, String title, String dataSource) 
+			throws Exception {
+		CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
+		DataSourceLoader dataSourceLoader = DataSourceLoader.Default.getInstance();
+		Id dataSourceId;
+		String errorMessage = "Failed to create course space for bathcUid: " + batchUid
+				+ " CourseId: " + courseId + " as it already exists";
+		
+		Course course = new Course();
+		
+		if (courseLoader.doesCourseIdExist(courseId)) {
+			//throw new IllegalArgumentException(errorMessage);
+			return;
+		}
+		
+		try {
+			dataSourceId = dataSourceLoader.loadByBatchUid(dataSource).getDataSourceId();
+		} catch(Exception e) {
+			dataSourceId = dataSourceLoader.loadDefault().getDataSourceId();
+		}
+		
+		try {
+			course.setBatchUid(batchUid);
+			course.setCourseId(courseId);
+			course.setTitle(title);
+			course.setDataSourceId(dataSourceId);
 			CourseDbPersister.Default.getInstance().persist(course);
 		} catch (Exception e) {
 			throw new Exception("Could not persist course to DB. BatchUid: " + batchUid + ".");

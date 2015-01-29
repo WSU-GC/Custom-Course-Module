@@ -20,7 +20,7 @@ String title = request.getParameter("title");
 
 String[] ids = CourseManagement.getBatchAndCourseIdFromRoster(courseID);
 
-CourseManagement.createCourseSpace(ids[0], ids[1], title);
+CourseManagement.createCourseSpace(ids[0], ids[1], title, "CCM");
 
 /*
 CourseMembership instrMembership = new CourseMembership();
