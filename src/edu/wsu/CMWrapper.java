@@ -61,7 +61,7 @@ public class CMWrapper {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
-			if (cm.course.isAvailable == isAvailable) {
+			if (cm.course.isAvailable == isAvailable && cm.membership.getIsAvailable()) {
 				cmWrappers.add(cm);
 			}
 		}
