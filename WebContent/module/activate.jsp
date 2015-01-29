@@ -22,6 +22,7 @@ String[] ids = CourseManagement.getBatchAndCourseIdFromRoster(courseID);
 
 CourseManagement.createCourseSpace(ids[0], ids[1], title);
 
+/*
 CourseMembership instrMembership = new CourseMembership();
 CourseMembershipDbPersister cmPersister = CourseMembershipDbPersister.Default.getInstance();
 CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
@@ -36,6 +37,7 @@ try { // POSSIBLY UPDATING PREVIOUSLY CREATED COURSE THE INSTR IS ALREADY ENROLL
 } catch(Exception e) {
 	cmPersister.persist(instrMembership);
 }
+*/
 
 CourseManagement.mergeCourses(ids[1], new String[] {courseID});
 
