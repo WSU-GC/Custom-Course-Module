@@ -374,9 +374,13 @@ if(instMemberships.size() > 0) {
 	function mapTerms(_terms) {
 		var keys = Object.keys(_terms);
 		var terms = {};
+		terms['All Courses'] = [];
+		var courses;
 		
 		for(var i = 0, l = keys.length; i < l; i++) {
-			terms[keys[i]] = mapCourses(_terms[keys[i]]);
+			courses = mapCourses(_terms[keys[i]]);
+			terms[keys[i]] = courses;
+			terms['All Courses'] = terms['All Courses'].concat(courses);
 		}
 		
 		return terms;
@@ -464,9 +468,12 @@ if(instMemberships.size() > 0) {
 	var selectedTerm = new Module({
 		controller: function() {
 			this.terms = Object.keys(Terms.listAll()).sort().reverse();
-			if(this.terms[0] == "Continuous") {
+			if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
 				this.terms.push(this.terms.shift());
-			}
+			} 
+			if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
+				this.terms.push(this.terms.shift());
+			} 
 		},
 		
 		viewModel: function(ctrl) {
