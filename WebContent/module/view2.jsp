@@ -372,18 +372,60 @@ if(instMemberships.size() > 0) {
 	}
 	
 	function mapTerms(_terms) {
-		var keys = Object.keys(_terms);
+		var keys = Object.keys(_terms).sort(sortTerms);
 		var terms = {};
-		terms['All Courses'] = [];
+		terms['All'] = [];
 		var courses;
 		
 		for(var i = 0, l = keys.length; i < l; i++) {
 			courses = mapCourses(_terms[keys[i]]);
 			terms[keys[i]] = courses;
-			terms['All Courses'] = terms['All Courses'].concat(courses);
+			terms['All'] = terms['All'].concat(courses);
 		}
 		
 		return terms;
+	}
+	
+	function sortTerms(a, b) {
+		a = a.split(' ');
+		b = b.split(' ');
+		if(!isNaN(a[0]) && isNaN(b[0])) {
+			return -1;
+		} else if (isNaN(a[0]) && !isNaN(b[0])) {
+			return 1;
+		} else if(a[0].localeCompare(b[0]) == 0 && a.length > 1 && b.length > 1) {
+			return sortSeason(a[1], b[1]);
+		} else {
+			switch (a[0].localeCompare(b[0])) {
+			case -1:
+				return 1;
+				break;
+			case 1:
+				return -1;
+				break;
+			default:
+				return 0;
+			} 
+		}
+	}
+	
+	function sortSeason(a, b) {
+		if (a.toLowerCase() == 'fall') {
+			return -1;
+		} else if (b.toLowerCase() == 'fall') {
+			return 1;
+		} else {
+			switch (a.localeCompare(b)) {
+			case -1:
+				return 1;
+				break;
+			case 1:
+				return -1;
+				break;
+			default:
+				return 0;
+			}
+		}
 	}
 	
 	var Terms = {};
@@ -467,13 +509,13 @@ if(instMemberships.size() > 0) {
 
 	var selectedTerm = new Module({
 		controller: function() {
-			this.terms = Object.keys(Terms.listAll()).sort().reverse();
-			if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
-				this.terms.push(this.terms.shift());
-			} 
-			if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
-				this.terms.push(this.terms.shift());
-			} 
+			this.terms = Object.keys(Terms.listAll()).sort(sortTerms); //.reverse();
+			//if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
+			//	this.terms.push(this.terms.shift());
+			//} 
+			//if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
+			//	this.terms.push(this.terms.shift());
+			//} 
 		},
 		
 		viewModel: function(ctrl) {
