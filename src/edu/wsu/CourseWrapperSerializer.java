@@ -38,7 +38,7 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.add("parent", new JsonPrimitive(cw.parent));
 		result.addProperty("cvUri", "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + cw.courseId);
 		result.addProperty("disableUri", moduleBasePath + "disable.jsp?course-id=" + cw.courseId);
-		result.addProperty("displayTitle", cw.title + "(" + cw.courseId + ")");
+		result.addProperty("displayTitle", cw.title + " (" + cw.courseId + ")");
 		result.addProperty("enableUri", moduleBasePath + "enable.jsp?course-id=" + cw.courseId);
 		result.addProperty("unmergeUri", moduleBasePath + "remove.jsp?parent-course=" + cw.parent + "&child-course=" + cw.courseId);
 		result.addProperty("activateUri", moduleBasePath + "activate.jsp?course-id=" + cw.courseId + "&title=" + cw.title);

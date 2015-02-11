@@ -580,9 +580,25 @@ if(instMemberships.size() > 0) {
 				var data = {};
 				var rosters = Terms.listRosters();
 				var template = $.templates('#rosterTemplate');
+				var lecReg = /-lec$/ig;
+				var labReg = /-lab$/ig;
+				var rosterReg;
+				
+				if (lecReg.test(parentCourse)) {
+					rosterReg = lecReg.test.bind(lecReg);
+				} else if (labReg.test(parentCourse)) {
+					rosterReg = labReg.test.bind(labReg);
+				} else {
+					rosterReg = function() { return true; }	
+				}				
+				
+				rosters = (rosters[this.selectedTerm()] || []).filter(function(el) {
+					return rosterReg(el.course.courseId);
+				});
+				
 				data.parentCourse = parentCourse;
 				parentCourseId = parentCourse;
-				data.rosters = rosters[this.selectedTerm()] || [];
+				data.rosters = rosters;
 				var html = template.render(data);
 				$('#rosterContainer').html(html);
 				$('#CCMPage1').css('display', 'none');
