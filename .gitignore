@@ -1,3 +1,4 @@
 build/
 *.war
 *.class
+*.md.html

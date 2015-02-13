@@ -86,3 +86,4 @@ $Env:Path
 - [Blackboard Eclipse plugin](http://www.edugarage.com/display/BBDN/Building+Blocks+Eclipse+Plugin)
 - [Blackboard Jars](https://behind.blackboard.com/downloads/details.aspx?d=1691)
 - [Blackboard Taglib](http://library.blackboard.com/ref/b9696cc1-1d49-45f3-b8af-ce709f71b915/bbNG/tld-summary.html)
+- [Default bbmanifest file for modules](https://gist.github.com/dworthen/ed90794cbd752f338823)
