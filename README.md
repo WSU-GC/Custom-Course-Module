@@ -2,7 +2,7 @@
 
 This will serve as documentation for creating Blackboard building blocks and outlines the process used to build the WSU Custom Course Module (WSU CCM). Specific information about the CCM building block will also be presented.   
 
-### Environment Setup
+## Environment Setup
 
 __note:__ Installation locations are included for example. The locations of your installed software may vary.
 
@@ -38,7 +38,7 @@ $Env:Path
 - [Download](https://behind.blackboard.com/downloads/details.aspx?d=1691) the appropriate jar files for your environment. 
 - Optional: add BBJarPath as an environment variable pointing to the systemlib directory (C:\bb-as-windows-9.1.201404.160205\payload\systemlib).
 
-### Getting Started
+## Getting Started
 
 ##### Creating the Eclipse Project
 
@@ -78,7 +78,7 @@ $Env:Path
 - Upload the war file to your Blackboard environment (System Admin > Building Blocks > Installed Tools > Upload).
 - It is possible to automatically deploy to a development environment of Learn... We dont have a development environment setup so I cannot speak to that process.
 
-### About the WSU Custom Course Module
+## About the WSU Custom Course Module
 
 The custom course module was built to address and solve several problems. 
 
@@ -93,7 +93,7 @@ The custom course module was built to address and solve several problems.
   - Enable and Disable parent course spaces
   - Provide the ability to merge/separate rosters to parent spaces without providing instructors system level accounts
 
-### Resources
+## Resources
 
 - [Edugarage](http://www.edugarage.com/display/BBDN/Building+Blocks).
 - [Building Block Api](https://help.blackboard.com/en-us/Learn/9.1_2014_04/Administrator/130_Building_Blocks/020_Developing_Building_Blocks/000_Building_Blocks_API_and_Web_Services_Specifications_and_Changes)
