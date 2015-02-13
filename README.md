@@ -59,7 +59,7 @@ $Env:Path
 ##### Configuring the Ant build file
 
 - If you created the project using the Blackboard eclipse plugin then your project should contain a build.xml file, if not then create the build.xml file. 
-- I override the default build.xml file with my own standard [build file](https://gist.github.com/dworthen/a7c04ce0af6a9c725874).
+- I override the default build.xml file with my own standard [ant build file](https://gist.github.com/dworthen/a7c04ce0af6a9c725874).
   - Ensure that the src.dir and build.dir match the source and build directories as defined in the Project build path (right click on the project folder in the Project Explorer > Build Path > Configure Build Path > Source tab).
   - Update the b2.package.name to match your project name.
   
@@ -101,4 +101,5 @@ The custom course module was built to address and solve several problems.
 - [Blackboard Eclipse plugin](http://www.edugarage.com/display/BBDN/Building+Blocks+Eclipse+Plugin)
 - [Blackboard Jars](https://behind.blackboard.com/downloads/details.aspx?d=1691)
 - [Blackboard Taglib](http://library.blackboard.com/ref/b9696cc1-1d49-45f3-b8af-ce709f71b915/bbNG/tld-summary.html)
-- [Default bbmanifest file for modules](https://gist.github.com/dworthen/ed90794cbd752f338823)
+- [Example ant build file](https://gist.github.com/dworthen/a7c04ce0af6a9c725874)
+- [Example bbmanifest file for creating modules](https://gist.github.com/dworthen/ed90794cbd752f338823)
