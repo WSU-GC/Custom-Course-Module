@@ -35,7 +35,7 @@ $Env:Path
 - Ensure ant installation directory (C:\apache-ant-1.9.4) is stored as `ANT_HOME` environment variable.
 
 ##### Blackboard Jars
-- [Download](https://behind.blackboard.com/downloads/details.aspx?d=1691) the appropriate jar files for your environment. 
+- [Download](https://behind.blackboard.com/downloads/details.aspx?d=1691) the appropriate environment files. 
 - Optional: add BBJarPath as an environment variable pointing to the systemlib directory (C:\bb-as-windows-9.1.201404.160205\payload\systemlib).
 
 ## Getting Started
@@ -51,6 +51,12 @@ $Env:Path
 - [Add a user library for the Tomcat Jars](http://www.avajava.com/tutorials/lessons/how-do-i-create-an-eclipse-user-library-for-the-tomcat-jar-files.html)
 - Follow the same process to add a user library for the Blackboard Jars located systemlib folder. If you created the new eclipse project using the Blackboard eclipse plugin then this step has been done for you and may be skipped.  
 
+##### bb-manifest.xml
+
+- Building block projects require a bb-manifest.xml file in the webContent/WEB-INF directory. This should already exist if the eclipse plugin was used to create the project or if the project was created using a sample project. 
+- [Example manifest for portal/module building blocks](https://gist.github.com/dworthen/ed90794cbd752f338823)
+  - Update the ALLCAPS attribute values with project specific values.
+
 ##### Adding External Jars
 
 - Add external jars to the WEB-INF/lib directory
@@ -61,6 +67,9 @@ $Env:Path
 - If you created the project using the Blackboard eclipse plugin then your project should contain a build.xml file, if not then create the build.xml file. 
 - I override the default build.xml file with my own standard [ant build file](https://gist.github.com/dworthen/a7c04ce0af6a9c725874).
   - Ensure that the src.dir and build.dir match the source and build directories as defined in the Project build path (right click on the project folder in the Project Explorer > Build Path > Configure Build Path > Source tab).
+  - Ensure the web.dir value matches the webContent directory of your project (depending on how the project was created you may have a webContent directory or a WebContent directory).
+  - Update the b2.package.name value with the project name.
+  - My default project settings: default source: PROJECT-DIRECTORY/src, default build: PROJECT-DIRECTORY/build/classes.
   - Update the b2.package.name to match your project name.
   
 ##### Develop!
@@ -85,12 +94,12 @@ $Env:Path
 The custom course module was built to address and solve several problems. 
 
 - Separate SIS changes from course content changes. 
-  - The overall concern was that it was possible for a department to delist a course thus deleting the course in Bb and therefore any content the instructor may created. 
+  - The overall concern was in regards to the ability for a department to make course changes which would feed into Learn through the SIS integration and affect any content created by the instructor. Example, delisting a course in SIS would delete the course and any corresponding content in Learn.    
   - Solution:
-    - Students enroll into child sections and content is created in parent (master) spaces.
+    - Students enroll into child sections and content is created in a parent (master) space.
     - Child sections are not accessible by staff or students and content cannot be created in these spaces.
-    - These child sections are referred to as "roster" spaces.
-    - Changes made to courses by departments in SIS affect roster spaces but the parent space and the content within are unaffected. 
+    - The child sections are referred to as "roster" spaces while the parent spaces are referred to as "content" spaces.
+    - Course changes in SIS affect roster spaces but the content spaces and the content within are unaffected. 
 - Provide a central mechanism to faculty for managing courses.
   - Enable and Disable parent course spaces
   - Provide the ability to merge/separate rosters to parent spaces without providing instructors system level accounts
