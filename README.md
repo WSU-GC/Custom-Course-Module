@@ -1,6 +1,6 @@
 # WSU Custom Course Module
 
-This will serve as documentation for creating Blackboard building blocks and outlines the process used to build the WSU Custom Course Module (WSU CCM). Specific information about the CCM building block will also be presented.   
+This will serve as documentation for creating Blackboard building blocks and outlines the process used to develop the WSU Custom Course Module (WSU CCM).    
 
 ## Environment Setup
 
@@ -66,12 +66,14 @@ $Env:Path
 ##### Develop!
 
 - Begin developing content in the webContent directory.
+- The [building block](https://help.blackboard.com/en-us/Learn/9.1_2014_04/Administrator/130_Building_Blocks/020_Developing_Building_Blocks/000_Building_Blocks_API_and_Web_Services_Specifications_and_Changes) and [taglib](http://library.blackboard.com/ref/b9696cc1-1d49-45f3-b8af-ce709f71b915/bbNG/tld-summary.html) api will help.
 
 ##### Build
 
 - [Open the Ant view and run the package-war task](http://www.tutorialspoint.com/ant/ant_eclipse_integration.htm)
 - If package-war is set as the default task then the keyboard shortcut `Alt+Shift+X,Q` will build project.
 - Building should create a new war file in the base directory of the project. 
+- Ensure you build for the correct target environment. At the time of this writing the target environment was Java 1.5. To update the target build environment right click the project > Build Path > Configure Build Path > Libraries tab > Select JRE System Library > Edit > Select Execution environment and select the appropriate environment from the dropdown (JSE-1.5 (jre1.8.0_20)).
 
 ##### Deploy
 
