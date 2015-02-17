@@ -105,3 +105,10 @@ The custom course module was built to address and solve several problems.
 - [Blackboard Taglib](http://library.blackboard.com/ref/b9696cc1-1d49-45f3-b8af-ce709f71b915/bbNG/tld-summary.html)
 - [Example ant build file](https://gist.github.com/dworthen/a7c04ce0af6a9c725874)
 - [Example bbmanifest file for creating modules](https://gist.github.com/dworthen/ed90794cbd752f338823)
+
+##### Additional Resources
+
+- [Java tutorial](http://www.tutorialspoint.com/java/)
+- [Ant tutorial](http://www.tutorialspoint.com/ant/)
+- [Git integration with eclipse](http://www.vogella.com/tutorials/EclipseGit/article.html)
+- [Java web development](http://www.vogella.com/tutorials/EclipseWTP/article.html)
