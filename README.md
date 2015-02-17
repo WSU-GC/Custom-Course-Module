@@ -70,7 +70,6 @@ $Env:Path
   - Ensure the web.dir value matches the webContent directory of your project (depending on how the project was created you may have a webContent directory or a WebContent directory).
   - Update the b2.package.name value with the project name.
   - My default project settings: default source: PROJECT-DIRECTORY/src, default build: PROJECT-DIRECTORY/build/classes.
-  - Update the b2.package.name to match your project name.
   
 ##### Develop!
 
