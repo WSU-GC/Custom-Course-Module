@@ -363,7 +363,7 @@ if(instMemberships.size() > 0) {
 			c.role = el.role || role;
 			role = (role || el.role).toLowerCase();
 			c.course.accessUri = "<%= courseBasePath %>" + c.course.coursePkId;
-			c.course.isInstructor = role == "instructor" || role == "pcb" || role == "support";
+			c.course.isInstructor = role == "instructor" || role == "pcb" || role == "support" || role == "course_editor";
 			c.course.isSecondaryInstructor = role == "si" || role == "scb";
 			c.course.isInstructor = c.course.isInstructor || c.course.isSecondaryInstructor;
 			c.course.children = mapCourses(c.course.children, c.role);
