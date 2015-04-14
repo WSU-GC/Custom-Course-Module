@@ -16,6 +16,48 @@
 		<servlet-name>CourseAdmin</servlet-name>
 		<servlet-class>servlets.CourseAdmin</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>ThrowException</display-name>
+		<servlet-name>ThrowException</servlet-name>
+		<servlet-class>servlets.ThrowException</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Activate</display-name>
+		<servlet-name>Activate</servlet-name>
+		<servlet-class>servlets.Activate</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Enable</display-name>
+		<servlet-name>Enable</servlet-name>
+		<servlet-class>servlets.Enable</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Disable</display-name>
+		<servlet-name>Disable</servlet-name>
+		<servlet-class>servlets.Disable</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Remove</display-name>
+		<servlet-name>Remove</servlet-name>
+		<servlet-class>servlets.Remove</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Merge</display-name>
+		<servlet-name>Merge</servlet-name>
+		<servlet-class>servlets.Merge</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>TestHttpServ</servlet-name>
 		<url-pattern>/TestHttpServ</url-pattern>
@@ -23,6 +65,30 @@
 	<servlet-mapping>
 		<servlet-name>CourseAdmin</servlet-name>
 		<url-pattern>/CourseAdmin</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ThrowException</servlet-name>
+		<url-pattern>/ThrowException</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Activate</servlet-name>
+		<url-pattern>/Activate</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Enable</servlet-name>
+		<url-pattern>/Enable</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Disable</servlet-name>
+		<url-pattern>/Disable</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Remove</servlet-name>
+		<url-pattern>/Remove</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Merge</servlet-name>
+		<url-pattern>/Merge</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
