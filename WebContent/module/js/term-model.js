@@ -62,7 +62,7 @@
 		   }
 			
 			el.children = el.children && el.children.length
-				? mapCourses2(el.children)
+				? mapCourses(el.children)
 				: [];
 			
 			return el;

@@ -5,8 +5,8 @@
 			var vm = this.vm;
 			
 			return m("a", {
-				href: obj.href,
-				onclick: vm.showLoading
+				href: obj.href
+				//onclick: vm.showLoading
 			}, obj.text);
 		},
 		
