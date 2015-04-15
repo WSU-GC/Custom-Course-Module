@@ -17,13 +17,15 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/opentip.css") %>' />
 
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/polyfill.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/opentip.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/mithril.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/module.js") %>'></script>
+<!-- <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>-->
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/opentip.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/term-model.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/filter-module.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/loading-module.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/ccm-table-module.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/roster-module.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/selectedterm-module.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/showchildren-module.js") %>'></script>
@@ -178,9 +180,14 @@ if(instMemberships.size() > 0) {
 				</li>
 			</ol>
 			
-			<!-- Instructor Courses -->
+			<!-- ***************************************************************
+				 * Instructor Courses
+				 * div where CCM instructor table is loaded  
+			******************************************************************** -->
 			<div id="instCourses">
+				
 			</div>
+			
 			<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
 		</div> <!-- END Manage Course -->
 	</div><!-- End CCMSPace -->
@@ -203,71 +210,19 @@ if(instMemberships.size() > 0) {
 	
 </div><!-- End Page1 -->
 
-<div id="CCMPage2">
-	<div id="rosterContainer" class="CCMSpace">
-	<!-- Container where the available rosters will display for merges -->
-		
-	</div>
-	<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
-</div><!-- End Page2 -->
-
-<div id="loadingRequest">
-	<div class="CCMSpace">
-		<h6>Loading...</h6>
-		<p></p>
-	</div>
-</div>
-
-<div id="rosterTemplate" style="display: none;">
-	<a id="back" href="#">back</a>
-	<h6>Parent Course Space</h6>
-	<br/>
-	<div id="parentCourse">{{:parentCourse}}</div>
-	<br/>
-	<h6>Select rosters to include</h6>
-	<ul id="mergeList" class="portletList-img courseListing">
-	{{for rosters}}
-		<li>
-		{{for course}}
-			{{if !isOnline}}
-				<input type='checkbox' value='{{:courseId}}' />
-			{{else}}
-				*
-			{{/if}}
-			{{:displayTitle}}
-		{{/for}}
-		</li>
-	{{/for}}
-	</ul>
-	<bbNG:button id="createCourseSection" url="#" label="Save" />
-</div>
 
 <script type="text/javascript">
 	window.moduleBasePath = "<%= moduleBasePath %>";
+	window.courseBasePath = "<%= courseBasePath %>";
 	window.parentCourseId = '';
 	window.isInstructor = <%= isInstructor %>;
 	window.instCourses = <%= jsonInstTerms %>;	
 	window.rosters = <%= jsonRosters %>;
 
 	function main() {
-		function showLoading(evt) {
-	        document.getElementById("CCMPage1").style.display = "none";
-	        document.getElementById("CCMPage2").style.display = "none";
-	        document.getElementById("loadingRequest").style.display = "block";
-		}
 		
-		jQuery(document).on('click', '#back', function() {
-	        document.getElementById("CCMPage2").style.display = "none";
-			document.getElementById("CCMPage1").style.display = "block";
-		});
-		
-		jQuery(document).on('click', '#createCourseSection', function(evt){
-			evt.stopPropagation();
-			evt.preventDefault();
-			
-			showLoading();
-			
-			var uri = moduleBasePath + "Merge?parent-course=" + parentCourseId + "&child-courses=";
+		function merge(parentCourseId) {
+			var uri = "<%= BuildingBlockHelper.getBaseUrl() %>" + "Merge?parent-course=" + parentCourseId + "&child-courses=";
 			var childCourses = document.querySelectorAll('#mergeList input:checked');
 			[].forEach.call(childCourses, function(el, i) {
 				var prefix = i > 0 ? ',' : '';
@@ -275,141 +230,7 @@ if(instMemberships.size() > 0) {
 			});
 			
 			window.location.replace(uri);
-		});
-		
-		// TODO: Decouple from data to create reusable module.
-		// and create module for roster list!!!
-		var table = new Module({
-			controller: function() {
-				//this.terms = new Terms.listAll();
-				this.terms = [];
-				
-				this.rosters = m.prop([]);
-				this.allRosters = m.prop();
-				this.headers = [[]];
-				this.parentCourseId = m.prop("");
-				this.filter = function(item) {
-					return true;
-				};
-			},
-			
-			viewModel: function(ctrl) {
-				var $ = jQuery;
-				this.selectedTerm = m.prop("2015 Spring");
-				this.itemsPerPage = m.prop(Infinity);
-				this.selectedPage = m.prop(1);
-				this.showChildren = m.prop(false);
-				this.showRosterList = m.prop(false);
-				
-				this.showRosters = function(parentCourse) {
-					var data = {};
-					var rosters = ctrl.allRosters()[this.selectedTerm()];
-					var template = $.templates('#rosterTemplate');
-					var lecReg = /-lec$/ig;
-					var labReg = /-lab$/ig;
-					var rosterReg;
-					
-					if (lecReg.test(parentCourse)) {
-						rosterReg = lecReg.test.bind(lecReg);
-					} else if (labReg.test(parentCourse)) {
-						rosterReg = labReg.test.bind(labReg);
-					} else {
-						rosterReg = function() { return true; }	
-					}	
-					
-					var localRosters = (rosters || []).filter(function(el) {
-						return rosterReg(el.course.courseId);
-					});
-					
-					ctrl.parentCourseId(parentCourse);
-					ctrl.rosters(localRosters);
-					this.showRosterList(true);
-					m.redraw();
-					
-					/*data.parentCourse = parentCourse;
-					parentCourseId = parentCourse;
-					data.rosters = rosters;
-					var html = template.render(data);
-					$('#rosterContainer').html(html);
-					$('#CCMPage1').css('display', 'none');
-					$('#CCMPage2').css('display', 'block');*/
-				};
-			},
-			
-			view: function() {
-				var ctrl = this.ctrl;
-				var vm = this.vm;
-				return m("table", {class: 'four'}, [m("tr", [
-			        m("td", "Enrl"),
-			        m("td", "Course Title (Course ID)"),
-			        m("td", {id: "availabilityTT"}, [
-			             "Availability ",
-			             m("img", {
-			            	 height: 20,
-			            	 src: moduleBasePath + 'images/question_mark.png'
-			             })
-			        ]),
-			        m("td", {id: "actionTT"}, [
-			             "Action ",
-			             m('img', {
-			            	 height: 20,
-			            	 src: moduleBasePath + 'images/question_mark.png'
-			             })
-			        ])
-			    ]),
-			  	ctrl.terms[vm.selectedTerm()].filter(ctrl.filter).map(function(cm) {
-			  		var co = cm.course;
-			  		var cc = co.children.length && vm.showChildren()
-				   		? [co].concat(co.children.map(function(child) {return child.course; }))
-				   		: [co];
-			   	   return cc.map(function(c) {
-			    	   return m('tr', [
-			             m('td', c.enrl),
-			             m('td', {class: c.isChild ? "child" : ""}, (function() {
-			            	 return c.isRoster 
-			            	 ? c.displayTitle
-			            	 : [m('a', {href: c.accessUri}, c.displayTitle)];
-			             }())),
-			             m("td", (function() {
-			          	   if (!c.isRoster && c.isInstructor) {
-			          		   if (c.isAvailable) {
-			          			   return m("a", {href: c.disableUri, onclick: showLoading}, "Disable");
-			          		   } else {
-			          			   return m("a", {href: c.enableUri, onclick: showLoading}, "Enable");
-			          		   }
-			          	   }
-			          	   return "";
-			             }())),
-			             m("td", (function() {
-			          	   if (c.isOnline && (c.isInstructor || c.isSecondaryInstructor) && !c.isChild) {
-			          		   if(!c.isRoster) {
-			          			   return m("a", {target: "_blank", href: c.cvUri}, "Course Verification");
-			          		   } else {
-			          			   return "*";
-			          		   }
-			          	   } else if (c.isInstructor && c.isChild) {
-			          		   if (!/onlin-/ig.test(c.parent)) {
-				          		   return m("a", {href: c.unmergeUri}, "Remove");
-			          		   } else {
-			          			   return "*";
-			          		   }
-			          	   } else if (c.isInstructor) {
-			          		   if (c.isRoster) {
-			          			   return m("a", {href: c.activateUri, onclick: showLoading}, "Activate");
-			          		   } else {
-			          			   return m("a", {
-			          				    href: "#" + c.courseId,
-			          					onclick: vm.showRosters.bind(vm, c.courseId)
-			          			   }, "Merge");
-			          		   }
-			          	   }
-			             }()))
-			           ]);
-			   		});
-			      })
-			  ]);
-			}
-		});
+		}
 		
 		var app = new Module({
 			controller: function() {
@@ -417,24 +238,30 @@ if(instMemberships.size() > 0) {
 				// Model
 				var courses = new Terms(instCourses.terms);
 				var localRosterList = new Terms(window.rosters.terms);
-				window.localRosterList = localRosterList;
 				
-				var filterCourses = function filterCourses(item, ind) {
-					if (item.course.isChild) return false;
-					var course = item.course;
-					var searchVal = filter.vm.searchTerm().toLowerCase();
-					var page = table.vm.selectedPage() - 1;
-					var pageSize = table.vm.itemsPerPage();
+				var filterCourses = function filterCourses(el, ind) {
+					if (el.isChild) return false;
 					
-					if (searchVal == "")
-						if (ind < page || ind >= page + pageSize) return false;
+					function filterFn(item, ind) {
+						var course = item;
+						var searchVal = filter.vm.searchTerm().toLowerCase();
+						var page = tableModule.vm.selectedPage() - 1;
+						var pageSize = tableModule.vm.itemsPerPage();
+						
+						if (searchVal == "")
+							if (ind < page || ind >= page + pageSize) return false;
+						
+						var name = course.title.toLowerCase();
+						var id = course.courseId.toLowerCase();
+						var children = course.children.filter(filterFn);
+						return name.indexOf(searchVal) > -1 || id.indexOf(searchVal) > -1 || children.length;
+					}
 					
-					var name = course.title.toLowerCase();
-					var id = course.courseId.toLowerCase();
-					var children = course.children.filter(filterCourses);
-					return name.indexOf(searchVal) > -1 || id.indexOf(searchVal) > -1 || children.length;
+					return filterFn(el, ind);
 				};
 				
+				this.loading = m.prop(false);
+				this.loadingModule = loadingModule.init();
 				this.showRosters = m.prop(false);
 				
 				this.filter = filter.init();
@@ -448,12 +275,13 @@ if(instMemberships.size() > 0) {
 				this.showChildren = showChildren.init();
 				this.parentCourseId = m.prop("");
 				
-				this.table = table.init({
+				this.table = tableModule.init({
 					filter: filterCourses,
 					terms: courses.courses,
 					allRosters: self.rosterList,
 					rosters: self.currentRosters,
-					parentCourseId: self.parentCourseId
+					parentCourseId: self.parentCourseId,
+					loading: self.loading
 				}, {
 					showChildren: showChildren.vm.showChildren,
 					selectedTerm: selectedTerm.vm.selectedTerm,
@@ -464,7 +292,10 @@ if(instMemberships.size() > 0) {
 					rosters: self.currentRosters,
 					showRosters: self.showRosters,
 					parentCourse: self.parentCourseId,
-					selectedTerm: selectedTerm.vm.selectedTerm
+					selectedTerm: selectedTerm.vm.selectedTerm,
+					loading: self.loading
+				}, {
+					save: merge
 				});
 				
 			},
@@ -478,6 +309,8 @@ if(instMemberships.size() > 0) {
 				return m("div", (function() {
 					if (ctrl.showRosters()) {
 						return ctrl.rosterModule.view();
+					} else if (ctrl.loading()) {
+						return ctrl.loadingModule.view();
 					} else {
 				  		return [m('#appHeader', [
 							ctrl.selectedTerm.view(),
@@ -493,17 +326,15 @@ if(instMemberships.size() > 0) {
 		}); // END APP
 		
 		window.app = app;
-		window.tableModule = table;
 	} // END MAIN
 
 	ready(function() {
 		console.log('dom loaded');
 		main();
 		m.module(document.getElementById('instCourses'), app.init());
-		startOpenTip();
-	}, "isPolyFilled", "Opentip", "startOpenTip", "m", "Module", "jQuery", "Terms", "filter", "selectedTerm", "showChildren", "rosterModule");
+		//startOpenTip();
+	}, "isPolyFilled", "Opentip", "startOpenTip", "m", "Module", "jQuery", "Terms", "filter", "selectedTerm", "showChildren", "rosterModule", "loadingModule", "tableModule");
 
-  	//typeof Opentip == 'undefined' || typeof m == 'undefined' || typeof jQuery == 'undefined' // in = loadINg
 </script>
 
 </bbNG:includedPage>

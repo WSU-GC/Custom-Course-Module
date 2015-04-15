@@ -7,16 +7,65 @@
 	
 	function mapCourses(courses, role) {
 		return courses.map(function(el, i) {
-			var c = {};
-			c.course = el.course || el;
-			c.role = el.role || role;
-			role = (role || el.role).toLowerCase();
-			c.course.accessUri = "<%= courseBasePath %>" + c.course.coursePkId;
-			c.course.isInstructor = role == "instructor" || role == "pcb" || role == "support" || role == "course_editor";
-			c.course.isSecondaryInstructor = role == "si" || role == "scb";
-			c.course.isInstructor = c.course.isInstructor || c.course.isSecondaryInstructor;
-			c.course.children = mapCourses(c.course.children, c.role);
-			return c;
+			
+			var accessUri = el.accessUri
+				, activateUri = el.activateUri
+				, cvUri = el.cvUri
+				, disableUri = el.disableUri
+				, enableUri = el.enableUri
+				, unmergeUri = el.unmergeUri;
+			
+			el.accessUri = {uiFn: 'link', href: accessUri, text: el.displayTitle};
+			el.activateUri = {uiFn: 'link', href: activateUri, text: "Activate"};
+			el.cvUri = {uiFn: 'link', href: cvUri, text: "Course Verification", newTab: true};
+			el.disableUri = {uiFn: 'link', href: disableUri, text: "Disable"};
+			el.enableUri = {uiFn: 'link', href: enableUri, text: "Enable"};
+			el.unmergeUri = {uiFn: 'link', href: unmergeUri, text: "Remove"};
+			
+			el.availableAction = !el.isRoster && el.isInstructor
+				? el.isAvailable 
+					? el.disableUri
+					: el.enableUri
+				: "";
+			
+			if (el.isRoster || el.isChild) 
+				el.accessUri = {uiFn: "text", attrs: {class: el.isChild ? "child" : ""}, text: el.displayTitle};
+			
+			if (el.isOnline && (el.isInstructor || el.isSecondaryInstructor) && !el.isChild) {
+       		   if(!el.isRoster) {
+       			   el.action = el.cvUri;
+       		   } else {
+       			   el.action = "*";
+       		   }
+		   } else if (el.isInstructor && el.isChild) {
+			   if (!/onlin-/ig.test(el.parent)) {
+		  		   el.action = el.unmergeUri;
+			   } else {
+				   el.action = "*";
+			   }
+		   } else if (el.isInstructor) {
+			   if (el.isRoster) {
+				   el.action = el.activateUri;
+			   } else {
+				   el.action = function(course) {
+					   var ctrl = this.ctrl;
+					   var vm = this.vm;
+					   
+					   return m("a", {
+         				    href: "#" + course.courseId,
+         					onclick: vm.showRosters.bind(vm, course.courseId)
+         			   }, "Merge");
+				   };
+			   }
+		   } else {
+			   el.action = "";
+		   }
+			
+			el.children = el.children && el.children.length
+				? mapCourses2(el.children)
+				: [];
+			
+			return el;
 		});
 	};
 	
@@ -76,16 +125,6 @@
 			}
 		}
 	};
-	
-	Terms.prototype.listAll = function() {
-		//return convertFromJson(instCourses);
-		return this.courses;
-	};
-/*	
-	Terms.prototype.listRosters = function() {
-		//return convertFromJson(rosters);
-		return mapTerms(rosters.terms);
-	};*/
 	
 	win.Terms = Terms;
 }(window));

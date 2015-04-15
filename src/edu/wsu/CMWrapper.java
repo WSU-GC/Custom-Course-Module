@@ -32,6 +32,11 @@ public class CMWrapper {
 		this.role = this.membership.getRoleAsString();
 	}
 	
+	public List<CMWrapper> loadChildren() 
+			throws PersistenceException {
+		return CMWrapper.loadCMWrappersByUserAndCourseWrappers(this.user, this.course.loadChildren());
+	}
+	
 	public static List<CMWrapper> loadCMWrappersByUser(User user) throws KeyNotFoundException, PersistenceException {
 		List<CourseWrapper> courseWrappers = CourseWrapper.loadCourseWrappersByUser(user);
 		return CMWrapper.loadCMWrappersByUserAndCourseWrappers(user, courseWrappers);

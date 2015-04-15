@@ -128,6 +128,25 @@
 	}
 	
 	/**
+	 * Array.isArray
+	 */
+	if (!Array.isArray) {
+	  Array.isArray = function(arg) {
+	    return Object.prototype.toString.call(arg) === '[object Array]';
+	  };
+	}
+	
+	/**
+	 * Object.isObj
+	 */
+	if(!Object.isObj) {
+		Object.isObj = function(val) {
+			return val !== null && typeof val === 'object';
+		}
+	}
+	
+	
+	/**
 	 * Global identifier indicating when the polyfill functions have been loaded.
 	 */
 	win.isPolyFilled = true;

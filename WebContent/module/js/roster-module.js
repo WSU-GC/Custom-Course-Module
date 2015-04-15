@@ -5,6 +5,7 @@
 			this.showRosters = m.prop(true);
 			this.parentCourse = m.prop("");
 			this.selectedTerm = m.prop("");
+			this.loading = m.prop(false);
 		},
 		
 		viewModel: function(ctrl) {
@@ -14,6 +15,15 @@
 			
 			this.save = function() {
 				// provide a function;
+			};
+			
+			this.showLoading = function() {
+				ctrl.loading(true);
+			};
+			
+			this.merge = function() {
+				ctrl.loading(true);
+				this.save(ctrl.parentCourse());
 			};
 		},
 		
@@ -36,19 +46,21 @@
 		   	  m('ul', {id: "mergeList"}, [
 		   	    ctrl.rosters().map(function(item) {
 		   	      return m('li', [(function() { 
-		   	    	  if(item.course.isOnline) {
+		   	    	  if(item.isOnline) {
 		   	    		  return "*";
 		   	    	  } else {
 		   	    		  return m('input', {
 		   	    			  type: 'checkbox',
-		   	    			  value: item.course.courseId
+		   	    			  value: item.courseId
 		   	    		  });
 		   	    	  }
-	   	    	  }()), " " + item.course.displayTitle])
+	   	    	  }()), " " + item.displayTitle])
 		   	    })
 		   	  ]),
 		   	  m("br"),
-		   	  m("button", {onclick: vm.svae}, "Save")
+		   	  m("button", { onclick: vm.merge.bind(vm) }, "Save"),
+		   	  m("br"),
+		   	  m("br")
 		   	]);
 		}
 	});

@@ -41,6 +41,7 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.addProperty("enableUri", BuildingBlockHelper.getBaseUrl() + "Enable?course-id=" + cw.courseId);
 		result.addProperty("unmergeUri", BuildingBlockHelper.getBaseUrl() + "Remove?parent-course=" + cw.parent + "&child-course=" + cw.courseId);
 		result.addProperty("activateUri", BuildingBlockHelper.getBaseUrl() + "Activate?course-id=" + cw.courseId + "&title=" + cw.title);
+		result.addProperty("accessUri", "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + cw.coursePkId);
 		try {
 			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {
