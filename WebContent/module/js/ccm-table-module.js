@@ -1,13 +1,20 @@
 (function(win) {
 	var uiFn = {
-		link: function(obj) {
+		link: function(obj, course) {
 			var ctrl = this.ctrl;
 			var vm = this.vm;
+			var self = this;
 			
-			return m("a", {
-				href: obj.href
-				//onclick: vm.showLoading
-			}, obj.text);
+			var attrs = obj.elAttrs || {};
+			
+			if (obj.showLoading) 
+				attrs.onclick = vm.showLoading;
+				
+			
+			if(obj.newTab) 
+				attrs.target = "_blank";
+			
+			return m("a", attrs, contents.call(self, obj.text, course));
 		},
 		
 		text: function(obj) {
@@ -15,16 +22,30 @@
 			var vm = this.vm;
 			
 			return obj.text;
+		},
+		
+		element: function(obj, course) {
+			var self = this;
+			var attrs = obj.elAttrs || {};
+			
+			return m(obj.tag, attrs, contents.call(self, obj.text, course));
 		}
 	};
+	
 	
 	function tdContent(obj, course) {
 		var ctrl = this.ctrl;
 		var vm = this.vm;
 		var self = this;
-		var attrs = obj.attrs || {};
+		var attrs = obj.tdAttrs || {};
 		
-		var contents = [].concat(obj).map(function(el, i) {
+		return m("td", attrs, contents.call(self, obj, course));
+	}
+	
+	function contents(content, course) {
+		var self = this;
+		
+		return [].concat(content).map(function(el, i) {
 			if(Object.isObj(el) && !Array.isArray(el)) {
 				return uiFn[el.uiFn].call(self, el, course);
 			} else if (typeof el == 'function') {
@@ -33,9 +54,6 @@
 				return el;
 			}
 		});
-		
-		return m("td", attrs, contents);
-		
 	}
 	
 	
@@ -92,7 +110,7 @@
 			var self = this;
 			
 			return m("table", {class: 'four'}, [m("tr", ctrl.headers.map(function(el, i) {
-					return m("td", el[1]);
+					return tdContent.call(self, el[1]);
 				})),
 	 		  	ctrl.terms[vm.selectedTerm()].filter(ctrl.filter).map(function(co) {
 	 		  		var cc = co.children.length && vm.showChildren()

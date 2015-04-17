@@ -15,12 +15,12 @@
 				, enableUri = el.enableUri
 				, unmergeUri = el.unmergeUri;
 			
-			el.accessUri = {uiFn: 'link', href: accessUri, text: el.displayTitle};
-			el.activateUri = {uiFn: 'link', href: activateUri, text: "Activate"};
-			el.cvUri = {uiFn: 'link', href: cvUri, text: "Course Verification", newTab: true};
-			el.disableUri = {uiFn: 'link', href: disableUri, text: "Disable"};
-			el.enableUri = {uiFn: 'link', href: enableUri, text: "Enable"};
-			el.unmergeUri = {uiFn: 'link', href: unmergeUri, text: "Remove"};
+			el.accessUri = {uiFn: 'link', elAttrs: {href: accessUri}, text: el.displayTitle};
+			el.activateUri = {uiFn: 'link', elAttrs: {href: activateUri}, text: "Activate", showLoading: true};
+			el.cvUri = {uiFn: 'link', elAttrs: {href: cvUri, target: "_blank" }, text: "Course Verification"};
+			el.disableUri = {uiFn: 'link', elAttrs: {href: disableUri}, text: "Disable", showLoading: true};
+			el.enableUri = {uiFn: 'link', elAttrs: {href: enableUri}, text: "Enable", showLoading: true};
+			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true};
 			
 			el.availableAction = !el.isRoster && el.isInstructor
 				? el.isAvailable 
@@ -29,7 +29,7 @@
 				: "";
 			
 			if (el.isRoster || el.isChild) 
-				el.accessUri = {uiFn: "text", attrs: {class: el.isChild ? "child" : ""}, text: el.displayTitle};
+				el.accessUri = {uiFn: "text", tdAttrs: {class: el.isChild ? "child" : ""}, text: el.displayTitle};
 			
 			if (el.isOnline && (el.isInstructor || el.isSecondaryInstructor) && !el.isChild) {
        		   if(!el.isRoster) {
