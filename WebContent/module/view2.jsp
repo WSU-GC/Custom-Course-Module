@@ -16,13 +16,15 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/style.css") %>' />
 <link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/opentip.css") %>' />
 
+
+
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/polyfill.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/mithril.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/module.js") %>'></script>
-<!-- <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>-->
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/opentip.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/term-model.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/filter-module.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/loading-module.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/ccm-table-module.js") %>'></script>
@@ -41,6 +43,14 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 	* example: ready(function() {// stuff to execute when globals are ready}, "jQuery", "underscore", ...OTHER GLOBALS TO LISTEN FOR);
 	* It will run for a few seconds before consoling an error and moving on. This must be defined in page as we cannot dynamically load the dynamic loader.
 	*/
+	function load(resource) {
+		var script = document.createElement("script");
+		script.setAttribute("type", "text/javascript");
+		script.setAttribute("src", resource);
+		document.head.appendChild(script);
+	}
+	
+	
 	function ready(cb) {
 		//this.__count = 0;
 		window.__COUNT_LOADING_ATTEMPTS = window.__COUNT_LOADING_ATTEMPTS || 0;
@@ -86,8 +96,8 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 		};
 	
 		/in/.test(document.readyState) || loading.length
-		? setTimeout(run._bind(this), 9)
-		: cb();
+			? setTimeout(run._bind(this), 9)
+			: (function() {cb(); window.__COUNT_LOADING_ATTEMPTS = 0; }());
 		
 		/**
 		* None of the polyfills in this function override native prototype chains/functionality
@@ -327,13 +337,26 @@ if(instMemberships.size() > 0) {
 		
 		window.app = app;
 	} // END MAIN
+	
 
 	ready(function() {
-		console.log('dom loaded');
-		main();
-		m.module(document.getElementById('instCourses'), app.init());
-		//startOpenTip();
-	}, "isPolyFilled", "Opentip", "startOpenTip", "m", "Module", "jQuery", "Terms", "filter", "selectedTerm", "showChildren", "rosterModule", "loadingModule", "tableModule");
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>');
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/filter-module.js") %>');
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/roster-module.js") %>');
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/loading-module.js") %>');
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/ccm-table-module.js") %>');
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/selectedterm-module.js") %>');
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/showchildren-module.js") %>');
+		load('<%= BuildingBlockHelper.getBaseUrl("module/js/app.js") %>');
+		
+		ready(function() {
+			console.log('dom loaded');
+			main();
+			m.module(document.getElementById('instCourses'), app.init());
+			//startOpenTip();
+		}, "filter", "selectedTerm", "showChildren", "rosterModule", "loadingModule", "tableModule", "startOpenTip");
+		
+	}, "isPolyFilled", "m", "Module", "Opentip", "jQuery", "Terms");
 
 </script>
 
