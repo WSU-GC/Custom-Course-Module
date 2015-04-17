@@ -24,14 +24,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/opentip.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/term-model.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/filter-module.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/loading-module.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/ccm-table-module.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/roster-module.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/selectedterm-module.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/showchildren-module.js") %>'></script>
-<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/app.js") %>'></script>
+
 
 
 <script>
@@ -79,6 +72,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 			if (window.__COUNT_LOADING_ATTEMPTS > 1000) {
 				// Unable to load all resources. log error and move on.
 				console.error("Error: page failed to load all resources: %s", loading.toString());
+				window.__COUNT_LOADING_ATTEMPTS = 0;
 				cb();
 			} else { 
 				ready.apply(this, [cb].concat(args));

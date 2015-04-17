@@ -24,13 +24,17 @@
 		var self = this;
 		var attrs = obj.attrs || {};
 		
-		if(Object.isObj(obj) && !Array.isArray(obj)) {
-			return m("td", attrs, uiFn[obj.uiFn].call(self, obj, course));
-		} else if (typeof obj == 'function') {
-			return m("td", attrs, obj.call(self, course));
-		} else {
-			return m("td", attrs, obj);
-		}
+		var contents = [].concat(obj).map(function(el, i) {
+			if(Object.isObj(el) && !Array.isArray(el)) {
+				return uiFn[el.uiFn].call(self, el, course);
+			} else if (typeof el == 'function') {
+				return el.call(self, course);
+			} else {
+				return el;
+			}
+		});
+		
+		return m("td", attrs, contents);
 		
 	}
 	
@@ -58,18 +62,18 @@
 			
 			this.showRosters = function(parentCourse) {
 				var rosters = ctrl.allRosters()[this.selectedTerm()];
-				var lecReg = /-lec$/ig;
-				var labReg = /-lab$/ig;
-				var rosterReg = function() { return true; };
+				var lecReg = /-lec$/i;
+				var labReg = /-lab$/i;
+				var rosterReg = /./i;
 				
 				if (lecReg.test(parentCourse)) {
-					rosterReg = lecReg.test.bind(lecReg);
+					rosterReg = lecReg;
 				} else if (labReg.test(parentCourse)) {
-					rosterReg = labReg.test.bind(labReg);
+					rosterReg = labReg;
 				}
 				
 				var localRosters = (rosters || []).filter(function(el) {
-					return rosterReg(el.courseId);
+					return rosterReg.test(el.courseId);
 				});
 				
 				ctrl.parentCourseId(parentCourse);
