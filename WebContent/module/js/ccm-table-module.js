@@ -7,8 +7,27 @@
 			
 			var attrs = obj.elAttrs || {};
 			
-			if (obj.showLoading) 
+			function warningPrompt(message, e) {
+				var cont = confirm(message);
+				if(!cont) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+				return cont;
+			}
+			
+			if (obj.prompt && obj.showLoading) {
+				attrs.onclick = function(e) {
+					var cont = warningPrompt(obj.prompt);
+					if (cont) {
+						vm.showLoading();
+					}
+				};
+			} else if (obj.prompt) {
+				attrs.onclick = warningPrompt.bind(self, obj.prompt);
+			} else if (obj.showLoading) {
 				attrs.onclick = vm.showLoading;
+			}
 				
 			
 			if(obj.newTab) 
