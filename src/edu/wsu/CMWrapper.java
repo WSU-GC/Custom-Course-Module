@@ -7,6 +7,7 @@ import java.util.List;
 
 import blackboard.data.course.Course;
 import blackboard.data.course.CourseMembership;
+import blackboard.data.course.CourseToolUtil;
 import blackboard.data.user.User;
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
@@ -18,6 +19,7 @@ public class CMWrapper {
 	public CourseWrapper course;
 	public CourseMembership membership = null;
 	public String role;
+	public boolean useCourseVerification;
 	
 	public CMWrapper() {
 	}
@@ -30,6 +32,7 @@ public class CMWrapper {
 		this.membership = CourseMembershipDbLoader.Default.getInstance()
 				.loadByCourseAndUserId(this.course.id, this.user.getId());
 		this.role = this.membership.getRoleAsString();
+		this.useCourseVerification = this.isCourseVerificationEnabled();
 	}
 	
 	public List<CMWrapper> loadChildren() 
@@ -40,6 +43,11 @@ public class CMWrapper {
 	public static List<CMWrapper> loadCMWrappersByUser(User user) throws KeyNotFoundException, PersistenceException {
 		List<CourseWrapper> courseWrappers = CourseWrapper.loadCourseWrappersByUser(user);
 		return CMWrapper.loadCMWrappersByUserAndCourseWrappers(user, courseWrappers);
+	}
+	
+	public boolean isCourseVerificationEnabled() throws PersistenceException {
+//		String pluginName = courseToolUtil.getLocalizedLabelForCourseTools(arg0, arg1, arg2);
+		return CourseToolUtil.isToolAvailableForCourseUser("wsu-course-verification", this.membership);
 	}
 	
 	public static List<CMWrapper> loadCMWrappersByUserAndCourses(User user, List<Course> courses) 

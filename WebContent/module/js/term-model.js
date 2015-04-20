@@ -22,7 +22,7 @@
 			el.enableUri = {uiFn: 'link', elAttrs: {href: enableUri}, text: "Enable", showLoading: true};
 			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true};
 			
-			el.availableAction = !el.isRoster && el.isInstructor
+			el.availableAction = !el.isRoster && el.isInstructor && !el.isChild
 				? el.isAvailable 
 					? el.disableUri
 					: el.enableUri
@@ -31,7 +31,7 @@
 			if (el.isRoster || el.isChild) 
 				el.accessUri = {uiFn: "text", tdAttrs: {class: el.isChild ? "child" : ""}, text: el.displayTitle};
 			
-			if (el.isOnline && (el.isInstructor || el.isSecondaryInstructor) && !el.isChild) {
+			if ((el.isOnline || el.useCourseVerification) && (el.isInstructor || el.isSecondaryInstructor) && !el.isChild) {
        		   if(!el.isRoster) {
        			   el.action = el.cvUri;
        		   } else {

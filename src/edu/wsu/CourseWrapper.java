@@ -8,6 +8,7 @@ import java.util.List;
 import blackboard.data.course.Course;
 import blackboard.data.course.CourseCourse;
 import blackboard.data.course.CourseMembership;
+import blackboard.data.course.CourseToolUtil;
 import blackboard.data.user.User;
 import blackboard.persist.Id;
 import blackboard.persist.KeyNotFoundException;
@@ -38,7 +39,7 @@ public class CourseWrapper {
 	public CourseWrapper() {
 	}
 	
-	public CourseWrapper(Course course) {
+	public CourseWrapper(Course course) throws PersistenceException {
 		//String saipRegex = "^\\d+-\\d+-\\d+-\\w+-\\w+-\\d+$";
 		String saipRegex = "^ROSTER-.+";
 		String onlineRegex = "(?i).+-ONLIN-.+";
@@ -129,7 +130,7 @@ public class CourseWrapper {
 		return cwCourses;
 	}
 	
-	public static List<CourseWrapper> loadByCourses(List<Course> courses) {
+	public static List<CourseWrapper> loadByCourses(List<Course> courses) throws PersistenceException {
 		List<CourseWrapper> cw = new ArrayList<CourseWrapper>();
 		for(Course course: courses) {
 			cw.add(new CourseWrapper(course));
