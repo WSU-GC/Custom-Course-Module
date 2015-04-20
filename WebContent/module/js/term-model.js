@@ -47,7 +47,7 @@
 			   if (el.isRoster) {
 				   el.action = el.activateUri;
 			   } else {
-				   el.action = function(course) {
+				   el.action = [function(course) {
 					   var ctrl = this.ctrl;
 					   var vm = this.vm;
 					   
@@ -55,7 +55,7 @@
          				    href: "#" + course.courseId,
          					onclick: vm.showRosters.bind(vm, course.courseId)
          			   }, "Merge");
-				   };
+				   }];
 			   }
 		   } else {
 			   el.action = "";
