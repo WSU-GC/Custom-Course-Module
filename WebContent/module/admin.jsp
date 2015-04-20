@@ -151,14 +151,18 @@ ready(function() {
 	}
 	
 	function convertToCsv(data) {
-		var keys = ['coursePkId', 'courseId', 'courseBatchUid', 'title', 'isAvailable', 'isRoster', 'isOnline', 'isParent', 'isChild', 'parent', 'enrl'];
-		var csv = 'coursePkId, courseId, courseBatchUid, title, isAvailable, isRoster, isOnline, isParent, isChild, parent, enrl\n';
+		var keys = ['coursePkId', 'courseId', 'courseBatchUid', 'title', 'isAvailable', 'isRoster', 'isOnline', 'isParent', 'isChild', 'parent', 'enrl', 'instructorEmails'];
+		var csv = 'coursePkId, courseId, courseBatchUid, title, isAvailable, isRoster, isOnline, isParent, isChild, parent, enrl, instructorEmails\n';
 		
 		for (var i = 0, l = data.length; i < l; i++) {
 			if(i != 0) csv += "\n";
 			for (var j = 0, k = keys.length; j < k; j++) {
 				if (j != 0) csv += ",";
-				csv += '"' + (data[i][keys[j]] || '' ) + '"'
+				if (Array.isArray(data[i][keys[j]])) {
+					csv += '"' + data[i][keys[j]].join('; ') + '"';
+				} else {
+					csv += '"' + (data[i][keys[j]] || '' ) + '"';
+				}
 			}
 		}
 		return csv;

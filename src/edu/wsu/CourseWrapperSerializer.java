@@ -20,6 +20,8 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 	public JsonElement serialize(final CourseWrapper cw, final Type type,
 			final JsonSerializationContext context) {
 		
+		Gson plainGson = new Gson();
+		
 		Gson gson = new GsonBuilder()
 			.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
 		
@@ -42,6 +44,12 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.addProperty("unmergeUri", BuildingBlockHelper.getBaseUrl() + "Remove?parent-course=" + cw.parent + "&child-course=" + cw.courseId);
 		result.addProperty("activateUri", BuildingBlockHelper.getBaseUrl() + "Activate?course-id=" + cw.courseId + "&title=" + cw.title);
 		result.addProperty("accessUri", "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + cw.coursePkId);
+		try {
+			result.add("instructorEmails", plainGson.toJsonTree(cw.loadInstructorEmails()));
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			result.addProperty("instructorEmails", "falied");
+		} 
 		try {
 			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {
