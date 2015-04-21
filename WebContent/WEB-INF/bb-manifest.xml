@@ -3,8 +3,8 @@
   <plugin>
     <name value= "WSU Custom Course Module"/>
     <handle value= "wsu-custom-course-module"/>
-    <description value= "WSU Custom Course Module for managing course sections and merges."/>
-    <version value= "2.0.1"/>
+    <description value= "WSU Custom Course Module for managing course sections and merges. Testing"/>
+    <version value= "2.0.2"/>
     <requires>
     	<bbversion value="9.0.0"/>
     </requires>

@@ -5,12 +5,12 @@
 		this.terms = Object.keys(this.courses).sort(sortTerms);
 	};
 	
-	function mapCourses(courses, role) {
+	function mapCourses(courses) {
 		return courses.map(function(el, i) {
 			
 			var accessUri = el.accessUri
 				, activateUri = el.activateUri
-				, cvUri = el.cvUri
+				, cvUri = el.cvUriar
 				, disableUri = el.disableUri
 				, enableUri = el.enableUri
 				, unmergeUri = el.unmergeUri;
@@ -20,7 +20,9 @@
 			el.cvUri = {uiFn: 'link', elAttrs: {href: cvUri, target: "_blank" }, text: "Course Verification"};
 			el.disableUri = {uiFn: 'link', elAttrs: {href: disableUri}, text: "Disable", showLoading: true};
 			el.enableUri = {uiFn: 'link', elAttrs: {href: enableUri}, text: "Enable", showLoading: true};
-			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true};
+			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true,
+					prompt: "This will remove " + el.courseId + " from " + el.parent + ". This action may delete student work and grades. "
+					+ "Do you wish to continue?"};
 			
 			el.availableAction = !el.isRoster && el.isInstructor && !el.isChild
 				? el.isAvailable 
@@ -38,7 +40,7 @@
        			   el.action = "*";
        		   }
 		   } else if (el.isInstructor && el.isChild) {
-			   if (!/onlin-/ig.test(el.parent)) {
+			   if (!/onlin-/i.test(el.parent)) {
 		  		   el.action = el.unmergeUri;
 			   } else {
 				   el.action = "*";
@@ -47,7 +49,7 @@
 			   if (el.isRoster) {
 				   el.action = el.activateUri;
 			   } else {
-				   el.action = function(course) {
+				   el.action = [function(course) {
 					   var ctrl = this.ctrl;
 					   var vm = this.vm;
 					   
@@ -55,7 +57,7 @@
          				    href: "#" + course.courseId,
          					onclick: vm.showRosters.bind(vm, course.courseId)
          			   }, "Merge");
-				   };
+				   }];
 			   }
 		   } else {
 			   el.action = "";
