@@ -72,7 +72,7 @@ public class CMWrapper {
 	
 	public boolean isCourseVerificationEnabled() throws PersistenceException {
 //		String pluginName = courseToolUtil.getLocalizedLabelForCourseTools(arg0, arg1, arg2);
-		return CourseToolUtil.isToolAvailableForCourseUser("wsu-course-verification", this.membership);
+		return CourseToolUtil.isToolAvailableForCourseUser("Achievements", this.membership);
 	}
 	
 	public static List<CMWrapper> loadCMWrappersByUserAndCourses(User user, List<Course> courses) 
