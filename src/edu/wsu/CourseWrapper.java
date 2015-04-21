@@ -80,8 +80,12 @@ public class CourseWrapper {
 	}
 	
 	public List<CourseWrapper> loadChildren() 
-			throws PersistenceException {
-		return CourseWrapper.loadChildCourseWrappersByParentCourse(this.course);
+			throws PersistenceException, Exception {
+//		try {
+			return CourseWrapper.loadChildCourseWrappersByParentCourse(this.course);
+//		} catch (Exception e) {
+//			throw new Exception("Unable to load CourseWrappers");
+//		}
 	}
 	
 	public String loadParentCourseId () {

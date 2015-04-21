@@ -216,14 +216,17 @@ if(instMemberships.size() > 0) {
 
 
 <script type="text/javascript">
-	window.moduleBasePath = "<%= moduleBasePath %>";
-	window.courseBasePath = "<%= courseBasePath %>";
-	window.parentCourseId = '';
-	window.isInstructor = <%= isInstructor %>;
-	window.instCourses = <%= jsonInstTerms %>;	
-	window.rosters = <%= jsonRosters %>;
+	var moduleBasePath = "<%= moduleBasePath %>"
+		, courseBasePath = "<%= courseBasePath %>"
+		, parentCourseId = ''
+		, isInstructor = <%= isInstructor %>
+		, instCourses = <%= jsonInstTerms %>
+		, rosters = <%= jsonRosters %>;
+	
 
 	function main() {
+		
+		window.courseClone = Object.assign({}, instCourses);
 		
 		function merge(parentCourseId) {
 			var uri = "<%= BuildingBlockHelper.getBaseUrl() %>" + "Merge?parent-course=" + parentCourseId + "&child-courses=";

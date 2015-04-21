@@ -1,6 +1,8 @@
 package edu.wsu;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
@@ -65,9 +67,11 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 			result.add("children", gson.toJsonTree(cw.loadChildren()));
 			//result.add("children", new JsonPrimitive(gson.toJson(cw.loadChildren())));
 			//result.addProperty("children", gson.toJson(cw.loadChildren()));
-		} catch (PersistenceException e) {
+		} catch (Exception e) {
+			List<String> children = new ArrayList<String>();
+			children.add("Unable to load child course for " + cw.courseId);
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			result.add("Children", new Gson().toJsonTree(children));
 		}
 		return result;
 	}

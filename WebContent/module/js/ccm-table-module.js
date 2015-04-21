@@ -18,7 +18,7 @@
 			
 			if (obj.prompt && obj.showLoading) {
 				attrs.onclick = function(e) {
-					var cont = warningPrompt(obj.prompt);
+					var cont = warningPrompt(obj.prompt, e);
 					if (cont) {
 						vm.showLoading();
 					}
