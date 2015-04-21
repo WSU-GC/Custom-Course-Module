@@ -1,16 +1,16 @@
 (function(win) {
 	
 	var Terms = function(_terms) {
-		this.courses = mapTerms(_terms);
+		this.courses = mapTerms(Object.assign({}, _terms));
 		this.terms = Object.keys(this.courses).sort(sortTerms);
 	};
 	
-	function mapCourses(courses, role) {
+	function mapCourses(courses) {
 		return courses.map(function(el, i) {
 			
 			var accessUri = el.accessUri
 				, activateUri = el.activateUri
-				, cvUri = el.cvUri
+				, cvUri = el.cvUriar
 				, disableUri = el.disableUri
 				, enableUri = el.enableUri
 				, unmergeUri = el.unmergeUri;
@@ -22,7 +22,7 @@
 			el.enableUri = {uiFn: 'link', elAttrs: {href: enableUri}, text: "Enable", showLoading: true};
 			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true};
 			
-			el.availableAction = !el.isRoster && el.isInstructor
+			el.availableAction = !el.isRoster && el.isInstructor && !el.isChild
 				? el.isAvailable 
 					? el.disableUri
 					: el.enableUri
@@ -38,7 +38,7 @@
        			   el.action = "*";
        		   }
 		   } else if (el.isInstructor && el.isChild) {
-			   if (!/onlin-/ig.test(el.parent)) {
+			   if (!/onlin-/i.test(el.parent)) {
 		  		   el.action = el.unmergeUri;
 			   } else {
 				   el.action = "*";
