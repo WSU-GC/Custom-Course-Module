@@ -1,7 +1,7 @@
 (function(win) {
 	
 	var Terms = function(_terms) {
-		this.courses = mapTerms(Object.assign({}, _terms));
+		this.courses = mapTerms(_terms);
 		this.terms = Object.keys(this.courses).sort(sortTerms);
 	};
 	
@@ -20,7 +20,9 @@
 			el.cvUri = {uiFn: 'link', elAttrs: {href: cvUri, target: "_blank" }, text: "Course Verification"};
 			el.disableUri = {uiFn: 'link', elAttrs: {href: disableUri}, text: "Disable", showLoading: true};
 			el.enableUri = {uiFn: 'link', elAttrs: {href: enableUri}, text: "Enable", showLoading: true};
-			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true};
+			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true,
+					prompt: "This will remove " + el.courseId + " from " + el.parent + ". This action may delete student work and grades. "
+					+ "Do you wish to continue?"};
 			
 			el.availableAction = !el.isRoster && el.isInstructor && !el.isChild
 				? el.isAvailable 
