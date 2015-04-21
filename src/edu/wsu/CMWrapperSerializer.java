@@ -62,8 +62,10 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 			//result.add("children", new JsonPrimitive(gson.toJson(cw.loadChildren())));
 			//result.addProperty("children", gson.toJson(cw.loadChildren()));
 		} catch (Exception e) {
+			List<String> children = new ArrayList<String>();
+			children.add("Unable to load child course for " + cm.course.courseId);
 			// TODO Auto-generated catch block
-			result.addProperty("children", e.toString() + " " + e.getMessage());
+			result.add("Children", new Gson().toJsonTree(children));
 		}
 		
 		result.addProperty("isSecondaryInstructor", cm.role.equalsIgnoreCase("si") || cm.role.equalsIgnoreCase("scb"));

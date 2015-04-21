@@ -283,7 +283,7 @@ if(instMemberships.size() > 0) {
 				this.parentCourseId = m.prop("");
 				
 				this.table = tableModule.init({
-					//filter: filterCourses,
+					filter: filterCourses,
 					terms: courses.courses,
 					allRosters: self.rosterList,
 					rosters: self.currentRosters,

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <manifest>
   <plugin>
-    <name value= "WSU Custom Course Module Testing"/>
-    <handle value= "wsu-custom-course-module-testing"/>
+    <name value= "WSU Custom Course Module"/>
+    <handle value= "wsu-custom-course-module"/>
     <description value= "WSU Custom Course Module for managing course sections and merges. Testing"/>
-    <version value= "2.0.1.1"/>
+    <version value= "2.0.1"/>
     <requires>
     	<bbversion value="9.0.0"/>
     </requires>
     <vendor>
-      <id value="wsu2"/>
+      <id value="wsu"/>
       <name value="WSU"/>
       <url value="http://wsu.edu/" />
       <description value="Preparing for v9." />
     </vendor>
     <http-actions></http-actions>
     <module-defs>
-      <module-type ext-ref="wsu-course-module-test" title="My Courses" uicreatable="true">
+      <module-type ext-ref="wsu-course-module" title="My Courses" uicreatable="true">
         <jsp-dir>module</jsp-dir>
         <jsp>
           <view>view2.jsp</view>
         </jsp>
       </module-type>  
-      <module type="wsu-course-module-test" isadmin="false" isavailabletocourse="true" useraddable="true" isdeletable="true" title="My Courses">
-        <description>WSU Custom Course Module Testing</description>
+      <module type="wsu-course-module" isadmin="false" isavailabletocourse="true" useraddable="true" isdeletable="true" title="My Courses">
+        <description>WSU Custom Course Module</description>
         <ExtraInfo>
 					<property key="" type=""></property>
 		</ExtraInfo>
