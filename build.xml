@@ -15,8 +15,41 @@
     	<fileset dir="${bb.build}" includes="**/*.jar" />
         <pathelement path="${build.dir}"/>
     </path>
+	
+	<target name="init" description="Create build directory structure">
+        <!--Delete previous build files-->
+        <delete dir="${build.js.dir}"/>
+        
+        <!--Recreate the build directories-->
+        <mkdir dir="${build.js.dir}"/>       
+    </target>
+	
+	<target name="js.concatenate" depends="init" 
+        description="Concatenates specified JavaScript files">
+        <concat destfile="${build.js.dir}/concat-${build.version}.js">
+            <filelist dir="${src.js.dir}">
+            	<file name="polyfill.js" />
+            	<file name="mithril.js" />
+            	<file name="module.js" />
+		    	<file name="jquery.js" />
+            	<file name="blob.js" />
+	    		<file name="filesaver.js" />
+		    	<file name="opentip.js" />
+		    	<file name="term-model.js" />
+            	<file name="init-opentip.js" />
+		    	<file name="filter-module.js" />
+		    	<file name="roster-module.js" />
+		    	<file name="loading-module.js" />
+            	<file name="ccm-table-module.js" />
+		    	<file name="selectedterm-module.js" />
+		    	<file name="showchildren.js" />
+		    	<file name="app.js" />
+        	</filelist>
+        </concat>
+        <echo>Finished</echo>
+    </target>
 
-    <target name="build" description="Compile source tree java files">
+    <target name="build" depends="js.concatenate" description="Compile source tree java files">
         <mkdir dir="${build.dir}"/>
         <javac destdir="${build.dir}" source="1.5" target="1.5">
             <src path="${src.dir}"/>
