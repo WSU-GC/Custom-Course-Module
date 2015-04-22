@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	var rosterModule = new Module({
 		controller: function() {
 			this.rosters = m.prop([]);

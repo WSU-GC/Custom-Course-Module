@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	var filter = new Module({
 		controller: function() {
 					

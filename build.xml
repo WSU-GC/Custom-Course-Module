@@ -42,7 +42,7 @@
 		    	<file name="loading-module.js" />
             	<file name="ccm-table-module.js" />
 		    	<file name="selectedterm-module.js" />
-		    	<file name="showchildren.js" />
+		    	<file name="showchildren-module.js" />
 		    	<file name="app.js" />
         	</filelist>
         </concat>
@@ -65,6 +65,7 @@
             	<exclude name="**/*-javadoc.jar"/>
             	<exclude name="**/*-sources.jar"/>
             </fileset>
+			
         </war>
 	</target>
 	

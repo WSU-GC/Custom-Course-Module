@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	
 	var Terms = function(_terms) {
 		this.courses = mapTerms(_terms);

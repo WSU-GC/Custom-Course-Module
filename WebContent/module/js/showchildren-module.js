@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	var showChildren = new Module({
 		controller: function() {
 			

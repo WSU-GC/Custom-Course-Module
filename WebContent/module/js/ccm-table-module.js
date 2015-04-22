@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	var uiFn = {
 		link: function(obj, course) {
 			var ctrl = this.ctrl;

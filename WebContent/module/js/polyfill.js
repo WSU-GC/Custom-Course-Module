@@ -1,4 +1,4 @@
-(function(win, doc){
+;(function(win, doc){
 	
 	/**
 	 * window/document.addEventListener polyfill.

@@ -54,9 +54,9 @@ public class BuildingBlockHelper {
 	
 	public static Properties loadBuildProperties() throws IOException {
 		File settingsFile = new File(getBaseUrl(BUILD_FILE_NAME));
-		if (!settingsFile.exists()) {
-			settingsFile.createNewFile();
-		}
+//		if (!settingsFile.exists()) {
+//			settingsFile.createNewFile();
+//		}
 		FileInputStream in = new FileInputStream(settingsFile);
 		Properties settings = new Properties();
 		settings.load(in);
