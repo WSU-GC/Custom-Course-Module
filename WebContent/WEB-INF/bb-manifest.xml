@@ -4,7 +4,7 @@
     <name value= "WSU Custom Course Module"/>
     <handle value= "wsu-custom-course-module"/>
     <description value= "WSU Custom Course Module for managing course sections and merges. Testing"/>
-    <version value= "2.0.4"/>
+    <version value= "2.0.10"/>
     <requires>
     	<bbversion value="9.0.0"/>
     </requires>
@@ -49,7 +49,7 @@
       <permission type="persist" name="metadatapickeruserpreference" actions="create"/>
       <permission type="persist" name="metadatapickerattributevalues" actions="create"/> 
       <permission type="java.lang.reflect.ReflectPermission" name="suppressAccessChecks" actions="suppressAccessChecks"/>   
-      <permission type="java.io.FilePermission" name="&lt;&lt;ALL FILES&gt;&gt;" actions="read,write" />  
+      <permission type="java.io.FilePermission" name="/webapps/wsu-wsu-custom-course-module-BBLEARN/build.properties" actions="read,write" />  
     </permissions>
   </plugin>
 
