@@ -26,6 +26,8 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		Gson gson = new GsonBuilder()
 			.registerTypeAdapter(CMWrapper.class, new CMWrapperSerializer()).create();
 		
+		Gson plainGson = new Gson();
+		
 		JsonObject result = new JsonObject();
 		//result.add("course", gson.toJsonTree(cm.course));
 		
@@ -47,6 +49,7 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		result.addProperty("activateUri", BuildingBlockHelper.getBaseUrl() + "Activate?course-id=" + cm.course.courseId + "&title=" + cm.course.title);
 		result.addProperty("accessUri", "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + cm.course.coursePkId);
 		result.addProperty("isUsingCourseVerification", cm.course.isUsingCourseVerification);
+		//result.addProperty("isUsingCourseVerification", true);
 		try {
 			result.add("enrl", new JsonPrimitive(cm.course.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {
@@ -68,6 +71,13 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 			// TODO Auto-generated catch block
 			result.add("Children", new Gson().toJsonTree(children));
 		}
+		
+// useful for troubleshooting
+//		try {
+//			result.add("settings", plainGson.toJsonTree(cm.course.loadCourseTools()));
+//		} catch (Exception e) {
+//			result.addProperty("settings", "Failed to load course settings");
+//		}
 		
 		result.addProperty("isSecondaryInstructor", cm.role.equalsIgnoreCase("si") || cm.role.equalsIgnoreCase("scb"));
 		result.addProperty("isInstructor", cm.role.equalsIgnoreCase("si") || cm.role.equalsIgnoreCase("scb") 

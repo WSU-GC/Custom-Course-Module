@@ -67,9 +67,19 @@ public class CourseWrapper {
 	public boolean checkForCourseVerification() throws PersistenceException, ToolSettingsException {
 		boolean isCV = false;
 		ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
-		CourseToolSettings courseToolSettings = toolManager.loadCourseToolSettings(this.id, "Course Verificaiton Tool", CourseToolSettings.CourseToolType.ContentHandler);
-		//isCV = courseToolSettings.getCourseApplication().getIsEnabled();
+		CourseToolSettings courseToolSettings = toolManager.loadCourseToolSettings(this.id, "wsu-wsu-course-verification", CourseToolSettings.CourseToolType.Application);
+		isCV = courseToolSettings.getToolEnabledSetting().isAvailable();
 		return isCV;
+	}
+	
+	public List<String> loadCourseTools() throws PersistenceException {
+		List<String> settingStrings = new ArrayList<String>();
+		ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
+		List<CourseToolSettings> allSettings = toolManager.loadAllCourseToolSettings(this.id, CourseToolSettings.CourseToolType.Application, true);
+		for(CourseToolSettings settings : allSettings) {
+			settingStrings.add(settings.toString());
+		}
+		return settingStrings;
 	}
 	
 	public List<CourseMembership> loadMemberships() throws KeyNotFoundException, PersistenceException {
