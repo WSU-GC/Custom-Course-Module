@@ -20,12 +20,12 @@ public class BuildingBlockHelper {
 	 * The vendor ID for the Building Block. This must match the vendor ID in the
 	 * bb-manifest.xml file.
 	 */
-	public static final String VENDOR_ID = "wsu";
+	public static final String VENDOR_ID = "wsu2";
 	/** 
 	 * The vendor ID for the Building Block. This must match the building block "handle"
 	 * in the bb-manifest.xml file.
 	 */
-	public static final String HANDLE = "wsu-custom-course-module";
+	public static final String HANDLE = "wsu-custom-course-module-testing";
 	/** The name of the building block settings file in the config directory */
 	public static final String SETTINGS_FILE_NAME = "settings.properties";
 	public static final String BUILD_FILE_NAME = "build.properties";

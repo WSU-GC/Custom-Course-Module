@@ -58,6 +58,13 @@
 		<servlet-name>Merge</servlet-name>
 		<servlet-class>servlets.Merge</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Waitlist</display-name>
+		<servlet-name>Waitlist</servlet-name>
+		<servlet-class>servlets.Waitlist</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>TestHttpServ</servlet-name>
 		<url-pattern>/TestHttpServ</url-pattern>
@@ -89,6 +96,10 @@
 	<servlet-mapping>
 		<servlet-name>Merge</servlet-name>
 		<url-pattern>/Merge</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Waitlist</servlet-name>
+		<url-pattern>/Waitlist</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
