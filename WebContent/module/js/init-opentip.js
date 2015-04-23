@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	win.startOpenTip = function startOpenTip() {
 
 		var availabilityMessage = "Enable/Disable your course for student viewing.";

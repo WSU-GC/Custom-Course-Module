@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	
 	
 	var CourseWrapper = function(courses) {

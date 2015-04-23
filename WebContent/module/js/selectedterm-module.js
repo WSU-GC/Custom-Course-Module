@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	var selectedTerm = new Module({
 		controller: function() {
 			//this.terms = Object.keys(Terms.listAll()).sort(sortTerms); //.reverse();

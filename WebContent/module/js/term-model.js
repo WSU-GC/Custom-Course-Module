@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	
 	var Terms = function(_terms) {
 		this.courses = mapTerms(_terms);
@@ -10,7 +10,7 @@
 			
 			var accessUri = el.accessUri
 				, activateUri = el.activateUri
-				, cvUri = el.cvUriar
+				, cvUri = el.cvUri
 				, disableUri = el.disableUri
 				, enableUri = el.enableUri
 				, unmergeUri = el.unmergeUri;

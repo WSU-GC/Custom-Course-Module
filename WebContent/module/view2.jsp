@@ -6,6 +6,7 @@
 <%@page import="blackboard.data.user.*" %>
 <%@page import="java.util.ArrayList" %>
 <%@page import="java.util.List" %>
+<%@page import="java.util.Properties" %>
 
 <%@ taglib uri="/bbNG" prefix="bbNG"%>
 
@@ -16,7 +17,13 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/style.css") %>' />
 <link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/opentip.css") %>' />
 
+<%
+boolean isDev = false;
+//Properties buildProps = BuildingBlockHelper.loadBuildProperties();
+//String version = buildProps.getProperty("build.version");
+String version = "2.1.0";
 
+if (isDev) { %>
 
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/polyfill.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/mithril.js") %>'></script>
@@ -24,6 +31,12 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/opentip.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/term-model.js") %>'></script>
+
+<% } else { %>
+
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl() + "build/concat-" + version + ".js" %>'></script>
+
+<% } %>
 
 
 
@@ -216,7 +229,8 @@ if(instMemberships.size() > 0) {
 
 
 <script type="text/javascript">
-	var moduleBasePath = "<%= moduleBasePath %>"
+	var isDev = <%= isDev %>
+		, moduleBasePath = "<%= moduleBasePath %>"
 		, courseBasePath = "<%= courseBasePath %>"
 		, parentCourseId = ''
 		, isInstructor = <%= isInstructor %>
@@ -337,14 +351,16 @@ if(instMemberships.size() > 0) {
 	
 
 	ready(function() {
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>');
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/filter-module.js") %>');
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/roster-module.js") %>');
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/loading-module.js") %>');
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/ccm-table-module.js") %>');
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/selectedterm-module.js") %>');
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/showchildren-module.js") %>');
-		load('<%= BuildingBlockHelper.getBaseUrl("module/js/app.js") %>');
+		if (isDev) {
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/filter-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/roster-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/loading-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/ccm-table-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/selectedterm-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/showchildren-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/app.js") %>');
+		}
 		
 		ready(function() {
 			console.log('dom loaded');

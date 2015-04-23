@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	var loadingModule = new Module({
 		controller: function() {
 					

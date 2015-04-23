@@ -1,4 +1,4 @@
-(function(win) {
+;(function(win) {
 	var Module = function(m) {
 
 		this._m = m;

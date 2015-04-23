@@ -1,5 +1,5 @@
 
-function appLoader() {
+;function appLoader() {
 	ready(function() {
 		console.log('dom loaded');
 		main();
