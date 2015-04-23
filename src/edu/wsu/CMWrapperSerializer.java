@@ -46,7 +46,7 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		result.addProperty("unmergeUri", BuildingBlockHelper.getBaseUrl() + "Remove?parent-course=" + cm.course.parent + "&child-course=" + cm.course.courseId);
 		result.addProperty("activateUri", BuildingBlockHelper.getBaseUrl() + "Activate?course-id=" + cm.course.courseId + "&title=" + cm.course.title);
 		result.addProperty("accessUri", "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + cm.course.coursePkId);
-		result.addProperty("useCourseVerification", cm.useCourseVerification);
+		result.addProperty("isUsingCourseVerification", cm.course.isUsingCourseVerification);
 		try {
 			result.add("enrl", new JsonPrimitive(cm.course.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {

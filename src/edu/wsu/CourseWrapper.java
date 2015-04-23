@@ -9,6 +9,8 @@ import blackboard.data.course.Course;
 import blackboard.data.course.CourseCourse;
 import blackboard.data.course.CourseMembership;
 import blackboard.data.course.CourseToolUtil;
+import blackboard.data.navigation.CourseToolSettings;
+import blackboard.data.navigation.ToolSettingsException;
 import blackboard.data.user.User;
 import blackboard.persist.Id;
 import blackboard.persist.KeyNotFoundException;
@@ -17,6 +19,7 @@ import blackboard.persist.course.CourseCourseDbLoader;
 import blackboard.persist.course.CourseDbLoader;
 import blackboard.persist.user.UserDbLoader;
 import blackboard.persist.course.CourseMembershipDbLoader;
+import blackboard.persist.navigation.*;
 
 public class CourseWrapper {
 	
@@ -32,6 +35,7 @@ public class CourseWrapper {
 	public boolean isOnline;
 	public boolean isParent;
 	public boolean isChild;
+	public boolean isUsingCourseVerification;
 	//public List<CourseMembership> memberships = new ArrayList<CourseMembership>();
 	//public int enrollment;
 	
@@ -39,7 +43,7 @@ public class CourseWrapper {
 	public CourseWrapper() {
 	}
 	
-	public CourseWrapper(Course course) throws PersistenceException {
+	public CourseWrapper(Course course) throws PersistenceException, ToolSettingsException {
 		//String saipRegex = "^\\d+-\\d+-\\d+-\\w+-\\w+-\\d+$";
 		String saipRegex = "^ROSTER-.+";
 		String onlineRegex = "(?i).+-ONLIN-.+";
@@ -55,8 +59,17 @@ public class CourseWrapper {
 		this.isParent = course.isParent();
 		this.isChild = course.isChild();
 		this.parent = this.loadParentCourseId();
+		this.isUsingCourseVerification = checkForCourseVerification();
 		//this.memberships = CourseMembershipDbLoader.Default.getInstance().loadByCourseId(this.id);
 		//this.enrollment = this.memberships != null ? this.memberships.size() : 0;
+	}
+	
+	public boolean checkForCourseVerification() throws PersistenceException, ToolSettingsException {
+		boolean isCV = false;
+		ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
+		CourseToolSettings courseToolSettings = toolManager.loadCourseToolSettings(this.id, "Course Verificaiton Tool", CourseToolSettings.CourseToolType.ContentHandler);
+		//isCV = courseToolSettings.getCourseApplication().getIsEnabled();
+		return isCV;
 	}
 	
 	public List<CourseMembership> loadMemberships() throws KeyNotFoundException, PersistenceException {
@@ -106,7 +119,7 @@ public class CourseWrapper {
 	}
 	
 	public static List<CourseWrapper> loadCourseWrappersByUser(User user) 
-			throws KeyNotFoundException, PersistenceException {
+			throws KeyNotFoundException, PersistenceException, ToolSettingsException {
 		List<CourseWrapper> cwCourses = new ArrayList<CourseWrapper>();
 		List<Course> courses = CourseDbLoader.Default.getInstance()
 				.loadByUserId(user.getId());
@@ -134,7 +147,7 @@ public class CourseWrapper {
 		return cwCourses;
 	}
 	
-	public static List<CourseWrapper> loadByCourses(List<Course> courses) throws PersistenceException {
+	public static List<CourseWrapper> loadByCourses(List<Course> courses) throws PersistenceException, ToolSettingsException {
 		List<CourseWrapper> cw = new ArrayList<CourseWrapper>();
 		for(Course course: courses) {
 			cw.add(new CourseWrapper(course));

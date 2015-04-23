@@ -18,7 +18,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 <link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/opentip.css") %>' />
 
 <%
-boolean isDev = false;
+boolean isDev = true;
 //Properties buildProps = BuildingBlockHelper.loadBuildProperties();
 //String version = buildProps.getProperty("build.version");
 String version = "2.1.0";

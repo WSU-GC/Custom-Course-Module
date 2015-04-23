@@ -33,7 +33,7 @@
 			if (el.isRoster || el.isChild) 
 				el.accessUri = {uiFn: "text", tdAttrs: {class: el.isChild ? "child" : ""}, text: el.displayTitle};
 			
-			if ((el.isOnline || el.useCourseVerification) && (el.isInstructor || el.isSecondaryInstructor) && !el.isChild) {
+			if ((el.isOnline || el.isUsingCourseVerification) && (el.isInstructor || el.isSecondaryInstructor) && !el.isChild) {
        		   if(!el.isRoster) {
        			   el.action = el.cvUri;
        		   } else {

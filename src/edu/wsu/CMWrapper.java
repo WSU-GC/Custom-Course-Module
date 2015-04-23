@@ -8,6 +8,7 @@ import java.util.List;
 import blackboard.data.course.Course;
 import blackboard.data.course.CourseMembership;
 import blackboard.data.course.CourseToolUtil;
+import blackboard.data.navigation.ToolSettingsException;
 import blackboard.data.user.User;
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
@@ -19,20 +20,20 @@ public class CMWrapper {
 	public CourseWrapper course;
 	public CourseMembership membership = null;
 	public String role;
-	public boolean useCourseVerification;
+	//public boolean useCourseVerification;
 	
 	public CMWrapper() {
 	}
 	
 	public CMWrapper(User user, Course course) 
-			throws KeyNotFoundException, PersistenceException {
+			throws KeyNotFoundException, PersistenceException, ToolSettingsException {
 		this.user = user;
 		this._course = course;
 		this.course = new CourseWrapper(course);
 		this.membership = CourseMembershipDbLoader.Default.getInstance()
 				.loadByCourseAndUserId(this.course.id, this.user.getId());
 		this.role = this.membership.getRoleAsString();
-		this.useCourseVerification = this.isCourseVerificationEnabled();
+		//this.useCourseVerification = this.isCourseVerificationEnabled();
 	}
 	
 	public CMWrapper(User user, Course course, Course _parent) throws Exception {
@@ -65,18 +66,18 @@ public class CMWrapper {
 //		}
 	}
 	
-	public static List<CMWrapper> loadCMWrappersByUser(User user) throws KeyNotFoundException, PersistenceException {
+	public static List<CMWrapper> loadCMWrappersByUser(User user) throws KeyNotFoundException, PersistenceException, ToolSettingsException {
 		List<CourseWrapper> courseWrappers = CourseWrapper.loadCourseWrappersByUser(user);
 		return CMWrapper.loadCMWrappersByUserAndCourseWrappers(user, courseWrappers);
 	}
 	
 	public boolean isCourseVerificationEnabled() throws PersistenceException {
 //		String pluginName = courseToolUtil.getLocalizedLabelForCourseTools(arg0, arg1, arg2);
-		return CourseToolUtil.isToolAvailableForCourseUser("Achievements", this.membership);
+		return CourseToolUtil.isToolAvailableForCourseUser("wsu-course-verification", this.membership);
 	}
 	
 	public static List<CMWrapper> loadCMWrappersByUserAndCourses(User user, List<Course> courses) 
-			throws KeyNotFoundException, PersistenceException {
+			throws KeyNotFoundException, PersistenceException, ToolSettingsException {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i =0, l = courses.size(); i < l; i++) {
 			cmWrappers.add(new CMWrapper(user, courses.get(i)));
@@ -94,7 +95,7 @@ public class CMWrapper {
 	}
 	
 	public static List<CMWrapper> loadCMWrappersByUserAndCourseWrappers(User user, List<CourseWrapper> courses) 
-			throws PersistenceException {
+			throws PersistenceException, ToolSettingsException {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (CourseWrapper course: courses) {
 			cmWrappers.add(new CMWrapper(user, course.course));
