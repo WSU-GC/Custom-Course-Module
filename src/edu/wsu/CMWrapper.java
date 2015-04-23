@@ -32,6 +32,36 @@ public class CMWrapper {
 		this.role = this.membership.getRoleAsString();
 	}
 	
+	public CMWrapper(User user, Course course, Course _parent) throws Exception {
+		this.user = user;
+		this._course = course;
+		this.course = new CourseWrapper(course);
+		CourseWrapper parent = new CourseWrapper(_parent);
+		try {
+			this.membership = CourseMembershipDbLoader.Default.getInstance()
+					.loadByCourseAndUserId(this.course.id, this.user.getId());
+		} catch (Exception e) {
+			try {
+				this.membership = CourseMembershipDbLoader.Default.getInstance()
+						.loadByCourseAndUserId(parent.id, this.user.getId());
+			} catch (Exception f) {
+				throw new Exception("User is not associated to course: " + user.getUserName() + " " + this.course.courseId + " or " + parent.courseId);
+			}
+		}
+		
+		
+		this.role = this.membership.getRoleAsString();
+	}
+	
+	public List<CMWrapper> loadChildren() 
+			throws PersistenceException, Exception {
+//		try {
+			return CMWrapper.loadCMWrappersByUserAndCourseWrappersAndParent(this.user, this.course.loadChildren(), this.course.course);			
+//		} catch (Exception e) {
+//			throw new Exception("Unable to load CM Wrappers.");
+//		}
+	}
+	
 	public static List<CMWrapper> loadCMWrappersByUser(User user) throws KeyNotFoundException, PersistenceException {
 		List<CourseWrapper> courseWrappers = CourseWrapper.loadCourseWrappersByUser(user);
 		return CMWrapper.loadCMWrappersByUserAndCourseWrappers(user, courseWrappers);
@@ -46,11 +76,20 @@ public class CMWrapper {
 		return cmWrappers;
 	}
 	
-	public static List<CMWrapper> loadCMWrappersByUserAndCourseWrappers(User user, List<CourseWrapper> courses) 
-			throws KeyNotFoundException, PersistenceException {
+	public static List<CMWrapper> loadCMWrappersByUserAndCourseWrappersAndParent(User user, List<CourseWrapper> courses, Course parent) 
+			throws Exception {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
-		for (int i =0, l = courses.size(); i < l; i++) {
-			cmWrappers.add(new CMWrapper(user, courses.get(i).course));
+		for (CourseWrapper course: courses) {
+			cmWrappers.add(new CMWrapper(user, course.course, parent));
+		}
+		return cmWrappers;
+	}
+	
+	public static List<CMWrapper> loadCMWrappersByUserAndCourseWrappers(User user, List<CourseWrapper> courses) 
+			throws PersistenceException {
+		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
+		for (CourseWrapper course: courses) {
+			cmWrappers.add(new CMWrapper(user, course.course));
 		}
 		return cmWrappers;
 	}

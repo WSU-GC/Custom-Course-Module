@@ -188,8 +188,9 @@ public class CourseManagement {
 		Course childCourse = courseLoader.loadByCourseId(childId);
 		//CourseManagement.removeGroup(parentId, childId);
 		try {
+			// should be KEEP_ORIGINAL_COURSE_RETAIN_CHILD_ENROLLMENTS_IN_MASTER
 			ccManager.removeChildFromMaster(childCourse.getId(), parentCourse.getId(), 
-					CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE);
+					CourseCourseManager.DecrosslistStyle.KEEP_ORIGINAL_COURSE_RETAIN_CHILD_ENROLLMENTS_IN_MASTER);
 		} catch (Exception e) {
 			throw new Exception("Failed to persist unmerge courses. parent course: " + parentId + " Child course: " + childId + ".");
 		}

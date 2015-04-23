@@ -14,6 +14,7 @@ import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.course.CourseCourseDbLoader;
 import blackboard.persist.course.CourseDbLoader;
+import blackboard.persist.user.UserDbLoader;
 import blackboard.persist.course.CourseMembershipDbLoader;
 
 public class CourseWrapper {
@@ -61,9 +62,30 @@ public class CourseWrapper {
 		return CourseMembershipDbLoader.Default.getInstance().loadByCourseId(this.id);
 	}
 	
+	public List<CourseMembership> loadInstructorMemberships() throws KeyNotFoundException, PersistenceException {
+		return CourseMembershipDbLoader.Default.getInstance().loadByCourseIdAndInstructorFlag(this.id);
+	}
+	
+	public List<String> loadInstructorEmails() throws KeyNotFoundException, PersistenceException {
+		List<CourseMembership> instructorMemberships = this.loadInstructorMemberships();
+		List<String> emails = new ArrayList<String>();
+		for(CourseMembership instructor : instructorMemberships) {
+			try {
+				emails.add(UserDbLoader.Default.getInstance().loadById(instructor.getUserId()).getEmailAddress());
+			} catch (Exception e) {
+				emails.add("----ERROR LOADING EMAIL----");
+			}
+		}
+		return emails;
+	}
+	
 	public List<CourseWrapper> loadChildren() 
-			throws PersistenceException {
-		return CourseWrapper.loadChildCourseWrappersByParentCourse(this.course);
+			throws PersistenceException, Exception {
+//		try {
+			return CourseWrapper.loadChildCourseWrappersByParentCourse(this.course);
+//		} catch (Exception e) {
+//			throw new Exception("Unable to load CourseWrappers");
+//		}
 	}
 	
 	public String loadParentCourseId () {

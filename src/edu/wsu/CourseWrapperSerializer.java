@@ -1,10 +1,13 @@
 package edu.wsu;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
 import blackboard.platform.plugin.PlugInUtil;
+import helper.buildingblock.BuildingBlockHelper;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,7 +22,7 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 	public JsonElement serialize(final CourseWrapper cw, final Type type,
 			final JsonSerializationContext context) {
 		
-		String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "") + "module/";
+		Gson plainGson = new Gson();
 		
 		Gson gson = new GsonBuilder()
 			.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
@@ -37,11 +40,18 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.add("isChild", new JsonPrimitive(cw.isChild));
 		result.add("parent", new JsonPrimitive(cw.parent));
 		result.addProperty("cvUri", "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + cw.courseId);
-		result.addProperty("disableUri", moduleBasePath + "disable.jsp?course-id=" + cw.courseId);
+		result.addProperty("disableUri", BuildingBlockHelper.getBaseUrl() + "Disable?course-id=" + cw.courseId);
 		result.addProperty("displayTitle", cw.title + " (" + cw.courseId + ")");
-		result.addProperty("enableUri", moduleBasePath + "enable.jsp?course-id=" + cw.courseId);
-		result.addProperty("unmergeUri", moduleBasePath + "remove.jsp?parent-course=" + cw.parent + "&child-course=" + cw.courseId);
-		result.addProperty("activateUri", moduleBasePath + "activate.jsp?course-id=" + cw.courseId + "&title=" + cw.title);
+		result.addProperty("enableUri", BuildingBlockHelper.getBaseUrl() + "Enable?course-id=" + cw.courseId);
+		result.addProperty("unmergeUri", BuildingBlockHelper.getBaseUrl() + "Remove?parent-course=" + cw.parent + "&child-course=" + cw.courseId);
+		result.addProperty("activateUri", BuildingBlockHelper.getBaseUrl() + "Activate?course-id=" + cw.courseId + "&title=" + cw.title);
+		result.addProperty("accessUri", "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + cw.coursePkId);
+		try {
+			result.add("instructorEmails", plainGson.toJsonTree(cw.loadInstructorEmails()));
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			result.addProperty("instructorEmails", "falied");
+		} 
 		try {
 			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
 		} catch (KeyNotFoundException e1) {
@@ -57,9 +67,11 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 			result.add("children", gson.toJsonTree(cw.loadChildren()));
 			//result.add("children", new JsonPrimitive(gson.toJson(cw.loadChildren())));
 			//result.addProperty("children", gson.toJson(cw.loadChildren()));
-		} catch (PersistenceException e) {
+		} catch (Exception e) {
+			List<String> children = new ArrayList<String>();
+			children.add("Unable to load child course for " + cw.courseId);
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			result.add("Children", new Gson().toJsonTree(children));
 		}
 		return result;
 	}

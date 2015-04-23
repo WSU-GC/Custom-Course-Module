@@ -28,7 +28,7 @@ public class BuildingBlockHelper {
 	public static final String HANDLE = "wsu-custom-course-module";
 	/** The name of the building block settings file in the config directory */
 	public static final String SETTINGS_FILE_NAME = "settings.properties";
-	public static final String ENV_FILE_NAME = "env.properties";
+	public static final String BUILD_FILE_NAME = "build.properties";
 	
 	/** 
 	 * Returns the config directory for this Building Block 
@@ -52,11 +52,11 @@ public class BuildingBlockHelper {
 		return PlugInUtil.getUri(VENDOR_ID, HANDLE, resource);
 	}
 	
-	public static Properties loadEnvProperties() throws IOException {
-		File settingsFile = new File(getBaseUrl(ENV_FILE_NAME));
-		if (!settingsFile.exists()) {
-			settingsFile.createNewFile();
-		}
+	public static Properties loadBuildProperties() throws IOException {
+		File settingsFile = new File(getBaseUrl(BUILD_FILE_NAME));
+//		if (!settingsFile.exists()) {
+//			settingsFile.createNewFile();
+//		}
 		FileInputStream in = new FileInputStream(settingsFile);
 		Properties settings = new Properties();
 		settings.load(in);

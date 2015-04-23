@@ -1,3 +1,4 @@
+<%@page import="helper.buildingblock.BuildingBlockHelper"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="com.google.gson.GsonBuilder" %>
 <%@page import="edu.wsu.*"%>
@@ -5,6 +6,7 @@
 <%@page import="blackboard.data.user.*" %>
 <%@page import="java.util.ArrayList" %>
 <%@page import="java.util.List" %>
+<%@page import="java.util.Properties" %>
 
 <%@ taglib uri="/bbNG" prefix="bbNG"%>
 
@@ -12,105 +14,109 @@
 String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "") + "module/";
 %>
 
-<link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "style.css" %>' />
-<link rel="stylesheet" type="text/css" href='<%= moduleBasePath + "opentip.css" %>' />
+<link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/style.css") %>' />
+<link rel="stylesheet" type="text/css" href='<%= BuildingBlockHelper.getBaseUrl("module/css/opentip.css") %>' />
+
+<%
+boolean isDev = false;
+//Properties buildProps = BuildingBlockHelper.loadBuildProperties();
+//String version = buildProps.getProperty("build.version");
+String version = "2.0.10";
+
+if (isDev) { %>
+
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/polyfill.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/mithril.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/module.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/opentip.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/term-model.js") %>'></script>
+
+<% } else { %>
+
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl() + "build/concat-" + version + ".js" %>'></script>
+
+<% } %>
+
+
 
 <script>
-(function(win, doc){
-	if(win.addEventListener)return;		//No need to polyfill
 
-	function docHijack(p){var old = doc[p];doc[p] = function(v){return addListen(old(v))}}
-	function addEvent(on, fn, self){
-		return (self = this).attachEvent('on' + on, function(e){
-			var e = e || win.event;
-			e.preventDefault  = e.preventDefault  || function(){e.returnValue = false}
-			e.stopPropagation = e.stopPropagation || function(){e.cancelBubble = true}
-			fn.call(self, e);
+	/* 
+	* Dynamic script loader. This entire page is loaded by Bb at page load, after the initial DOMLoaded event has fired.
+	* Therefore you cannot depend on $(function() { ... }) or $(document).ready(...) for resource loading or executing on page load events.
+	* The function defined below allows you to explicitly listen for when specific globals defined on window have finished loading
+	* example: ready(function() {// stuff to execute when globals are ready}, "jQuery", "underscore", ...OTHER GLOBALS TO LISTEN FOR);
+	* It will run for a few seconds before consoling an error and moving on. This must be defined in page as we cannot dynamically load the dynamic loader.
+	*/
+	function load(resource) {
+		var script = document.createElement("script");
+		script.setAttribute("type", "text/javascript");
+		script.setAttribute("src", resource);
+		document.head.appendChild(script);
+	}
+	
+	
+	function ready(cb) {
+		//this.__count = 0;
+		window.__COUNT_LOADING_ATTEMPTS = window.__COUNT_LOADING_ATTEMPTS || 0;
+		var args = Array.prototype.slice.call(arguments, 1);
+		
+		// Polyfill for array.filter
+		var filter = Array.prototype.filter || function(fn) {
+			var array = this;
+			var l = array.length;
+			var res = [];
+			
+			for(var i = 0; i < l; i++) {
+				if(fn.call(this, array[i], i, array))
+					res = res.push(array[i]);
+			}
+			
+			return res;
+		}
+		
+		var loading = filter.call(args, function(el) {
+			return typeof window[el] == 'undefined';
 		});
+		
+		function run() {
+			window.__COUNT_LOADING_ATTEMPTS++;
+			if (window.__COUNT_LOADING_ATTEMPTS > 1000) {
+				// Unable to load all resources. log error and move on.
+				console.error("Error: page failed to load all resources: %s", loading.toString());
+				window.__COUNT_LOADING_ATTEMPTS = 0;
+				cb();
+			} else { 
+				ready.apply(this, [cb].concat(args));
+			}
+		}
+		
+		// polyfill for function binding.
+		run._bind = Function.prototype.bind || function(bThis) {
+			var args = Array.prototype.slice.call(arguments, 1);
+			var fn = this;
+			return function() {
+				var _args = args.concat(Array.prototype.slice.call(arguments));
+				return fn.apply(bThis, _args);
+			}
+		};
+	
+		/in/.test(document.readyState) || loading.length
+			? setTimeout(run._bind(this), 9)
+			: (function() {cb(); window.__COUNT_LOADING_ATTEMPTS = 0; }());
+		
+		/**
+		* None of the polyfills in this function override native prototype chains/functionality
+		* polyfill.js provides more robust polyfill functions that do extend native prototype chains.
+		*/
 	}
-	function addListen(obj, i){
-		if(i = obj.length)while(i--)obj[i].addEventListener = addEvent;
-		else obj.addEventListener = addEvent;
-		return obj;
-	}
 
-	addListen([doc, win]);
-	if('Element' in win)win.Element.prototype.addEventListener = addEvent;			//IE8
-	else{																			//IE < 8
-		doc.attachEvent('onreadystatechange', function(){addListen(doc.all)});		//Make sure we also init at domReady
-		docHijack('getElementsByTagName');
-		docHijack('getElementById');
-		docHijack('createElement');
-		addListen(doc.all);	
-	}
-})(window, document);
-if (!Function.prototype.bind) {
-	  Function.prototype.bind = function(oThis) {
-	    if (typeof this !== 'function') {
-	      // closest thing possible to the ECMAScript 5
-	      // internal IsCallable function
-	      throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
-	    }
-
-	    var aArgs   = Array.prototype.slice.call(arguments, 1),
-	        fToBind = this,
-	        fNOP    = function() {},
-	        fBound  = function() {
-	          return fToBind.apply(this instanceof fNOP && oThis
-	                 ? this
-	                 : oThis,
-	                 aArgs.concat(Array.prototype.slice.call(arguments)));
-	        };
-
-	    fNOP.prototype = this.prototype;
-	    fBound.prototype = new fNOP();
-
-	    return fBound;
-	  };
-	}
-if (!Array.prototype.filter) {
-	  Array.prototype.filter = function(fun/*, thisArg*/) {
-	    'use strict';
-
-	    if (this === void 0 || this === null) {
-	      throw new TypeError();
-	    }
-
-	    var t = Object(this);
-	    var len = t.length >>> 0;
-	    if (typeof fun !== 'function') {
-	      throw new TypeError();
-	    }
-
-	    var res = [];
-	    var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
-	    for (var i = 0; i < len; i++) {
-	      if (i in t) {
-	        var val = t[i];
-
-	        // NOTE: Technically this should Object.defineProperty at
-	        //       the next index, as push can be affected by
-	        //       properties on Object.prototype and Array.prototype.
-	        //       But that method's new, and collisions should be
-	        //       rare, so use the more-compatible alternative.
-	        if (fun.call(thisArg, val, i, t)) {
-	          res.push(val);
-	        }
-	      }
-	    }
-
-	    return res;
-	  };
-	}
 </script>
-
-<script type="text/javascript" src='<%= moduleBasePath + "jquery.js" %>'></script>
-<script type="text/javascript" src='<%= moduleBasePath + "opentip.js" %>'></script>
-<script type="text/javascript" src='<%= moduleBasePath + "mithril.js" %>'></script>
 
 <style>
 	.CSSTableGenerator tr td.child {
-		background-image: url('<%= moduleBasePath + "xchild.png" %>');
+		background-image: url('<%= BuildingBlockHelper.getBaseUrl("module/images/xchild.png") %>');
 	}
 	#CCMPage2, #loadingRequest {
 		display: none;
@@ -191,9 +197,14 @@ if(instMemberships.size() > 0) {
 				</li>
 			</ol>
 			
-			<!-- Instructor Courses -->
+			<!-- ***************************************************************
+				 * Instructor Courses
+				 * div where CCM instructor table is loaded  
+			******************************************************************** -->
 			<div id="instCourses">
+				
 			</div>
+			
 			<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
 		</div> <!-- END Manage Course -->
 	</div><!-- End CCMSPace -->
@@ -216,530 +227,150 @@ if(instMemberships.size() > 0) {
 	
 </div><!-- End Page1 -->
 
-<div id="CCMPage2">
-	<div id="rosterContainer" class="CCMSpace">
-	<!-- Container where the available rosters will display for merges -->
-		
-	</div>
-	<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
-</div><!-- End Page2 -->
-
-<div id="loadingRequest">
-	<div class="CCMSpace">
-		<h6>Loading...</h6>
-		<p></p>
-	</div>
-</div>
-
-<div id="rosterTemplate" style="display: none;">
-		<a id="back" href="#">back</a>
-		<h6>Parent Course Space</h6>
-		<br/>
-		<div id="parentCourse">{{:parentCourse}}</div>
-		<br/>
-		<h6>Select rosters to include</h6>
-		<ul id="mergeList" class="portletList-img courseListing">
-		{{for rosters}}
-			<li>
-			{{for course}}
-				{{if !isOnline}}
-					<input type='checkbox' value='{{:courseId}}' />
-				{{else}}
-					*
-				{{/if}}
-				{{:displayTitle}}
-			{{/for}}
-			</li>
-		{{/for}}
-		</ul>
-		<bbNG:button id="createCourseSection" url="#" label="Save" />
-</div>
 
 <script type="text/javascript">
-	if (!Object.assign) {
-	  Object.defineProperty(Object, "assign", {
-	    enumerable: false,
-	    configurable: true,
-	    writable: true,
-	    value: function(target, firstSource) {
-	      "use strict";
-	      if (target === undefined || target === null)
-	        throw new TypeError("Cannot convert first argument to object");
-	      var to = Object(target);
-	      for (var i = 1; i < arguments.length; i++) {
-	        var nextSource = arguments[i];
-	        if (nextSource === undefined || nextSource === null) continue;
-	        var keysArray = Object.keys(Object(nextSource));
-	        for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
-	          var nextKey = keysArray[nextIndex];
-	          var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
-	          if (desc !== undefined && desc.enumerable) to[nextKey] = nextSource[nextKey];
-	        }
-	      }
-	      return to;
-	    }
-	  });
-	}
+	var isDev = <%= isDev %>
+		, moduleBasePath = "<%= moduleBasePath %>"
+		, courseBasePath = "<%= courseBasePath %>"
+		, parentCourseId = ''
+		, isInstructor = <%= isInstructor %>
+		, instCourses = <%= jsonInstTerms %>
+		, rosters = <%= jsonRosters %>;
 	
-	function ready(cb) {
-		var args = Array.prototype.slice.call(arguments, 1);
-		var loading = args.filter(function(el) {
-			return typeof window[el] == 'undefined';
-		});
-		function run() {
-			ready.apply(this, [cb].concat(args));
-		}
 
-		/in/.test(document.readyState) || loading.length
-		? setTimeout(run.bind(this), 9)
-		: cb();
-	}
-	
-  	/* function ready(cb) {
-  		/in/.test(document.readyState) || typeof Opentip == 'undefined' || typeof m == 'undefined' || typeof jQuery == 'undefined' // in = loadINg
-        ? setTimeout('ready('+cb+')', 9)
-        : cb();
-	} */
-
-	function  startOpenTip() {
-		var availabilityMessage = "Enable/Disable your course for student viewing.";
-		var actionMessage = "<strong style='text-decoration: underline;'>Activate</strong>: Creates a course space for the corresponding roster. <br/>"
-			+ "<strong style='text-decoration: underline;'>Remove</strong>: Pull the roster enrollments out of the parent course space. <br/>"
-			+ "<strong style='text-decoration: underline;'>Course Verification</strong>: Manage Global Campus courses.<br />"
-			+ "<strong style='text-decoration: underline;'>Merge</strong>: Add roster sections to the selected course space.";
+	function main() {
 		
-		Opentip.styles.extendedAlert = {
-				extends: "alert",
-				background: "#981e32",
-				color: "#ffffff"
-		}
+		window.courseClone = Object.assign({}, instCourses);
 		
-		var options = {
-			target: true,
-			tipJoint: "bottom",
-			style: "extendedAlert"
-		};
-		new Opentip("#availabilityTT", availabilityMessage, options);
-		new Opentip("#actionTT", actionMessage, options);
-	}
-</script>
-<script type="text/javascript">
-	var moduleBasePath = "<%= moduleBasePath %>";
-	var parentCourseId = '';
-	var isInstructor = <%= isInstructor %>;
-	var instCourses = <%= jsonInstTerms %>;	
-	var rosters = <%= jsonRosters %>;
-	
-	function showLoading(evt) {
-        document.getElementById("CCMPage1").style.display = "none";
-        document.getElementById("CCMPage2").style.display = "none";
-        document.getElementById("loadingRequest").style.display = "block";
-	}
-	
-	jQuery(document).on('click', '#back', function() {
-        document.getElementById("CCMPage2").style.display = "none";
-		document.getElementById("CCMPage1").style.display = "block";
-	});
-	
-	jQuery(document).on('click', '#createCourseSection', function(evt){
-		evt.stopPropagation();
-		evt.preventDefault();
-		
-		showLoading();
-		
-		var uri = moduleBasePath + 'merge.jsp?parent-course=' + parentCourseId + "&child-courses=";
-		var childCourses = document.querySelectorAll('#mergeList input:checked');
-		[].forEach.call(childCourses, function(el, i) {
-			var prefix = i > 0 ? ',' : '';
-			uri += prefix + el.getAttribute("value");
-		});
-		window.location.replace(uri);
-	});
-	
-	function mapCourses(courses, role) {
-		return courses.map(function(el, i) {
-			var c = {};
-			c.course = el.course || el;
-			c.role = el.role || role;
-			role = (role || el.role).toLowerCase();
-			c.course.accessUri = "<%= courseBasePath %>" + c.course.coursePkId;
-			c.course.isInstructor = role == "instructor" || role == "pcb" || role == "support" || role == "course_editor";
-			c.course.isSecondaryInstructor = role == "si" || role == "scb";
-			c.course.isInstructor = c.course.isInstructor || c.course.isSecondaryInstructor;
-			c.course.children = mapCourses(c.course.children, c.role);
-			return c;
-		});
-	}
-	
-	function mapTerms(_terms) {
-		var keys = Object.keys(_terms).sort(sortTerms);
-		var terms = {};
-		terms['All'] = [];
-		var courses;
-		
-		for(var i = 0, l = keys.length; i < l; i++) {
-			courses = mapCourses(_terms[keys[i]]);
-			terms[keys[i]] = courses;
-			terms['All'] = terms['All'].concat(courses);
-		}
-		
-		return terms;
-	}
-	
-	function sortTerms(a, b) {
-		a = a.split(' ');
-		b = b.split(' ');
-		if(!isNaN(a[0]) && isNaN(b[0])) {
-			return -1;
-		} else if (isNaN(a[0]) && !isNaN(b[0])) {
-			return 1;
-		} else if(a[0].localeCompare(b[0]) == 0 && a.length > 1 && b.length > 1) {
-			return sortSeason(a[1], b[1]);
-		} else {
-			switch (a[0].localeCompare(b[0])) {
-			case -1:
-				return 1;
-				break;
-			case 1:
-				return -1;
-				break;
-			default:
-				return 0;
-			} 
-		}
-	}
-	
-	function sortSeason(a, b) {
-		if (a.toLowerCase() == 'fall') {
-			return -1;
-		} else if (b.toLowerCase() == 'fall') {
-			return 1;
-		} else {
-			switch (a.localeCompare(b)) {
-			case -1:
-				return 1;
-				break;
-			case 1:
-				return -1;
-				break;
-			default:
-				return 0;
-			}
-		}
-	}
-	
-	var Terms = {};
-	
-	Terms.listAll = function() {
-		//return convertFromJson(instCourses);
-		return mapTerms(instCourses.terms);
-	}
-	
-	Terms.listRosters = function() {
-		//return convertFromJson(rosters);
-		return mapTerms(rosters.terms);
-	}
-	
-	var Module = function(m) {
-		this._m = m;
-		this.vm = {};
-		this.ctrl = {};
-		this.controller = controller.bind(this);
-		this.view = this._m.view.bind(this);
-		
-		function controller () {
-			this._m.controller.call(this.ctrl);
-			var ctrl = this.ctrl;
-			this.controller = function () {
-				return ctrl;
-			};
-		};
-	};
-
-	Module.prototype.controllerInit = function(options) {
-		var merge = function merge(opts) {
-			if (opts) this.ctrl = Object.assign(this.ctrl, opts);
-		}.bind(this);
-		
-		this.controller();
-		merge(options);
-
-		this.controllerInit = merge;
-		return this;
-	};
-
-	Module.prototype.vmInit = function(options) {
-		var merge = function merge(opts) {
-			if (opts) this.vm = Object.assign(this.vm, opts);
-		}.bind(this);
-		
-		this._m.viewModel.call(this.vm, this.ctrl);
-		merge(options);
-
-		this.vmInit = merge;
-		return this;
-	};
-
-	Module.prototype.init = function(ctrlOptions, vmOptions) {
-		this.controllerInit.call(this, ctrlOptions);
-		this.vmInit.call(this, vmOptions);
-		return this;
-	};
-
-	var filter = new Module({
-		controller: function() {
-					
-		},
-		
-		viewModel: function() {
-			this.searchTerm = m.prop("");
-		},
-		
-		view: function() {
-			var ctrl = this.ctrl;
-			var vm = this.vm;
-			return m('div', {id: 'filter'}, [m('input', {
-			    oninput: m.withAttr('value', vm.searchTerm),
-			    placeholder: 'search',
-			    value: vm.searchTerm()
-			  })
-			]);
-		}
-	});
-
-	var selectedTerm = new Module({
-		controller: function() {
-			this.terms = Object.keys(Terms.listAll()).sort(sortTerms); //.reverse();
-			//if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
-			//	this.terms.push(this.terms.shift());
-			//} 
-			//if (this.terms[0] == "Continuous" || this.terms[0] == 'All Courses') {
-			//	this.terms.push(this.terms.shift());
-			//} 
-		},
-		
-		viewModel: function(ctrl) {
-			this.selectedTerm = m.prop(ctrl.terms[0]);
-		},
-		
-		view: function() {
-			var ctrl = this.ctrl;
-			var vm = this.vm;
-			return m('div', [
-		   	  "Term ",
-		   	  m('select', {
-		   		  onchange: m.withAttr('value', vm.selectedTerm)
-		   	  }, [
-		   	    ctrl.terms.map(function(item) {
-		   	      return m('option', {
-		   	    	  value: item,
-		   	    	  selected: vm.selectedTerm() == item ? true : false
-		   	      }, item)
-		   	    })
-		   	  ])
-		   	]);
-		}
-	});
-
-	var showChildren = new Module({
-		controller: function() {
-			
-		},
-		
-		viewModel: function() {
-			this.showChildren = m.prop(true);
-		},
-		
-		view: function() {
-			var ctrl = this.ctrl;
-			var vm = this.vm;
-			return m('div', ['Show Rosters', m('input', {
-				type: 'checkbox',
-			    onclick: m.withAttr('checked', vm.showChildren),
-			    checked: vm.showChildren()
-			})]);
-		}
-	});
-
-	var table = new Module({
-		controller: function() {
-			this.terms = new Terms.listAll();
-			this.filter = function(item) {
-				return true;
-			};
-		},
-		
-		viewModel: function() {
-			var $ = jQuery;
-			this.selectedTerm = m.prop("2015 Spring");
-			this.itemsPerPage = m.prop(Infinity);
-			this.selectedPage = m.prop(1);
-			this.showChildren = m.prop(false);
-			
-			this.showRosters = function(parentCourse) {
-				var data = {};
-				var rosters = Terms.listRosters();
-				var template = $.templates('#rosterTemplate');
-				var lecReg = /-lec$/ig;
-				var labReg = /-lab$/ig;
-				var rosterReg;
-				
-				if (lecReg.test(parentCourse)) {
-					rosterReg = lecReg.test.bind(lecReg);
-				} else if (labReg.test(parentCourse)) {
-					rosterReg = labReg.test.bind(labReg);
-				} else {
-					rosterReg = function() { return true; }	
-				}				
-				
-				rosters = (rosters[this.selectedTerm()] || []).filter(function(el) {
-					return rosterReg(el.course.courseId);
-				});
-				
-				data.parentCourse = parentCourse;
-				parentCourseId = parentCourse;
-				data.rosters = rosters;
-				var html = template.render(data);
-				$('#rosterContainer').html(html);
-				$('#CCMPage1').css('display', 'none');
-				$('#CCMPage2').css('display', 'block');
-			};
-		},
-		
-		view: function() {
-			var ctrl = this.ctrl;
-			var vm = this.vm;
-			return m("table", {class: 'four'}, [m("tr", [
-		        m("td", "Enrl"),
-		        m("td", "Course Title (Course ID)"),
-		        m("td", {id: "availabilityTT"}, [
-		             "Availability ",
-		             m("img", {
-		            	 height: 20,
-		            	 src: moduleBasePath + 'question_mark.png'
-		             })
-		        ]),
-		        m("td", {id: "actionTT"}, [
-		             "Action ",
-		             m('img', {
-		            	 height: 20,
-		            	 src: moduleBasePath + 'question_mark.png'
-		             })
-		        ])
-		    ]),
-		  	ctrl.terms[vm.selectedTerm()].filter(ctrl.filter).map(function(cm) {
-		  		var co = cm.course;
-		  		var cc = co.children.length && vm.showChildren()
-			   		? [co].concat(co.children.map(function(child) {return child.course; }))
-			   		: [co];
-		   	   return cc.map(function(c) {
-		    	   return m('tr', [
-		             m('td', c.enrl),
-		             m('td', {class: c.isChild ? "child" : ""}, (function() {
-		            	 return c.isRoster 
-		            	 ? c.displayTitle
-		            	 : [m('a', {href: c.accessUri}, c.displayTitle)];
-		             }())),
-		             m("td", (function() {
-		          	   if (!c.isRoster && c.isInstructor) {
-		          		   if (c.isAvailable) {
-		          			   return m("a", {href: c.disableUri, onclick: showLoading}, "Disable");
-		          		   } else {
-		          			   return m("a", {href: c.enableUri, onclick: showLoading}, "Enable");
-		          		   }
-		          	   }
-		          	   return "";
-		             }())),
-		             m("td", (function() {
-		          	   if (c.isOnline && (c.isInstructor || c.isSecondaryInstructor) && !c.isChild) {
-		          		   if(!c.isRoster) {
-		          			   return m("a", {target: "_blank", href: c.cvUri}, "Course Verification");
-		          		   } else {
-		          			   return "*";
-		          		   }
-		          	   } else if (c.isInstructor && c.isChild) {
-		          		   if (!/onlin-/ig.test(c.parent)) {
-			          		   return m("a", {href: c.unmergeUri}, "Remove");
-		          		   } else {
-		          			   return "*";
-		          		   }
-		          	   } else if (c.isInstructor) {
-		          		   if (c.isRoster) {
-		          			   return m("a", {href: c.activateUri, onclick: showLoading}, "Activate");
-		          		   } else {
-		          			   return m("a", {
-		          				    href: "#" + c.courseId,
-		          					onclick: vm.showRosters.bind(vm, c.courseId)
-		          			   }, "Merge");
-		          		   }
-		          	   }
-		             }()))
-		           ]);
-		   		});
-		      })
-		  ]);
-		}
-	});
-
-	var app = new Module({
-		controller: function() {
-			var filterCourses = function filterCourses(item, ind) {
-				if (item.course.isChild) return false;
-				var course = item.course;
-				var searchVal = filter.vm.searchTerm().toLowerCase();
-				var page = table.vm.selectedPage() - 1;
-				var pageSize = table.vm.itemsPerPage();
-				
-				if (searchVal == "")
-					if (ind < page || ind >= page + pageSize) return false;
-				
-				var name = course.title.toLowerCase();
-				var id = course.courseId.toLowerCase();
-				var children = course.children.filter(filterCourses);
-				return name.indexOf(searchVal) > -1 || id.indexOf(searchVal) > -1 || children.length;
-			};
-			
-			this.filter = filter.init();
-			
-			this.selectedTerm = selectedTerm.init();
-			
-			this.showChildren = showChildren.init();
-			
-			this.table = table.init({
-				filter: filterCourses
-			}, {
-				showChildren: showChildren.vm.showChildren,
-				selectedTerm: selectedTerm.vm.selectedTerm
+		function merge(parentCourseId) {
+			var uri = "<%= BuildingBlockHelper.getBaseUrl() %>" + "Merge?parent-course=" + parentCourseId + "&child-courses=";
+			var childCourses = document.querySelectorAll('#mergeList input:checked');
+			[].forEach.call(childCourses, function(el, i) {
+				var prefix = i > 0 ? ',' : '';
+				uri += prefix + el.getAttribute("value");
 			});
 			
-		},
-		
-		viewModel: function() {
-			
-		},
-		
-		view: function() {
-			var ctrl = this.ctrl;
-			return m("div", [
-			  m('#appHeader', [
-				ctrl.selectedTerm.view(),
-			  	ctrl.showChildren.view(),
-			  	ctrl.filter.view(),
-			  	m('br', {class: 'clear'})
-			  ]), m('.CSSTableGenerator', [
-				  ctrl.table.view()
-			  ])
-		    ]);
+			window.location.replace(uri);
 		}
-	});
+		
+		var app = new Module({
+			controller: function() {
+				var self = this;
+				// Model
+				var courses = new Terms(instCourses.terms);
+				var localRosterList = new Terms(window.rosters.terms);
+				
+				var filterCourses = function filterCourses(el, ind) {
+					if (el.isChild) return false;
+					
+					function filterFn(item, ind) {
+						var course = item;
+						var searchVal = filter.vm.searchTerm().toLowerCase();
+						var page = tableModule.vm.selectedPage() - 1;
+						var pageSize = tableModule.vm.itemsPerPage();
+						
+						if (searchVal == "")
+							if (ind < page || ind >= page + pageSize) return false;
+						
+						var name = course.title.toLowerCase();
+						var id = course.courseId.toLowerCase();
+						var children = course.children.filter(filterFn);
+						return name.indexOf(searchVal) > -1 || id.indexOf(searchVal) > -1 || children.length;
+					}
+					
+					return filterFn(el, ind);
+				};
+				
+				this.loading = m.prop(false);
+				this.loadingModule = loadingModule.init();
+				this.showRosters = m.prop(false);
+				
+				this.filter = filter.init();
+				
+				this.selectedTerm = selectedTerm.init({
+					terms: courses.terms
+				});
+				
+				this.rosterList = m.prop(localRosterList.courses);
+				this.currentRosters = m.prop(localRosterList.courses[selectedTerm.vm.selectedTerm()]);
+				this.showChildren = showChildren.init();
+				this.parentCourseId = m.prop("");
+				
+				this.table = tableModule.init({
+					filter: filterCourses,
+					terms: courses.courses,
+					allRosters: self.rosterList,
+					rosters: self.currentRosters,
+					parentCourseId: self.parentCourseId,
+					loading: self.loading
+				}, {
+					showChildren: showChildren.vm.showChildren,
+					selectedTerm: selectedTerm.vm.selectedTerm,
+					showRosterList: self.showRosters
+				});
+				
+				this.rosterModule = rosterModule.init({
+					rosters: self.currentRosters,
+					showRosters: self.showRosters,
+					parentCourse: self.parentCourseId,
+					selectedTerm: selectedTerm.vm.selectedTerm,
+					loading: self.loading
+				}, {
+					save: merge
+				});
+				
+			},
+			
+			viewModel: function() {
+				
+			},
+			
+			view: function() {
+				var ctrl = this.ctrl;
+				return m("div", (function() {
+					if (ctrl.showRosters()) {
+						return ctrl.rosterModule.view();
+					} else if (ctrl.loading()) {
+						return ctrl.loadingModule.view();
+					} else {
+				  		return [m('#appHeader', [
+							ctrl.selectedTerm.view(),
+						  	ctrl.showChildren.view(),
+						  	ctrl.filter.view(),
+						  	m('br', {class: 'clear'})
+					  	]), m('.CSSTableGenerator', [
+						 	ctrl.table.view()
+					  	])];
+					}
+				}()));
+			}
+		}); // END APP
+		
+		window.app = app;
+	} // END MAIN
+	
 
-  	ready(function() {
-  		console.log('dom loaded');
-	  	m.module(document.getElementById('instCourses'), app.init());
-		startOpenTip();
-  	}, "Opentip", "m", "jQuery");
+	ready(function() {
+		if (isDev) {
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/init-opentip.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/filter-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/roster-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/loading-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/ccm-table-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/selectedterm-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/showchildren-module.js") %>');
+			load('<%= BuildingBlockHelper.getBaseUrl("module/js/app.js") %>');
+		}
+		
+		ready(function() {
+			console.log('dom loaded');
+			main();
+			m.module(document.getElementById('instCourses'), app.init());
+			//startOpenTip();
+		}, "filter", "selectedTerm", "showChildren", "rosterModule", "loadingModule", "tableModule", "startOpenTip");
+		
+	}, "isPolyFilled", "m", "Module", "Opentip", "jQuery", "Terms");
 
-  	//typeof Opentip == 'undefined' || typeof m == 'undefined' || typeof jQuery == 'undefined' // in = loadINg
 </script>
 
 </bbNG:includedPage>
