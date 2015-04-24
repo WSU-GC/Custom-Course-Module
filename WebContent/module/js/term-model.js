@@ -8,18 +8,22 @@
 	function mapCourses(courses) {
 		return courses.map(function(el, i) {
 			
+			var brTag = {uiFn: 'element', tag: 'br'};
+			
 			var accessUri = el.accessUri
 				, activateUri = el.activateUri
 				, cvUri = el.cvUri
 				, disableUri = el.disableUri
 				, enableUri = el.enableUri
-				, unmergeUri = el.unmergeUri;
+				, unmergeUri = el.unmergeUri
+				, waitlistUri = el.waitlistUri;
 			
 			el.accessUri = {uiFn: 'link', elAttrs: {href: accessUri}, text: el.displayTitle};
 			el.activateUri = {uiFn: 'link', elAttrs: {href: activateUri}, text: "Activate", showLoading: true};
 			el.cvUri = {uiFn: 'link', elAttrs: {href: cvUri, target: "_blank" }, text: "Course Verification"};
 			el.disableUri = {uiFn: 'link', elAttrs: {href: disableUri}, text: "Disable", showLoading: true};
 			el.enableUri = {uiFn: 'link', elAttrs: {href: enableUri}, text: "Enable", showLoading: true};
+			el.waitlistUri = {uiFn: 'link', elAttrs: {href: waitlistUri}, text: "Add Waitlist", showLoading: true};
 			el.unmergeUri = {uiFn: 'link', elAttrs: {href: unmergeUri}, text: "Remove", showLoading: true,
 					prompt: "This will remove " + el.courseId + " from " + el.parent + ". This action may delete student work and grades. "
 					+ "Do you wish to continue?"};
@@ -57,7 +61,7 @@
          				    href: "#" + course.courseId,
          					onclick: vm.showRosters.bind(vm, course.courseId)
          			   }, "Merge");
-				   }];
+				   }, brTag, el.waitlistUri];
 			   }
 		   } else {
 			   el.action = "";

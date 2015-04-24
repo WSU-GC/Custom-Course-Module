@@ -49,6 +49,7 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		result.addProperty("activateUri", BuildingBlockHelper.getBaseUrl() + "Activate?course-id=" + cm.course.courseId + "&title=" + cm.course.title);
 		result.addProperty("accessUri", "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + cm.course.coursePkId);
 		result.addProperty("isUsingCourseVerification", cm.course.isUsingCourseVerification);
+		result.addProperty("waitlistUri", BuildingBlockHelper.getBaseUrl() + "Waitlist?course-id=" + cm.course.courseId + "&title=" + cm.course.title);
 		//result.addProperty("isUsingCourseVerification", true);
 		try {
 			result.add("enrl", new JsonPrimitive(cm.course.loadMemberships().size()));
