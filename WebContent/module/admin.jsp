@@ -105,6 +105,7 @@ function ready(cb) {
 
 </script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/jquery.js") %>'></script>
+<script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/lodash.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/polyfill.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/blob.js") %>'></script>
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/filesaver.js") %>'></script>
@@ -150,7 +151,21 @@ ready(function() {
 		saveAs(blob, "data-table-export.csv");
 	}
 	
+	function processEmails(arr) {
+		return [].concat(arr).map(function(el, i) {
+			if (_.isPlainObject(el)) {
+				var values = _.values(el).map(function(el, i) {
+					return '<' + el + '>;';
+				});
+				return _.flatten(_.zip(_.keys(el), values)).join(' ');
+			} else {
+				return el;
+			}
+		}).join(' ');
+	}
+	
 	function convertToCsv(data) {
+		window.data = data;
 		var keys = ['coursePkId', 'courseId', 'courseBatchUid', 'title', 'isAvailable', 'isRoster', 'isOnline', 'isParent', 'isChild', 'parent', 'enrl', 'instructorEmails'];
 		var csv = 'coursePkId, courseId, courseBatchUid, title, isAvailable, isRoster, isOnline, isParent, isChild, parent, enrl, instructorEmails\n';
 		
@@ -158,8 +173,8 @@ ready(function() {
 			if(i != 0) csv += "\n";
 			for (var j = 0, k = keys.length; j < k; j++) {
 				if (j != 0) csv += ",";
-				if (Array.isArray(data[i][keys[j]])) {
-					csv += '"' + data[i][keys[j]].join('; ') + '"';
+				if (Array.isArray(data[i][keys[j]]) || Object.isObj(data[i][keys[j]])) {
+					csv += '"' + processEmails(data[i][keys[j]]) + '"';
 				} else {
 					csv += '"' + (data[i][keys[j]] || '' ) + '"';
 				}
@@ -168,7 +183,7 @@ ready(function() {
 		return csv;
 	}
 	
-}, 'jQuery', 'isPolyFilled', 'saveAs', 'Blob', 'm', 'Module');
+}, 'jQuery', '_', 'isPolyFilled', 'saveAs', 'Blob', 'm', 'Module');
 </script>
 
 

@@ -48,7 +48,7 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 		result.addProperty("accessUri", "/webapps/blackboard/execute/launcher?type=Course&url=&id=" + cw.coursePkId);
 		result.addProperty("isUsingCourseVerification", cw.isUsingCourseVerification);
 		try {
-			result.add("instructorEmails", plainGson.toJsonTree(cw.loadInstructorEmails()));
+			result.add("instructorEmails", plainGson.toJsonTree(cw.loadInstructorInfo()));
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			result.addProperty("instructorEmails", "falied");

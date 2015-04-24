@@ -3,7 +3,9 @@ package edu.wsu;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import blackboard.data.course.Course;
 import blackboard.data.course.CourseCourse;
@@ -101,6 +103,20 @@ public class CourseWrapper {
 			}
 		}
 		return emails;
+	}
+	
+	public Map<String, String> loadInstructorInfo() throws KeyNotFoundException, PersistenceException {
+		List<CourseMembership> instructorMemberships = this.loadInstructorMemberships();
+		Map<String, String> info = new HashMap<String, String>();
+		for(CourseMembership instructor : instructorMemberships) {
+			try {
+				User user = UserDbLoader.Default.getInstance().loadById(instructor.getUserId());
+				info.put(user.getGivenName() + " " + user.getFamilyName(), user.getEmailAddress());
+			} catch (Exception e) {
+				info.put("Error", "----ERROR LOADING INSTRUCTOR INFO----");
+			}
+		}
+		return info;
 	}
 	
 	public List<CourseWrapper> loadChildren() 
