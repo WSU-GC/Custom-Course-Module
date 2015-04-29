@@ -45,7 +45,7 @@ public class CourseWrapper {
 	public CourseWrapper() {
 	}
 	
-	public CourseWrapper(Course course) throws PersistenceException, ToolSettingsException {
+	public CourseWrapper(Course course) {
 		//String saipRegex = "^\\d+-\\d+-\\d+-\\w+-\\w+-\\d+$";
 		String saipRegex = "^ROSTER-.+";
 		String onlineRegex = "(?i).+-ONLIN-.+";
@@ -66,11 +66,16 @@ public class CourseWrapper {
 		//this.enrollment = this.memberships != null ? this.memberships.size() : 0;
 	}
 	
-	public boolean checkForCourseVerification() throws PersistenceException, ToolSettingsException {
+	public boolean checkForCourseVerification() {
 		boolean isCV = false;
 		ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
-		CourseToolSettings courseToolSettings = toolManager.loadCourseToolSettings(this.id, "wsu-wsu-course-verification", CourseToolSettings.CourseToolType.Application);
-		isCV = courseToolSettings.getToolEnabledSetting().isAvailable();
+		CourseToolSettings courseToolSettings;
+		try {
+			courseToolSettings = toolManager.loadCourseToolSettings(this.id, "wsu-wsu-course-verification", CourseToolSettings.CourseToolType.Application);
+			isCV = courseToolSettings.getToolEnabledSetting().isAvailable();
+		} catch (Exception e) {
+			
+		} 
 		return isCV;
 	}
 	

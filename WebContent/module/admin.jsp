@@ -141,8 +141,8 @@ ready(function() {
 			save(convertToCsv(msg));
 		});
 	
-		jxhr.fail(function(xhr, statusText) {
-			console.log('Error: failed to load content from ' + url);
+		jxhr.fail(function(xhr, statusText, error) {
+			console.log('Error: failed to load content from %s, %s, %s', xhr.toString(), statusText, error.message);
 		});
 	}
 	
