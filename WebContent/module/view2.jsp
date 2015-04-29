@@ -21,7 +21,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 boolean isDev = false;
 //Properties buildProps = BuildingBlockHelper.loadBuildProperties();
 //String version = buildProps.getProperty("build.version");
-String version = "2.2.1";
+String version = "2.3.0";
 
 if (isDev) { %>
 
