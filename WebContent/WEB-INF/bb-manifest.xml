@@ -4,7 +4,7 @@
     <name value= "WSU Custom Course Module"/>
     <handle value= "wsu-custom-course-module"/>
     <description value= "WSU Custom Course Module for managing course sections and merges."/>
-    <version value= "2.3.0"/>
+    <version value= "2.3.2"/>
     <requires>
     	<bbversion value="9.0.0"/>
     </requires>
@@ -34,6 +34,8 @@
     </module-defs>
     
     <permissions>
+      <permission type="persist" name="user" actions="create,modify"/>
+      <permission type="persist" name="portalrole" actions="create,modify"/>
       <permission type="persist" name="Content" actions="create,modify,delete"/>
       <permission type="persist" name="course" actions="create,modify,delete"/>
       <permission type="persist" name="coursemembership" actions="create,modify,delete"/>
