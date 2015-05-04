@@ -50,18 +50,19 @@ public class TermUpdate extends HttpServlet {
 			String label = StringUtils.join(roleId.split("-"), " ");
 			
 			User user = UserDbLoader.Default.getInstance().loadByBatchUid(userId);
+			user.setBusinessFax(roleId);
 			try {
-				PortalRole role = PortalRoleDbLoader.Default.getInstance().loadByRoleId(roleId);
+				PortalRole role = PortalRoleDbLoader.Default.getInstance().loadByRoleId("FACULTY");
 				user.setPortalRole(role);
 			} catch (Exception ex) {
-				PortalRole pr = new PortalRole();
-				pr.setDescription(roleId);
-				pr.setRoleID(roleId);
-				pr.setRoleName(label);
-				PortalRoleDbPersister.Default.getInstance().persist(pr);
-				
-				PortalRole role = PortalRoleDbLoader.Default.getInstance().loadByRoleId(roleId);
-				user.setPortalRole(role);
+//				PortalRole pr = new PortalRole();
+//				pr.setDescription(roleId);
+//				pr.setRoleID(roleId);
+//				pr.setRoleName(label);
+//				PortalRoleDbPersister.Default.getInstance().persist(pr);
+//				
+//				PortalRole role = PortalRoleDbLoader.Default.getInstance().loadByRoleId(roleId);
+//				user.setPortalRole(role);
 			}
 			
 			UserDbPersister.Default.getInstance().persist(user);

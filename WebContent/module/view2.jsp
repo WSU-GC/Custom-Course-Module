@@ -24,7 +24,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 boolean isDev = false;
 //Properties buildProps = BuildingBlockHelper.loadBuildProperties();
 //String version = buildProps.getProperty("build.version");
-String version = "2.3.10";
+String version = "2.3.12";
 
 if (isDev) { %>
 
@@ -168,8 +168,9 @@ String jsonRosters = gson.toJson(rosterTerms);
 
 String roleId = "";
 
+	roleId = user.getBusinessFax();
 try {
-	roleId = PortalRoleDbLoader.Default.getInstance().loadPrimaryRoleByUserId(user.getId()).getRoleID();
+	//roleId = PortalRoleDbLoader.Default.getInstance().loadPrimaryRoleByUserId(user.getId()).getRoleID();
 } catch (Exception e) {
 	
 }

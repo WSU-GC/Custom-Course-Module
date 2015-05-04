@@ -38,7 +38,7 @@
 				});
 			
 				jxhr.fail(function(xhr, statusText, error) {
-					alert('Error: failed to set default term to ' + roleId + '. Error message: ' + error.message);
+					alert('Error: failed to set default term to ' + roleId + '. Error message: ' + error);
 				});
 			}
 		},
