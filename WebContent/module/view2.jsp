@@ -24,7 +24,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 boolean isDev = false;
 //Properties buildProps = BuildingBlockHelper.loadBuildProperties();
 //String version = buildProps.getProperty("build.version");
-String version = "2.4.0";
+String version = "2.4.2";
 
 if (isDev) { %>
 
@@ -166,14 +166,9 @@ String jsonRosters = gson.toJson(rosterTerms);
 //List<PortalRole> userRoles = userRoleLoader.loadAllByUserId(user.getId());
 //PortalRole specificRole = userRoleLoader.loadByRoleId("Spring-2015");
 
-String roleId = "";
+String roleId = user.getBusinessFax();
+String showRosters = user.getBusinessPhone1();
 
-	roleId = user.getBusinessFax();
-try {
-	//roleId = PortalRoleDbLoader.Default.getInstance().loadPrimaryRoleByUserId(user.getId()).getRoleID();
-} catch (Exception e) {
-	
-}
 
 %>
 
@@ -253,7 +248,8 @@ if(instMemberships.size() > 0) {
 		, instCourses = <%= jsonInstTerms %>
 		, rosters = <%= jsonRosters %>
 		, userId = "<%= user.getBatchUid() %>"
-		, userRoleId = "<%= roleId %>";
+		, userRoleId = "<%= roleId %>"
+		, showRosters = "<%= showRosters %>";
 	
 
 	function main() {
@@ -315,7 +311,10 @@ if(instMemberships.size() > 0) {
 				
 				this.rosterList = m.prop(localRosterList.courses);
 				this.currentRosters = m.prop(localRosterList.courses[selectedTerm.vm.selectedTerm()]);
-				this.showChildren = showChildren.init();
+				this.showChildren = showChildren.init({}, {
+					userId: window.userId,
+					url: "<%= BuildingBlockHelper.getBaseUrl() %>" + "ShowChildCourses"
+				});
 				this.parentCourseId = m.prop("");
 				
 				this.table = tableModule.init({
