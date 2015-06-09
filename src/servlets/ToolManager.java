@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import blackboard.data.course.Course;
 import blackboard.data.navigation.CourseToolSettings;
+import blackboard.data.navigation.*;
 import blackboard.persist.SearchOperator;
 import blackboard.persist.course.CourseDbLoader;
 import blackboard.persist.course.CourseSearch;
@@ -82,11 +83,13 @@ public class ToolManager extends HttpServlet {
 			Context ctx = contextManager.getContext();
 			CourseDbLoader courseLoader = CourseDbLoader.Default.getInstance();
 			CourseSearch courseSearch = new CourseSearch();
+			CourseToolSettings courseToolSettings;
 			
 			String searchTerm = request.getParameter("search");
 			String so = request.getParameter("operator");
 			String sk = request.getParameter("key");
 			String toolId = request.getParameter("tool-id");
+			String operation = request.getParameter("operation");
 			
 
 			CourseSearch.SearchKey key = searchKey.get(sk);
@@ -100,15 +103,26 @@ public class ToolManager extends HttpServlet {
 			
 			ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
 			
-			for (Course course: courses) {
-				
-			}
+//			for (Course course: courses) {
+//				
+//			}
 			
 			
 			Gson gson = new GsonBuilder()
 			.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
 			
 			List<CourseWrapper> courseWrappers = CourseWrapper.loadByCourses(courses);
+			
+			for (CourseWrapper cw: courseWrappers) {
+				try {
+					courseToolSettings = toolManager.loadCourseToolSettings(cw.id, toolId, CourseToolSettings.CourseToolType.ContentHandler);
+					cw.tool = courseToolSettings.getToolEnabledSetting().isAvailable();
+				} catch (Exception ex) {
+					response.setContentType("application/json");
+			        PrintWriter writer = response.getWriter();
+			        writer.print("Error: " + ex.getMessage());
+				} 
+			}
 			
 			String jsonResponse = gson.toJson(courseWrappers);
 			

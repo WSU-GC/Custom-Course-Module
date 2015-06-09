@@ -38,6 +38,7 @@ public class CourseWrapper {
 	public boolean isParent;
 	public boolean isChild;
 	public boolean isUsingCourseVerification;
+	public boolean tool;
 	//public List<CourseMembership> memberships = new ArrayList<CourseMembership>();
 	//public int enrollment;
 	
@@ -62,6 +63,7 @@ public class CourseWrapper {
 		this.isChild = course.isChild();
 		this.parent = this.loadParentCourseId();
 		this.isUsingCourseVerification = checkForCourseVerification();
+		this.tool = false;
 		//this.memberships = CourseMembershipDbLoader.Default.getInstance().loadByCourseId(this.id);
 		//this.enrollment = this.memberships != null ? this.memberships.size() : 0;
 	}

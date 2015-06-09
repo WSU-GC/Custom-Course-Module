@@ -22,7 +22,7 @@ Gson gson = new GsonBuilder()
 	.registerTypeAdapter(ToolSettings.class, new CourseToolSerializer()).create();
 
 ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
-List<ToolSettings> toolSettings = toolManager.loadAllToolSettings(false).get(ToolSettings.Type.Course);
+List<ToolSettings> toolSettings = toolManager.loadAllToolSettings(false).get(ToolSettings.Type.ContentHandler);
 
 String tools = gson.toJson(toolSettings);
 
@@ -36,17 +36,18 @@ String tools = gson.toJson(toolSettings);
 	<li>search: The value to search for</li>
 	<li>operator: contains, equals, notblank, startswith, greaterthan, lessthan</li>
 	<li>key: coursedescription, courseid, coursename, term, instructor, datecreated</li>
-	<li>tool-id: application identifying string.</li>
-	<li>operation: enable or disable</li>
+	<li>tool-id: application identifier.</li>
+	<li>operation: enable, disable or list</li>
 </ul>
 
 <p>
-example: search=2015-spri-onlin&operator=startswith&key=courseid
+example: search=2015-spri-onlin&operator=startswith&key=courseid&operation=list
 </p>
 
 <input style="width:400px;" type="text" id="searchParams" />
 
 <select id="tools">
+	<option>Please select an option</option>
 </select>
 
 <button id="submitSearch">Submit</button>
@@ -169,16 +170,20 @@ function initialize() {
 
 ready(function() {
 	var $ = jQuery;
+	var toolInd;
+	var tool;
 	
 	initialize();
 	
 	$('#submitSearch').on('click', function() {
-		var params = $('#searchParams').val();
+		toolInd = $('#tools option:selected').val();
+		tool = tools[toolInd];
+		var params = $('#searchParams').val() + '&tool-id=' + tool.identifier;
 		getSearchResults(params);
 	});
 	
 	function getSearchResults(params) {
-		var url = "<%= BuildingBlockHelper.getBaseUrl() %>" + "CourseAdmin?" + params;
+		var url = "<%= BuildingBlockHelper.getBaseUrl() %>" + "ToolManager?" + params;
 		var jxhr;
 		
 		jxhr = $.ajax(url);
@@ -213,8 +218,8 @@ ready(function() {
 	
 	function convertToCsv(data) {
 		window.data = data;
-		var keys = ['coursePkId', 'courseId', 'courseBatchUid', 'title', 'isAvailable', 'isRoster', 'isOnline', 'isParent', 'isChild', 'parent', 'enrl', 'instructorEmails'];
-		var csv = 'coursePkId, courseId, courseBatchUid, title, isAvailable, isRoster, isOnline, isParent, isChild, parent, enrl, instructorEmails\n';
+		var keys = ['coursePkId', 'courseId', 'courseBatchUid', 'title', 'isAvailable', 'isRoster', 'isOnline', 'isParent', 'isChild', 'parent', 'enrl', 'instructorEmails', 'tool'];
+		var csv = 'coursePkId, courseId, courseBatchUid, title, isAvailable, isRoster, isOnline, isParent, isChild, parent, enrl, instructorEmails, ' + tool.label + '\n';
 		
 		for (var i = 0, l = data.length; i < l; i++) {
 			if(i != 0) csv += "\n";
