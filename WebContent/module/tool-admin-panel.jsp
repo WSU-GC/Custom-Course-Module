@@ -22,9 +22,11 @@ Gson gson = new GsonBuilder()
 	.registerTypeAdapter(ToolSettings.class, new CourseToolSerializer()).create();
 
 ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
-List<ToolSettings> toolSettings = toolManager.loadAllToolSettings(false).get(ToolSettings.Type.ContentHandler);
+List<ToolSettings> contentArea = toolManager.loadAllToolSettings(false).get(ToolSettings.Type.ContentHandler);
+List<ToolSettings> courseApplications = toolManager.loadAllToolSettings(false).get(ToolSettings.Type.Course);
 
-String tools = gson.toJson(toolSettings);
+String contentHandlers = gson.toJson(contentArea);
+String applications = gson.toJson(courseApplications);
 
 %>
 
@@ -36,21 +38,40 @@ String tools = gson.toJson(toolSettings);
 	<li>search: The value to search for</li>
 	<li>operator: contains, equals, notblank, startswith, greaterthan, lessthan</li>
 	<li>key: coursedescription, courseid, coursename, term, instructor, datecreated</li>
-	<li>tool-id: application identifier.</li>
 	<li>operation: enable, disable or list</li>
 </ul>
 
 <p>
 example: search=2015-spri-onlin&operator=startswith&key=courseid&operation=list
 </p>
+<br/>
 
 <input style="width:400px;" type="text" id="searchParams" />
 
-<select id="tools">
+<br/>
+<br/>
+
+<select id="type">
+	<option>Select an option</option>
+	<option value="ContentHandler">Content Area</option>
+	<option value="Application">Application</option>
+</select>
+
+<br/>
+<br/>
+
+<select id="ContentHandler" class="hide">
 	<option>Please select an option</option>
 </select>
 
-<button id="submitSearch">Submit</button>
+<select id="Application" class="hide">
+	<option>Please select an option</option>
+</select>
+
+<br/>
+<br/>
+
+<button class="hide" id="submitSearch">Submit</button>
 
 <div id="toolContentDescription">
 </div>
@@ -141,23 +162,48 @@ function ready(cb) {
 <script type="text/javascript" src='<%= BuildingBlockHelper.getBaseUrl("module/js/module.js") %>'></script>
 <script>
 
-var tools = <%= tools %>;
+var contentHandlers = <%= contentHandlers %>;
+var applications = <%= applications %>;
+var type;
+var tools;
 
 function initialize() {
-	tools = tools.sort(function(a, b) {
+	contentHandlers = contentHandlers.sort(function(a, b) {
 		return a.label.localeCompare(b.label);
 	});
+	
+	applications = applications.sort(function(a, b) {
+		return a.label.localeCompare(b.label);
+	});
+	
+	tools = {
+		ContentHandler: contentHandlers,
+		Application: applications
+	};
 	
 	var $ = jQuery;
 	
 	var template = $.templates('#toolTemplate');
-	var output = template.render(tools);
+	var appHtml = template.render(tools.Application);
+	var conHtml = template.render(tools.ContentHandler);
 	
-	$('#tools').html(output);
 	
-	$(document).on('change', '#tools', function(ev) {
-		var ind = $('#tools option:selected').val();
-		var tool = tools[ind];
+	$('#ContentHandler').html(conHtml);
+	$('#Application').html(appHtml);
+	
+	$('.hide').hide();
+	
+	$(document).on('change', '#type', function(ev) {
+		type = $('#type option:selected').val();
+				
+		$('.hide').hide();
+		$('#' + type).show();
+		$('#submitSearch').show();
+	});
+	
+	$(document).on('change', '#ContentHandler, #Application', function(ev) {
+		var ind = $('#' + type + ' option:selected').val();
+		var tool = tools[type][ind];
 		var keys = Object.keys(tool);
 		
 		$('#toolContentDescription').html('');
@@ -176,9 +222,9 @@ ready(function() {
 	initialize();
 	
 	$('#submitSearch').on('click', function() {
-		toolInd = $('#tools option:selected').val();
-		tool = tools[toolInd];
-		var params = $('#searchParams').val() + '&tool-id=' + tool.identifier;
+		toolInd = $('#' + type + ' option:selected').val();
+		tool = tools[type][toolInd];
+		var params = $('#searchParams').val() + '&tool-id=' + tool.identifier + '&type=' + type;
 		getSearchResults(params);
 	});
 	

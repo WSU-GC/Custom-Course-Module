@@ -2,9 +2,11 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,8 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import blackboard.data.course.Course;
-import blackboard.data.navigation.CourseToolSettings;
 import blackboard.data.navigation.*;
+import blackboard.data.navigation.ToolSettings.SettingsAttribute;
 import blackboard.persist.SearchOperator;
 import blackboard.persist.course.CourseDbLoader;
 import blackboard.persist.course.CourseSearch;
@@ -28,6 +30,7 @@ import com.google.gson.GsonBuilder;
 import edu.wsu.CourseWrapper;
 import edu.wsu.CourseWrapperSerializer;
 import blackboard.persist.navigation.*;
+import blackboard.persist.navigation.ToolSettingsManager.SimpleToolSettings;
 
 /**
  * Servlet implementation class ToolManager
@@ -90,6 +93,7 @@ public class ToolManager extends HttpServlet {
 			String sk = request.getParameter("key");
 			String toolId = request.getParameter("tool-id");
 			String operation = request.getParameter("operation");
+			String type = request.getParameter("type");
 			
 
 			CourseSearch.SearchKey key = searchKey.get(sk);
@@ -103,19 +107,27 @@ public class ToolManager extends HttpServlet {
 			
 			ToolSettingsManager toolManager = ToolSettingsManagerFactory.getInstance();
 			
-//			for (Course course: courses) {
-//				
-//			}
-			
 			
 			Gson gson = new GsonBuilder()
-			.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
+				.registerTypeAdapter(CourseWrapper.class, new CourseWrapperSerializer()).create();
 			
 			List<CourseWrapper> courseWrappers = CourseWrapper.loadByCourses(courses);
 			
 			for (CourseWrapper cw: courseWrappers) {
 				try {
-					courseToolSettings = toolManager.loadCourseToolSettings(cw.id, toolId, CourseToolSettings.CourseToolType.ContentHandler);
+					
+					if (operation.equalsIgnoreCase("enable") && type.equalsIgnoreCase("ContentHandler")) {
+						toolManager.saveCourseContentHandlerSettings(cw.id, toolId, true);
+					} else if (operation.equalsIgnoreCase("enable") && type.equalsIgnoreCase("Application")) {
+						toolManager.saveCourseApplicationSettings(cw.id, toolId, true, true, true, true);
+					} else if (operation.equalsIgnoreCase("disable") && type.equalsIgnoreCase("ContentHandler")) {
+						toolManager.saveCourseContentHandlerSettings(cw.id, toolId, false);
+					} else if (operation.equalsIgnoreCase("disable") && type.equalsIgnoreCase("Application")) {
+						toolManager.saveCourseApplicationSettings(cw.id, toolId, false, false, false, false);
+					}
+				
+					
+					courseToolSettings = toolManager.loadCourseToolSettings(cw.id, toolId, CourseToolSettings.CourseToolType.valueOf(type));
 					cw.tool = courseToolSettings.getToolEnabledSetting().isAvailable();
 				} catch (Exception ex) {
 					response.setContentType("application/json");

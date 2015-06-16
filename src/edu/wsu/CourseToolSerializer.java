@@ -37,6 +37,7 @@ public class CourseToolSerializer implements JsonSerializer<ToolSettings> {
 		 	result.addProperty("label", cts.getApplicationLabel());
 		 	result.addProperty("identifier", cts.getIdentifier());
 		 	result.addProperty("type", cts.getType().toString());
+		 	result.addProperty("handle", cts.getContentHandler().getHandle());
 		} catch (Exception ex) {
 			
 		}
