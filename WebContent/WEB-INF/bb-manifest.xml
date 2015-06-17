@@ -4,7 +4,7 @@
     <name value= "WSU Custom Course Module"/>
     <handle value= "wsu-custom-course-module"/>
     <description value= "WSU Custom Course Module for managing course sections and merges."/>
-    <version value= "2.6.1"/>
+    <version value= "2.6.4"/>
     <requires>
     	<bbversion value="9.0.0"/>
     </requires>
@@ -34,6 +34,8 @@
     </module-defs>
     
     <permissions>
+      <permission type="persist" name="user" actions="create,modify"/>
+      <permission type="persist" name="portalrole" actions="create,modify"/>
       <permission type="persist" name="Content" actions="create,modify,delete"/>
       <permission type="persist" name="course" actions="create,modify,delete"/>
       <permission type="persist" name="coursemembership" actions="create,modify,delete"/>
@@ -43,7 +45,7 @@
       <permission type="persist" name="group" actions="create,modify,delete"/>
       <permission type="persist" name="groupmembership" actions="create,modify,delete"/>
       <permission type="attribute" name="user.authinfo" actions="get"/>
-      <permission type="attribute" name="user.personalinfo" actions="get"/>
+      <permission type="attribute" name="user.personalinfo" actions="get,set"/>
       <permission type="persist" name="contentfile" actions="create,modify,delete"/>
       <permission type="persist" name="metadatacontentareaassociation" actions="create"/>
       <permission type="persist" name="metadatapickeruserpreference" actions="create"/>

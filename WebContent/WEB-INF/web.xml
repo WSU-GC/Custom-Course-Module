@@ -58,6 +58,20 @@
 		<servlet-name>Merge</servlet-name>
 		<servlet-class>servlets.Merge</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>TermUpdate</display-name>
+		<servlet-name>TermUpdate</servlet-name>
+		<servlet-class>servlets.TermUpdate</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>ShowChildCourses</display-name>
+		<servlet-name>ShowChildCourses</servlet-name>
+		<servlet-class>servlets.ShowChildCourses</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>TestHttpServ</servlet-name>
 		<url-pattern>/TestHttpServ</url-pattern>
@@ -89,6 +103,14 @@
 	<servlet-mapping>
 		<servlet-name>Merge</servlet-name>
 		<url-pattern>/Merge</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>TermUpdate</servlet-name>
+		<url-pattern>/TermUpdate</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ShowChildCourses</servlet-name>
+		<url-pattern>/ShowChildCourses</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

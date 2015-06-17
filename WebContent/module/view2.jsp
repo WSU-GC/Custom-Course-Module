@@ -7,6 +7,9 @@
 <%@page import="java.util.ArrayList" %>
 <%@page import="java.util.List" %>
 <%@page import="java.util.Properties" %>
+<%@page import="blackboard.persist.user.*" %>
+<%@page import="blackboard.persist.role.*" %>
+<%@page import="blackboard.data.role.*" %>
 
 <%@ taglib uri="/bbNG" prefix="bbNG"%>
 
@@ -21,7 +24,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 boolean isDev = false;
 //Properties buildProps = BuildingBlockHelper.loadBuildProperties();
 //String version = buildProps.getProperty("build.version");
-String version = "2.3.0";
+String version = "2.5.0";
 
 if (isDev) { %>
 
@@ -158,8 +161,16 @@ String jsonInstTerms = gson.toJson(instTerms);
 //String jsonInstTerms = new Gson().toJson(instTerms.terms);
 String jsonRosters = gson.toJson(rosterTerms);
 
-%>
+//PortalRoleDbLoader userRoleLoader = PortalRoleDbLoader.Default.getInstance();
 
+//List<PortalRole> userRoles = userRoleLoader.loadAllByUserId(user.getId());
+//PortalRole specificRole = userRoleLoader.loadByRoleId("Spring-2015");
+
+String roleId = user.getBusinessFax();
+String showRosters = user.getBusinessPhone1();
+
+
+%>
 
 <% 
 if(instMemberships.size() > 0) { 
@@ -235,7 +246,10 @@ if(instMemberships.size() > 0) {
 		, parentCourseId = ''
 		, isInstructor = <%= isInstructor %>
 		, instCourses = <%= jsonInstTerms %>
-		, rosters = <%= jsonRosters %>;
+		, rosters = <%= jsonRosters %>
+		, userId = "<%= user.getBatchUid() %>"
+		, userRoleId = "<%= roleId %>"
+		, showRosters = "<%= showRosters %>";
 	
 
 	function main() {
@@ -288,12 +302,19 @@ if(instMemberships.size() > 0) {
 				this.filter = filter.init();
 				
 				this.selectedTerm = selectedTerm.init({
+					userRoleId: m.prop(userRoleId),
 					terms: courses.terms
+				}, {
+					userId: window.userId,
+					url: "<%= BuildingBlockHelper.getBaseUrl() %>" + "TermUpdate"
 				});
 				
 				this.rosterList = m.prop(localRosterList.courses);
 				this.currentRosters = m.prop(localRosterList.courses[selectedTerm.vm.selectedTerm()]);
-				this.showChildren = showChildren.init();
+				this.showChildren = showChildren.init({}, {
+					userId: window.userId,
+					url: "<%= BuildingBlockHelper.getBaseUrl() %>" + "ShowChildCourses"
+				});
 				this.parentCourseId = m.prop("");
 				
 				this.table = tableModule.init({
@@ -369,7 +390,7 @@ if(instMemberships.size() > 0) {
 			//startOpenTip();
 		}, "filter", "selectedTerm", "showChildren", "rosterModule", "loadingModule", "tableModule", "startOpenTip");
 		
-	}, "isPolyFilled", "m", "Module", "Opentip", "jQuery", "Terms");
+	}, "isPolyFilled", "m", "Module", "Opentip", "jQuery", "Terms", "userRoleId");
 
 </script>
 
