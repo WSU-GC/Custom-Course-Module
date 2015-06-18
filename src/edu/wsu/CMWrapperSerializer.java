@@ -73,11 +73,11 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		}
 		
 // useful for troubleshooting
-		try {
-			result.add("settings", plainGson.toJsonTree(cm.course.loadCourseTools()));
-		} catch (Exception e) {
-			result.addProperty("settings", "Failed to load course settings");
-		}
+//		try {
+//			result.add("settings", plainGson.toJsonTree(cm.course.loadCourseTools()));
+//		} catch (Exception e) {
+//			result.addProperty("settings", "Failed to load course settings");
+//		}
 		
 		result.addProperty("isSecondaryInstructor", cm.role.equalsIgnoreCase("si") || cm.role.equalsIgnoreCase("scb"));
 		result.addProperty("isInstructor", cm.role.equalsIgnoreCase("si") || cm.role.equalsIgnoreCase("scb") 
