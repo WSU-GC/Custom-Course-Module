@@ -41,7 +41,7 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		result.add("isParent", new JsonPrimitive(cm.course.isParent));
 		result.add("isChild", new JsonPrimitive(cm.course.isChild));
 		result.add("parent", new JsonPrimitive(cm.course.parent));
-		result.addProperty("cvUri", "http://cdpemoss.wsu.edu/_layouts/CDPE/CourseVerification/Version08/Summary.aspx?pk1=" + cm.course.courseId);
+		result.addProperty("cvUri", "https://elearning.wsu.edu/courseverification/Summary.aspx?courseid=" + cm.course.courseId);
 		result.addProperty("disableUri", BuildingBlockHelper.getBaseUrl() + "Disable?course-id=" + cm.course.courseId);
 		result.addProperty("displayTitle", cm.course.title + " (" + cm.course.courseId + ")");
 		result.addProperty("enableUri", BuildingBlockHelper.getBaseUrl() + "Enable?course-id=" + cm.course.courseId);
