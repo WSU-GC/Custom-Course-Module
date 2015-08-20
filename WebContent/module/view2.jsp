@@ -207,6 +207,9 @@ if(instMemberships.size() > 0) {
 					<strong><a target="_blank" href="http://elearning.wsu.edu/pdf/copyingcourseswithinblackboard.pdf">Instructions</a></strong>
 				</li>
 			</ol>
+			<br/>
+			
+			<strong style="font-size: 0.9em;">* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
 			
 			<!-- ***************************************************************
 				 * Instructor Courses
@@ -216,7 +219,6 @@ if(instMemberships.size() > 0) {
 				
 			</div>
 			
-			<strong>* Global Campus courses are managed through the Course Verification process and enabled by Global Campus before the official start date.</strong>
 		</div> <!-- END Manage Course -->
 	</div><!-- End CCMSPace -->
 
