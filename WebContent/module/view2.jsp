@@ -24,7 +24,7 @@ String moduleBasePath = PlugInUtil.getUri("wsu", "wsu-custom-course-module", "")
 boolean isDev = false;
 //Properties buildProps = BuildingBlockHelper.loadBuildProperties();
 //String version = buildProps.getProperty("build.version");
-String version = "2.6.0";
+String version = "2.7.0";
 
 if (isDev) { %>
 
@@ -181,7 +181,7 @@ if(instMemberships.size() > 0) {
 
 <div id="CCMPage1">
 	<div class="CCMSpace">
-		<h6>Courses to which you are assigned as the primary instructor:</h6>
+		<h6>Courses to which you are assigned as a course editor:</h6>
 		
 		<% if(instMemberships.size() == 0) { %>
 			<!-- <p>You are not enrolled in any course as an instructor. If you believe this is a mistake please work with your 
@@ -200,7 +200,7 @@ if(instMemberships.size() > 0) {
 					edit content. When the course ID is an active hyperlink, the course space has been activated.
 				</li>
 				<li>If needed, <strong>MERGE</strong> course spaces so that you can manage just one course space 
-					for multiple sections.- <strong><a target="_blank" href="http://elearning.wsu.edu/pdf/bblearnmanagingcoursestutorial.pdf">Instructions</a></strong> 
+					for multiple sections.- <strong><a target="_blank" href="https://www.youtube.com/watch?v=fP4-hneiVQg&feature=youtu.be">Instructions</a></strong> 
 				</li>
 				<li>
 					To <strong>COPY</strong> an existing Bb course into a newly activated one. 

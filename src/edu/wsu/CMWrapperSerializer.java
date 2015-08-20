@@ -82,7 +82,7 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		result.addProperty("isSecondaryInstructor", cm.role.equalsIgnoreCase("si") || cm.role.equalsIgnoreCase("scb"));
 		result.addProperty("isInstructor", cm.role.equalsIgnoreCase("si") || cm.role.equalsIgnoreCase("scb") 
 				|| cm.role.equalsIgnoreCase("instructor") || cm.role.equalsIgnoreCase("pcb") || cm.role.equalsIgnoreCase("support") 
-				|| cm.role.equalsIgnoreCase("course_editor"));
+				|| cm.role.equalsIgnoreCase("course_editor") || cm.role.equalsIgnoreCase("AS") || cm.role.equalsIgnoreCase("ACB"));
 		result.add("role", new JsonPrimitive(cm.role));
 		return result;
 	}
