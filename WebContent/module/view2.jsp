@@ -150,6 +150,7 @@ List<CMWrapper> activeStudentMemberships = CMWrapper.filterCMWrappersByAvailabil
 TermWrapper activeStudentTerms = new TermWrapper(activeStudentMemberships);
 
 List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByRole(userMemberships, "STUDENT", false);
+// List<CMWrapper> instMemberships = CMWrapper.filterCMWrappersByAvailability(_instMemberships, true);
 
 TermWrapper instTerms = new TermWrapper(instMemberships);
 

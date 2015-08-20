@@ -122,15 +122,18 @@ public class CMWrapper {
 		List<CMWrapper> cmWrappers = new ArrayList<CMWrapper>();
 		for (int i = 0, l = courses.size(); i < l; i++) {
 			CMWrapper cm = courses.get(i);
-			if (equals) {
-				if(cm.role.equalsIgnoreCase(role)) {
-					cmWrappers.add(cm);
-				}
-			} else {
-				if(!cm.role.equalsIgnoreCase(role)) {
-					cmWrappers.add(cm);
+			if(cm.membership.getIsAvailable()) {
+				if (equals) {
+					if(cm.role.equalsIgnoreCase(role)) {
+						cmWrappers.add(cm);
+					}
+				} else {
+					if(!cm.role.equalsIgnoreCase(role)) {
+						cmWrappers.add(cm);
+					}
 				}
 			}
+				
 		}
 		return cmWrappers;
 	}
