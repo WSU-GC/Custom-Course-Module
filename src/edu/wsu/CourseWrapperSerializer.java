@@ -55,7 +55,7 @@ public class CourseWrapperSerializer implements JsonSerializer<CourseWrapper> {
 			result.addProperty("instructorEmails", "falied");
 		} 
 		try {
-			result.add("enrl", new JsonPrimitive(cw.loadMemberships().size()));
+			result.add("enrl", new JsonPrimitive(cw.loadStudentEnrollments().size()));
 		} catch (KeyNotFoundException e1) {
 			// TODO Auto-generated catch block
 			result.add("enrl", new JsonPrimitive(0));

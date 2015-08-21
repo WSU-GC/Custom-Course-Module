@@ -99,6 +99,10 @@ public class CourseWrapper {
 		return CourseMembershipDbLoader.Default.getInstance().loadByCourseIdAndInstructorFlag(this.id);
 	}
 	
+	public List<CourseMembership> loadStudentEnrollments() throws KeyNotFoundException, PersistenceException {
+		return CourseMembershipDbLoader.Default.getInstance().loadByCourseIdAndRole(this.id, CourseMembership.Role.STUDENT);
+	}
+	
 	public List<String> loadInstructorEmails() throws KeyNotFoundException, PersistenceException {
 		List<CourseMembership> instructorMemberships = this.loadInstructorMemberships();
 		List<String> emails = new ArrayList<String>();

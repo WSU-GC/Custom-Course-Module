@@ -51,7 +51,7 @@ public class CMWrapperSerializer implements JsonSerializer<CMWrapper> {
 		result.addProperty("isUsingCourseVerification", cm.course.isUsingCourseVerification);
 		//result.addProperty("isUsingCourseVerification", true);
 		try {
-			result.add("enrl", new JsonPrimitive(cm.course.loadMemberships().size()));
+			result.add("enrl", new JsonPrimitive(cm.course.loadStudentEnrollments().size()));
 		} catch (KeyNotFoundException e1) {
 			// TODO Auto-generated catch block
 			result.add("enrl", new JsonPrimitive(0));
